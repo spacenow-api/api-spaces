@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "ts-node-dev ./src/server.ts",
     "start": "ts-node ./src/server.ts",
+    "debug": "tsnd --inspect --respawn src/server.ts",
     "migrate:up": "db-migrate up --config ./src/helpers/configs/database.json -m ./src/helpers/migrations",
     "migrate:down": "db-migrate down -c 999 --config ./src/helpers/configs/database.json -m ./src/helpers/migrations",
     "db:prepare": "yarn migrate:down && yarn migrate:up"
