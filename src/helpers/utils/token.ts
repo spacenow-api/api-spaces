@@ -1,6 +1,6 @@
 import { Request } from 'express';
 
-class TokenController {
+class Token {
 
   public getToken(request: Request): string {
     if (request.headers.authorization && request.headers.authorization.split(' ')[0] === 'Bearer') {
@@ -15,4 +15,4 @@ class TokenController {
 
 }
  
-export default TokenController
+export default Token;
