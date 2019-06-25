@@ -21,7 +21,8 @@
     "reflect-metadata": "~0.1.13",
     "sequelize": "~5.8.10",
     "sequelize-typescript": "~1.0.0-beta.3",
-    "uuid": "~3.3.2"
+    "uuid": "~3.3.2",
+    "dotenv": "~8.0.0"
   },
   "devDependencies": {
     "@types/cookie-parser": "~1.4.1",
@@ -30,6 +31,7 @@
     "@types/uuid": "~3.4.4",
     "db-migrate-mysql": "~1.1.10",
     "ts-node-dev": "~1.0.0-pre.39",
-    "typescript": "~3.4.5"
+    "typescript": "~3.4.5",
+    "@types/dotenv": "~6.1.1"
   }
 }
