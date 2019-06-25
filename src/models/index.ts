@@ -1,6 +1,6 @@
 import { Sequelize } from 'sequelize-typescript';
 import * as config from '../config';
-import { Category } from './category.model'
+import { Category } from './space.model'
 
 export const sequelize = new Sequelize({
   host: config.dbEndpoint,
@@ -16,4 +16,4 @@ sequelize.addModels([
   Category
 ])
 
-export { Category } from './category.model';
+export { Category } from './space.model';
