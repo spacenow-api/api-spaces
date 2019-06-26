@@ -32,14 +32,12 @@ class App {
   }
 
   private initializeControllers(controllers: any): void {
-    controllers.forEach((controller: any) => {
-      this.app.use('/', controller.router);
-    });
+    controllers.forEach((c: any) => this.app.use('/', c.router));
   }
 
   public listen() {
     this.app.listen(this.port, this.host, () => {
-      console.log(`App listening on the port ${this.host}:${this.port}`);
+      console.log(`API * Spaces * listening on ${this.host}:${this.port}`);
     });
   }
 }
