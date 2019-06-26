@@ -1,9 +1,0 @@
-{
-  "dev": {
-    "username": "spacenowtest",
-    "password": "Spac.918273!",
-    "database": "spacenow-api-users",
-    "host": "spacenow-test.cjo4zy3wnflc.ap-southeast-2.rds.amazonaws.com",
-    "driver": "mysql"
-  }
-}

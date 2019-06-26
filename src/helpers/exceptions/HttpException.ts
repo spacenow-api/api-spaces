@@ -1,4 +1,4 @@
-import { BaseError } from 'sequelize'
+import { BaseError } from 'sequelize';
 
 export default class HttpException extends BaseError {
   status: number;

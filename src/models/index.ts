@@ -1,19 +1,18 @@
 import { Sequelize } from 'sequelize-typescript';
+
 import * as config from '../config';
-import { Category } from './space.model'
+
+import { Listing } from './listing.model';
 
 export const sequelize = new Sequelize({
+  dialect: 'mysql',
   host: config.dbEndpoint,
   database: config.dbSchema,
-  dialect: 'mysql',
   username: config.dbUsername,
   password: config.dbPassword,
-  logging: false,
-  storage: ':memory:'
+  logging: true
 });
 
-sequelize.addModels([
-  Category
-])
+sequelize.addModels([Listing]);
 
-export { Category } from './space.model';
+export { Listing } from './listing.model';
