@@ -10,7 +10,7 @@ export const sequelize = new Sequelize({
   database: config.dbSchema,
   username: config.dbUsername,
   password: config.dbPassword,
-  logging: true
+  logging: config.DEBUG
 });
 
 sequelize.addModels([Listing]);

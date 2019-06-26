@@ -1,6 +1,8 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
 
+export const DEBUG = process.env.DEBUG ? Boolean(process.env.DEBUG) : false;
+
 export const PORT = process.env.PORT ? parseInt(process.env.PORT) : 6002;
 
 // Database Parameters

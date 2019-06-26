@@ -8,6 +8,7 @@ export default (
   next: NextFunction
 ): void => {
   console.debug('Running Sequelize sync process.');
+  // todo: Looking for an approach to turn Sync database dynamicaly, to 'NOT' sync in production. [Arthemus]
   // sequelize.sync();
   next();
 };
