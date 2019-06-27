@@ -1,18 +1,4 @@
-import { Sequelize } from 'sequelize-typescript';
-
-import * as config from '../config';
-
 import { Listing } from './listing.model';
+import { ListingData } from './listingData.model';
 
-export const sequelize = new Sequelize({
-  dialect: 'mysql',
-  host: config.dbEndpoint,
-  database: config.dbSchema,
-  username: config.dbUsername,
-  password: config.dbPassword,
-  logging: config.DEBUG
-});
-
-sequelize.addModels([Listing]);
-
-export { Listing } from './listing.model';
+export { Listing, ListingData };
