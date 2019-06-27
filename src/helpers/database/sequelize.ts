@@ -15,7 +15,7 @@ const initialize = () => {
       database: config.dbSchema,
       username: config.dbUsername,
       password: config.dbPassword,
-      logging: config.DEBUG
+      logging: config.DEBUG ? console.debug : false
     });
     sequelize.addModels([Listing, ListingData]);
   }
