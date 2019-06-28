@@ -29,7 +29,7 @@ export class Listing extends Model<Listing> {
   userId!: string;
 
   @Column
-  listSettingsParentId?: number;
+  listSettingsParentId!: number;
 
   @AllowNull(false)
   @Column

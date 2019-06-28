@@ -2,7 +2,7 @@ import { Sequelize } from 'sequelize-typescript';
 
 import * as config from '../../config';
 
-import { Listing, ListingData } from './../../models';
+import { arrayOfModels } from '../../models';
 
 let sequelize: Sequelize;
 
@@ -17,7 +17,7 @@ const initialize = () => {
       password: config.dbPassword,
       logging: config.DEBUG ? console.debug : false
     });
-    sequelize.addModels([Listing, ListingData]);
+    sequelize.addModels(arrayOfModels);
   }
 };
 
