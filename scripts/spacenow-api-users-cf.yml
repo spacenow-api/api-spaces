@@ -1,0 +1,390 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Deploy a service on AWS Fargate, hosted in a private subnet, but accessible via a public load balancer.
+Parameters:
+  StackName:
+    Type: String
+    Default: SANDPIT
+    Description: The name of the parent Fargate networking stack that you created. Necessary to locate and reference resources created by that stack.
+  SliceName:
+    Type: String
+    Default: MASTER
+    Description: The name of the curent git brnach.
+  ServiceName:
+    Type: String
+    Default: api-users
+    Description: A name for the service
+  ImageUrl:
+    Type: String
+    Default: nginx
+    Description: The url of a docker image that contains the application process that will handle the traffic for this service
+  ContainerPort:
+    Type: Number
+    Default: 80
+    Description: What port number the application inside the docker container is binding to
+  LoadBalancerPort:
+    Type: Number
+    Default: 443
+    Description: What port number the load balancer is binding to
+  LoadBalancerPortHTTP:
+    Type: Number
+    Default: 80
+    Description: What port number the load balancer is binding to
+  ContainerCpu:
+    Type: Number
+    Default: 1024
+    Description: How much CPU to give the container. 1024 is 1 CPU
+  ContainerMemory:
+    Type: Number
+    Default: 1024
+    Description: How much memory in megabytes to give the container
+  Path:
+    Type: String
+    Default: '*'
+    Description: A path on the public load balancer that this service should be connected to. Use * to send all load balancer traffic to this service.
+  Priority:
+    Type: Number
+    Default: 1
+    Description: The priority for the routing rule added to the load balancer. This only applies if your have multiple services which have been assigned to different paths on the load balancer.
+  DesiredCount:
+    Type: Number
+    Default: 1
+    Description: How many copies of the service task to run
+  HealthCheckPath:
+    Type: String
+    Default: /health
+  Certificate:
+    Type: String
+    Default: 'arn:aws:acm:ap-southeast-2:159220020591:certificate/ec3b5931-c71d-4ddd-8157-d59964d168f2'
+  MinContainers:
+    Type: Number
+    Default: 1
+  MaxContainers:
+    Type: Number
+    Default: 10
+  HostedZoneName:
+    Type: String
+    Default: ''
+  Subdomain:
+    Type: String
+    Default: spacenow
+  AutoScalingTargetValue:
+    Type: Number
+    Default: 50
+  TaskDefinitionARN:
+    Description: 'Task definition for this service'
+    Type: String
+    Default: ''
+  DbUser:
+    Description: 'DB_USER'
+    Type: String
+    Default: ''
+    NoEcho: true
+  DbPassword:
+    Description: 'DB_PASSWORD'
+    Type: String
+    Default: ''
+    NoEcho: true
+  DbHost:
+    Description: 'DB_HOST'
+    Type: String
+    Default: ''
+    NoEcho: true
+  DbSchema:
+    Description: 'DB_SCHEMA'
+    Type: String
+    Default: ''
+    NoEcho: true
+  JwtSecret:
+    Description: 'JWT_SECRET'
+    Type: String
+    Default: ''
+    NoEcho: true
+  S3Bucket:
+    Description: 'S3_BUCKET'
+    Type: String
+    Default: ''
+    NoEcho: true
+Conditions:
+  isMaster: !Equals [!Ref SliceName, master]
+  isFeature: !Not [Condition: isMaster]
+  HasTaskDefinition: !Not [!Equals [!Ref TaskDefinitionARN, '']]
+
+Resources:
+  AutoScalingRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName:
+        !Join ['', [!Ref ServiceName, AScalingRole, '-', !Ref SliceName]]
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceAutoscaleRole'
+  DefaultTaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+
+  ExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Join ['', [!Ref ServiceName, ExecRole, '-', !Ref SliceName]]
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy'
+        - 'arn:aws:iam::aws:policy/AmazonS3FullAccess'
+      Policies:
+        - PolicyName: 'S3Access'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: 'Allow'
+                Action:
+                  - 's3:GetBucketLocation'
+                  - 's3:ListAllMyBuckets'
+                  - 's3:ListBucket'
+                Resource:
+                  - 'arn:aws:arn:aws:s3:::*'
+              - Effect: 'Allow'
+                Action:
+                  - 's3:PutObject'
+                  - 's3:GetObject'
+                  - 's3:DeleteObject'
+                Resource:
+                  - 'arn:aws:s3:::*spacenow-api-users/*'
+
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName:
+        !Join ['', [/ecs/, !Ref ServiceName, TaskDef, '-', !Ref SliceName]]
+
+  ContainerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription:
+        !Join [
+          '',
+          [!Ref ServiceName, ContainerSecurityGroup, '-', !Ref SliceName],
+        ]
+      VpcId:
+        Fn::ImportValue: !Join ['-', [!Ref 'StackName', 'VPC-id']]
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: !Ref ContainerPort
+          ToPort: !Ref ContainerPort
+          SourceSecurityGroupId: !Ref LoadBalancerSecurityGroup
+  LoadBalancerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription:
+        !Join ['', [!Ref ServiceName, LBSecurityGroup, '-', !Ref SliceName]]
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: !Ref LoadBalancerPort
+          ToPort: !Ref LoadBalancerPort
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: !Ref LoadBalancerPortHTTP
+          ToPort: !Ref LoadBalancerPortHTTP
+          CidrIp: 0.0.0.0/0
+      VpcId:
+        Fn::ImportValue: !Join ['-', [!Ref 'StackName', 'VPC-id']]
+
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    DependsOn: LogGroup
+    Properties:
+      Family: !Join ['', [!Ref ServiceName, TaskDefinition]]
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: 512
+      Memory: 1GB
+      ExecutionRoleArn: !Ref ExecutionRole
+      TaskRoleArn: !Ref DefaultTaskRole
+      ContainerDefinitions:
+        - Name: !Ref ServiceName
+          Image: !Ref ImageUrl
+          PortMappings:
+            - ContainerPort: !Ref ContainerPort
+          Environment:
+            - Name: DATABASE_USERNAME
+              Value: !Ref DbUser
+            - Name: DATABASE_PASSWORD
+              Value: !Ref DbPassword
+            - Name: DATABASE_HOST
+              Value: !Ref DbHost
+            - Name: DATABASE_SCHEMA
+              Value: !Ref DbSchema
+            - Name: JWT_SECRET
+              Value: !Ref JwtSecret
+            - Name: S3_BUCKET
+              Value: !Ref S3Bucket
+
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-region: !Ref AWS::Region
+              awslogs-group: !Ref LogGroup
+              awslogs-stream-prefix: ecs
+
+  Service:
+    Type: AWS::ECS::Service
+    DependsOn:
+      - ListenerHTTP
+      - ListenerHTTPS
+    Properties:
+      ServiceName:
+        !Join ['-', [!Ref 'StackName', !Ref 'ServiceName', !Ref 'SliceName']]
+      Cluster:
+        Fn::ImportValue:
+          !Join ['-', [!Ref 'StackName', 'SPACENOW-ECSCLUSTER-Name']]
+      LaunchType: FARGATE
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 75
+      DesiredCount: !Ref 'DesiredCount'
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          SecurityGroups:
+            - !Ref ContainerSecurityGroup
+          Subnets:
+            - Fn::ImportValue:
+                !Join ['-', [!Ref 'StackName', 'NETWORK-subnets-private-a-id']]
+            - Fn::ImportValue:
+                !Join ['-', [!Ref 'StackName', 'NETWORK-subnets-private-b-id']]
+            - Fn::ImportValue:
+                !Join ['-', [!Ref 'StackName', 'NETWORK-subnets-private-c-id']]
+      TaskDefinition: !Ref 'TaskDefinition'
+      LoadBalancers:
+        - ContainerName: !Ref 'ServiceName'
+          ContainerPort: !Ref 'ContainerPort'
+          TargetGroupArn: !Ref 'TargetGroup'
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckIntervalSeconds: 10
+      HealthCheckPath: !Ref HealthCheckPath
+      HealthCheckTimeoutSeconds: 5
+      UnhealthyThresholdCount: 10
+      HealthyThresholdCount: 2
+      Name: !Join ['', ['service-api-users-', !Ref SliceName]]
+      Port: !Ref ContainerPort
+      Protocol: HTTP
+      TargetGroupAttributes:
+        - Key: deregistration_delay.timeout_seconds
+          Value: 60
+      TargetType: ip
+      VpcId:
+        Fn::ImportValue: !Join ['-', [!Ref 'StackName', 'VPC-id']]
+
+  ListenerHTTP:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: redirect
+          RedirectConfig:
+            Host: '#{host}'
+            Path: '/#{path}'
+            Port: !Ref LoadBalancerPort
+            Protocol: 'HTTPS'
+            Query: '#{query}'
+            StatusCode: HTTP_301
+      LoadBalancerArn: !Ref LoadBalancer
+      Port: !Ref LoadBalancerPortHTTP
+      Protocol: HTTP
+  ListenerHTTPS:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - TargetGroupArn: !Ref TargetGroup
+          Type: forward
+      LoadBalancerArn: !Ref LoadBalancer
+      Port: !Ref LoadBalancerPort
+      Protocol: HTTPS
+      Certificates:
+        - CertificateArn: !Ref Certificate
+  LoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      LoadBalancerAttributes:
+        - Key: idle_timeout.timeout_seconds
+          Value: 60
+      Name: !Join ['', [!Ref ServiceName, LB, '-', !Ref SliceName]]
+      Scheme: internet-facing
+      SecurityGroups:
+        - !Ref LoadBalancerSecurityGroup
+      Subnets:
+        - Fn::ImportValue:
+            !Join ['-', [!Ref 'StackName', 'NETWORK-subnets-publicdmz-a-id']]
+        - Fn::ImportValue:
+            !Join ['-', [!Ref 'StackName', 'NETWORK-subnets-publicdmz-b-id']]
+        - Fn::ImportValue:
+            !Join ['-', [!Ref 'StackName', 'NETWORK-subnets-publicdmz-c-id']]
+
+  DNSRecord:
+    Type: AWS::Route53::RecordSet
+    Condition: isMaster
+    Properties:
+      HostedZoneName: !Join ['', [!Ref HostedZoneName, .]]
+      Name:
+        !Join [
+          '',
+          [!Ref ServiceName, '-', !Ref Subdomain, ., !Ref HostedZoneName, .],
+        ]
+      Type: A
+      AliasTarget:
+        DNSName: !GetAtt LoadBalancer.DNSName
+        HostedZoneId: !GetAtt LoadBalancer.CanonicalHostedZoneID
+  DNSRecordFeature:
+    Type: AWS::Route53::RecordSet
+    Condition: isFeature
+    Properties:
+      HostedZoneName: !Join ['', [!Ref HostedZoneName, .]]
+      Name:
+        !Join [
+          '',
+          [!Ref SliceName, -, !Ref Subdomain, ., !Ref HostedZoneName, .],
+        ]
+      Type: A
+      AliasTarget:
+        DNSName: !GetAtt LoadBalancer.DNSName
+        HostedZoneId: !GetAtt LoadBalancer.CanonicalHostedZoneID
+  AutoScalingTarget:
+    Type: AWS::ApplicationAutoScaling::ScalableTarget
+    Properties:
+      MinCapacity: !Ref MinContainers
+      MaxCapacity: !Ref MaxContainers
+      ResourceId: !Join ['/', [service/SPACENOW-CLUSTER, !GetAtt Service.Name]]
+      ScalableDimension: ecs:service:DesiredCount
+      ServiceNamespace: ecs
+      RoleARN: !GetAtt AutoScalingRole.Arn
+  AutoScalingPolicy:
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    Properties:
+      PolicyName:
+        !Join ['', [!Ref ServiceName, AutoScalPolicy, '-', !Ref SliceName]]
+      PolicyType: TargetTrackingScaling
+      ScalingTargetId: !Ref AutoScalingTarget
+      TargetTrackingScalingPolicyConfiguration:
+        PredefinedMetricSpecification:
+          PredefinedMetricType: ECSServiceAverageCPUUtilization
+        ScaleInCooldown: 10
+        ScaleOutCooldown: 10
+        TargetValue: !Ref AutoScalingTargetValue
