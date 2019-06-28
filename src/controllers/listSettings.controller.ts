@@ -20,7 +20,8 @@ class ListSettingsController {
       async (request: Request, response: Response, next: NextFunction) => {
         try {
           const listingObj: Listing = await Listing.findOne({
-            where: { id: request.params.listingId }
+            where: { id: request.params.listingId },
+            attributes: ['listSettingsParentId']
           });
           const parentObj: ListSettingsParent = await ListSettingsParent.findOne({
             where: { id: listingObj.listSettingsParentId }
