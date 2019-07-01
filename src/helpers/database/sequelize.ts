@@ -11,7 +11,7 @@ const initialize = () => {
     console.debug('Initializing database.');
     sequelize = new Sequelize({
       dialect: 'mysql',
-      host: config.dbEndpoint,
+      host: config.dbHost,
       database: config.dbSchema,
       username: config.dbUsername,
       password: config.dbPassword,
