@@ -29,7 +29,6 @@ class ListingController {
           const listingObj: Listing = await Listing.findOne({ where });
           response.send(listingObj);
         } catch (error) {
-          console.error(error);
           sequelizeErrorMiddleware(error, request, response, next);
         }
       }
@@ -49,7 +48,6 @@ class ListingController {
           });
           response.send(listingDataObj);
         } catch (error) {
-          console.error(error);
           sequelizeErrorMiddleware(error, request, response, next);
         }
       }
