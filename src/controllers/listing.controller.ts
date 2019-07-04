@@ -4,6 +4,8 @@ import sequelizeErrorMiddleware from '../helpers/middlewares/sequelize-error-mid
 
 import { Listing, ListingData } from '../models';
 
+import { IDraftRequest } from '../interfaces/listing.interface';
+
 class ListingController {
   private router = Router();
 
@@ -17,19 +19,19 @@ class ListingController {
      */
     this.router.get(
       `/listings/:id`,
-      async (request: Request, response: Response, next: NextFunction) => {
+      async (req: Request, res: Response, next: NextFunction) => {
         try {
           const where: { id: number; [key: string]: any } = {
-            id: request.params.id
+            id: req.params.id
           };
-          const { isPublished } = request.query;
+          const { isPublished } = req.query;
           if (isPublished) {
             where.isPublished = isPublished === 'true';
           }
           const listingObj: Listing = await Listing.findOne({ where });
-          response.send(listingObj);
+          res.send(listingObj);
         } catch (error) {
-          sequelizeErrorMiddleware(error, request, response, next);
+          sequelizeErrorMiddleware(error, req, res, next);
         }
       }
     );
@@ -39,18 +41,36 @@ class ListingController {
      */
     this.router.get(
       `/listings/data/:listingId`,
-      async (request: Request, response: Response, next: NextFunction) => {
+      async (req: Request, res: Response, next: NextFunction) => {
         try {
           const listingDataObj: Listing = await ListingData.findOne({
             where: {
-              listingId: request.params.listingId
+              listingId: req.params.listingId
             }
           });
-          response.send(listingDataObj);
+          res.send(listingDataObj);
         } catch (error) {
-          sequelizeErrorMiddleware(error, request, response, next);
+          sequelizeErrorMiddleware(error, req, res, next);
         }
       }
+    );
+
+    /**
+     * Creating a new listing as a draft only with basic informations.
+     */
+    this.router.post(
+      '/listings/draft',
+      async (req: Request, res: Response, next: NextFunction) => {
+        const data: IDraftRequest = req.body;
+      }
+    );
+
+    /**
+     * Update a Listing with all data required.
+     */
+    this.router.put(
+      '/listings/update',
+      async (req: Request, res: Response, next: NextFunction) => {}
     );
   }
 }
