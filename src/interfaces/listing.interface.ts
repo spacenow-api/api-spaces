@@ -5,6 +5,7 @@ interface IDraftRequest {
   title?: string;
   coverPhotoId?: number;
   quantity?: number;
+  userId: string;
 }
 
 interface IAccessHoursRequest {

@@ -1,8 +1,10 @@
 import { Router, Request, Response, NextFunction } from 'express';
 
+import HttpException from '../helpers/exceptions/HttpException';
+
 import sequelizeErrorMiddleware from '../helpers/middlewares/sequelize-error-middleware';
 
-import { Listing, ListingData } from '../models';
+import { Listing, ListingData, Location, ListingAccessDays } from '../models';
 
 import { IDraftRequest } from '../interfaces/listing.interface';
 
@@ -62,6 +64,36 @@ class ListingController {
       '/listings/draft',
       async (req: Request, res: Response, next: NextFunction) => {
         const data: IDraftRequest = req.body;
+        try {
+          if (!data.locationId)
+            next(new HttpException(400, 'A location must be provided.'));
+          const locationObj: Location = await Location.findOne({
+            where: { id: data.locationId }
+          });
+          if (!locationObj)
+            next(new HttpException(400, 'A location must be provided.'));
+          // Creating listing record...
+          const listingObj: Listing = await Listing.create({
+            locationId: data.locationId,
+            listSettingsParentId: data.listSettingsParentId,
+            bookingPeriod: data.bookingPeriod,
+            title: data.title,
+            coverPhotoId: data.coverPhotoId,
+            quantity: data.quantity,
+            userId: data.userId
+          });
+          // Creating listing-data record...
+          await ListingData.findOrCreate({
+            where: { listingId: listingObj.id }
+          });
+          // Creating access-days record...
+          await ListingAccessDays.findOrCreate({
+            where: { listingId: listingObj.id }
+          });
+          res.send(listingObj);
+        } catch (err) {
+          sequelizeErrorMiddleware(err, req, res, next);
+        }
       }
     );
 

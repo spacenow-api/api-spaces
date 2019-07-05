@@ -30,10 +30,12 @@ export class ListingData extends Model<ListingData> {
   @Column
   bookingNoticeTime?: string;
 
+  @Default('Flexible')
   @AllowNull(false)
   @Column
   checkInStart?: string;
 
+  @Default('Flexible')
   @AllowNull(false)
   @Column
   checkInEnd?: string;
@@ -88,6 +90,7 @@ export class ListingData extends Model<ListingData> {
   )
   maxDaysNotice?: string;
 
+  @Default(1)
   @Column
   cancellationPolicy?: number;
 
@@ -100,6 +103,7 @@ export class ListingData extends Model<ListingData> {
   @Column
   description?: string;
 
+  @Default(0)
   @AllowNull(false)
   @Column
   isAbsorvedFee?: number;
@@ -107,12 +111,14 @@ export class ListingData extends Model<ListingData> {
   @Column
   capacity?: number;
 
+  @Default(0)
   @Column
   size?: number;
 
   @Column
   meetingRooms?: number;
 
+  @Default(0)
   @AllowNull(false)
   @Column
   isFurnished?: number;

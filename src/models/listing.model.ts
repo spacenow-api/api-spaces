@@ -28,110 +28,89 @@ export class Listing extends Model<Listing> {
   @Column
   userId!: string;
 
+  @AllowNull(false)
   @Column
   listSettingsParentId!: number;
 
-  @AllowNull(false)
   @Column
-  bookingPeriod!: string;
+  bookingPeriod?: string;
 
-  @AllowNull(false)
   @Column
-  roomType!: string;
+  roomType?: string;
 
-  @AllowNull(false)
   @Column
-  houseType!: string;
+  houseType?: string;
 
-  @AllowNull(false)
   @Column
-  residenceType!: string;
+  residenceType?: string;
 
-  @AllowNull(false)
   @Column
-  bedrooms!: string;
+  bedrooms?: string;
 
-  @AllowNull(false)
   @Column
-  buildingSize!: string;
+  buildingSize?: string;
 
-  @AllowNull(false)
   @Column
-  bedType!: string;
+  bedType?: string;
 
-  @AllowNull(false)
   @Column
-  beds!: number;
+  beds?: number;
 
-  @AllowNull(false)
   @Column
-  personCapacity!: number;
+  personCapacity?: number;
 
-  @AllowNull(false)
   @Column
-  bathrooms!: number;
+  bathrooms?: number;
 
-  @AllowNull(false)
   @Column
-  bathroomType!: string;
+  bathroomType?: string;
 
-  @AllowNull(false)
   @Column
-  country!: string;
+  country?: string;
 
-  @AllowNull(false)
   @Column
-  street!: string;
+  street?: string;
 
-  @AllowNull(false)
   @Column
-  buildingName!: string;
+  buildingName?: string;
 
-  @AllowNull(false)
   @Column
-  city!: string;
+  city?: string;
 
-  @AllowNull(false)
   @Column
-  state!: string;
+  state?: string;
 
-  @AllowNull(false)
   @Column
-  zipcode!: string;
+  zipcode?: string;
 
-  @AllowNull(false)
   @Column
-  lat!: string;
+  lat?: string;
 
-  @AllowNull(false)
   @Column
-  lng!: string;
+  lng?: string;
 
   @Default(false)
   @Column
   isMapTouched?: boolean;
 
-  @CreatedAt
   @AllowNull(false)
+  @CreatedAt
   @Column
   createdAt!: Date;
 
-  @UpdatedAt
   @AllowNull(false)
+  @UpdatedAt
   @Column
   updatedAt!: Date;
 
-  @AllowNull(false)
   @Column
-  title!: string;
+  title?: string;
 
-  @AllowNull(false)
   @Column
-  description!: string;
+  description?: string;
 
-  @AllowNull(false)
   @Column
-  coverPhoto!: number;
+  coverPhoto?: number;
 
   @AllowNull(false)
   @Default('instant')
@@ -148,13 +127,11 @@ export class Listing extends Model<Listing> {
   @Column
   isReady!: boolean;
 
-  @AllowNull(false)
   @Column
-  coverPhotoId!: number;
+  coverPhotoId?: number;
 
-  @AllowNull(false)
   @Column
-  quantity!: number;
+  quantity?: number;
 
   @Default('active')
   @Column(DataType.ENUM('active', 'deleted'))
