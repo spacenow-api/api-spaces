@@ -102,7 +102,13 @@ class ListingController {
      */
     this.router.put(
       '/listings/update',
-      async (req: Request, res: Response, next: NextFunction) => {}
+      async (req: Request, res: Response, next: NextFunction) => {
+        try {
+          next();
+        } catch (err) {
+          sequelizeErrorMiddleware(err, req, res, next);
+        }
+      }
     );
   }
 }
