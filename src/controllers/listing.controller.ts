@@ -104,7 +104,7 @@ class ListingController {
       '/listings/update',
       async (req: Request, res: Response, next: NextFunction) => {
         try {
-          next();
+          res.end();
         } catch (err) {
           sequelizeErrorMiddleware(err, req, res, next);
         }
