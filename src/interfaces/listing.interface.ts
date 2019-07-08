@@ -9,10 +9,10 @@ interface IDraftRequest {
 }
 
 interface IAccessHoursRequest {
-  weekday?: number;
-  allday?: Boolean;
-  openHour?: string;
-  closeHour?: string;
+  weekday: number;
+  allday: Boolean;
+  openHour: string;
+  closeHour: string;
 }
 
 interface IAccessDaysRequest {
@@ -25,7 +25,7 @@ interface IAccessDaysRequest {
   sat?: Boolean;
   sun?: Boolean;
   all247?: Boolean;
-  listingAccessHours?: Array<IAccessHoursRequest>;
+  listingAccessHours: Array<IAccessHoursRequest>;
 }
 
 interface IUpdateRequest {
@@ -54,4 +54,4 @@ interface IUpdateRequest {
   listingRules?: Array<number>;
 }
 
-export { IDraftRequest, IUpdateRequest };
+export { IDraftRequest, IUpdateRequest, IAccessDaysRequest };

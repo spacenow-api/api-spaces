@@ -1,12 +1,27 @@
 import { Router, Request, Response, NextFunction } from 'express';
 
+import { availabilitiesAPI } from './../config';
+
 import HttpException from '../helpers/exceptions/HttpException';
 
 import sequelizeErrorMiddleware from '../helpers/middlewares/sequelize-error-middleware';
 
-import { Listing, ListingData, Location, ListingAccessDays } from '../models';
+import {
+  Listing,
+  ListingData,
+  Location,
+  ListingAccessDays,
+  ListingAmenities,
+  ListingAccessHours,
+  ListingRules,
+  ListingPhotos
+} from '../models';
 
-import { IDraftRequest } from '../interfaces/listing.interface';
+import {
+  IDraftRequest,
+  IUpdateRequest,
+  IAccessDaysRequest
+} from '../interfaces/listing.interface';
 
 class ListingController {
   private router = Router();
@@ -103,13 +118,177 @@ class ListingController {
     this.router.put(
       '/listings/update',
       async (req: Request, res: Response, next: NextFunction) => {
+        const data: IUpdateRequest = req.body;
         try {
-          res.end();
+          // Getting listing record...
+          const listingObj: Listing = await Listing.findOne({ where: { id: data.listingId } });
+          if (!listingObj) {
+            next(new HttpException(400, `Listing ${data.listingId} not found.`));
+          } else {
+            // Updating isReady rule...
+            const isReady: boolean = await this.isReadyCheck(
+              data.listingId,
+              data.title,
+              data.bookingType,
+              data.basePrice,
+              data.listingAccessDays
+            );
+            let isPublished: boolean = listingObj.isPublished;
+            if (!isReady) isPublished = false;
+            await Listing.update(
+              {
+                title: data.title,
+                bookingType: data.bookingType,
+                isReady,
+                isPublished
+              },
+              { where: { id: data.listingId } }
+            );
+
+            // Updating listing data informations...
+            await ListingData.update(
+              {
+                listingId: data.listingId,
+                accessType: data.accessType,
+                bookingNoticeTime: data.bookingNoticeTime,
+                minTerm: data.minTerm,
+                maxTerm: data.maxTerm,
+                description: data.description,
+                basePrice: data.basePrice,
+                currency: data.currency,
+                isAbsorvedFee: data.isAbsorvedFee,
+                capacity: data.capacity,
+                size: data.size,
+                meetingRooms: data.meetingRooms,
+                isFurnished: data.isFurnished,
+                carSpace: data.carSpace,
+                sizeOfVehicle: data.sizeOfVehicle,
+                maxEntranceHeight: data.maxEntranceHeight,
+                spaceType: data.spaceType,
+                bookingType: data.bookingType
+              },
+              {
+                where: {
+                  listingId: data.listingId
+                }
+              }
+            );
+
+            // Checking out Amenities...
+            if (
+              data.listingAmenities != null &&
+              data.listingAmenities !== undefined
+            ) {
+              await ListingAmenities.destroy({ where: { listingId: data.listingId } });
+              data.listingAmenities.map(async item => {
+                await ListingAmenities.create({
+                  listingId: data.listingId,
+                  listSettingsId: item
+                });
+              });
+            }
+
+            // Checking out Exception Dates...
+            if (
+              data.listingExceptionDates != null &&
+              data.listingExceptionDates !== undefined
+            ) {
+              const availabilityObj = {
+                listingId: data.listingId.toString(),
+                blockedDates: data.listingExceptionDates
+              };
+              await fetch(`${availabilitiesAPI}`, {
+                method: 'POST',
+                body: JSON.stringify(availabilityObj),
+                headers: {
+                  Accept: 'application/json',
+                  'Content-Type': 'application/json'
+                }
+              });
+            }
+
+            // Checking out Listing Rules...
+            if (data.listingRules != null && data.listingRules !== undefined) {
+              await ListingRules.destroy({ where: { listingId: data.listingId } });
+              data.listingRules.map(async item => {
+                await ListingRules.create({
+                  listing: data.listingId,
+                  listSettingsId: item
+                });
+              });
+            }
+
+            // Checking out Access Days...
+            if (data.listingAccessDays) {
+              const listingAccessDays: IAccessDaysRequest = data.listingAccessDays;
+              await ListingAccessDays.update(
+                {
+                  mon: listingAccessDays.mon,
+                  tue: listingAccessDays.tue,
+                  wed: listingAccessDays.wed,
+                  thu: listingAccessDays.thu,
+                  fri: listingAccessDays.fri,
+                  sat: listingAccessDays.sat,
+                  sun: listingAccessDays.sun,
+                  all247: listingAccessDays.all247
+                },
+                {
+                  where: {
+                    listingId: data.listingId
+                  }
+                }
+              );
+              const accessDayObj = await ListingAccessDays.findOne({ where: { listingId: data.listingId } });
+
+              // Checking out Access Hours...
+              await ListingAccessHours.destroy({ where: { listingAccessDaysId: accessDayObj.id } });
+              for (const item of listingAccessDays.listingAccessHours) {
+                await ListingAccessHours.create({
+                  listingAccessDaysId: accessDayObj.id,
+                  weekday: item.weekday,
+                  openHour: new Date(parseInt(item.openHour, 10)),
+                  closeHour: new Date(parseInt(item.closeHour, 10)),
+                  allday: item.allday
+                });
+              }
+            }
+
+            // Finish.
+            res.send(listingObj);
+          }
         } catch (err) {
           sequelizeErrorMiddleware(err, req, res, next);
         }
       }
     );
+  }
+
+  async isReadyCheck(listingId: number, title?: string, bookingType?: string, basePrice?: number, listingAccessDays?: IAccessDaysRequest): Promise<boolean> {
+    // One photo at least...
+    const photosCount = await ListingPhotos.count({ where: { listingId } });
+    if (photosCount <= 0) {
+      return false;
+    }
+
+    // Title content...
+    if (!title) return false;
+
+    // A booking type selected...
+    if (!bookingType) return false;
+
+    // A base price defined...
+    if (!basePrice || basePrice <= 0) return false;
+
+    // If got one day open for work...
+    if (!this.isOpenForWork(listingAccessDays)) return false;
+
+    return true;
+  }
+
+  private isOpenForWork(listingAccessDays?: IAccessDaysRequest) {
+    if (!listingAccessDays) return false;
+    const { mon, tue, wed, thu, fri, sat, sun, all247 } = listingAccessDays;
+    return mon || tue || wed || thu || fri || sat || sun || all247;
   }
 }
 

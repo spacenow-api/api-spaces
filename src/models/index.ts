@@ -5,6 +5,10 @@ import { ListSettingsParent } from './listSettingsParent.model';
 import { Location } from './location.model';
 import { ListingAccessDays } from './listingAccessDays.model';
 import { ListingAccessHours } from './listingAccessHours.model';
+import { ListingAmenities } from './listingAmenities.model';
+import { ListingExceptionDates } from './listingExceptionDates.model';
+import { ListingRules } from './listingRules.model';
+import { ListingPhotos } from './listingPhotos.model';
 
 export {
   Listing,
@@ -13,7 +17,11 @@ export {
   ListSettingsParent,
   Location,
   ListingAccessDays,
-  ListingAccessHours
+  ListingAccessHours,
+  ListingAmenities,
+  ListingExceptionDates,
+  ListingRules,
+  ListingPhotos
 };
 
 export const arrayOfModels = [
@@ -23,5 +31,9 @@ export const arrayOfModels = [
   ListSettingsParent,
   Location,
   ListingAccessDays,
-  ListingAccessHours
+  ListingAccessHours,
+  ListingAmenities,
+  ListingExceptionDates,
+  ListingRules,
+  ListingPhotos
 ];
