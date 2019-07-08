@@ -74,13 +74,13 @@ class ListingController {
             next(new HttpException(400, 'A location must be provided.'));
           // Creating listing record...
           const listingObj: Listing = await Listing.create({
+            userId: data.userId,
             locationId: data.locationId,
             listSettingsParentId: data.listSettingsParentId,
             bookingPeriod: data.bookingPeriod,
             title: data.title,
             coverPhotoId: data.coverPhotoId,
-            quantity: data.quantity,
-            userId: data.userId
+            quantity: data.quantity
           });
           // Creating listing-data record...
           await ListingData.findOrCreate({
