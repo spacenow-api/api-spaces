@@ -1,6 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
 
-import { availabilitiesAPI } from './../config';
+import * as config from './../config';
 
 import HttpException from '../helpers/exceptions/HttpException';
 
@@ -197,14 +197,14 @@ class ListingController {
                 listingId: data.listingId.toString(),
                 blockedDates: data.listingExceptionDates
               };
-              await fetch(`${availabilitiesAPI}`, {
-                method: 'POST',
-                body: JSON.stringify(availabilityObj),
-                headers: {
-                  Accept: 'application/json',
-                  'Content-Type': 'application/json'
-                }
-              });
+              // await fetch(`${config.availabilitiesAPI}`, {
+              //   method: 'POST',
+              //   body: JSON.stringify(availabilityObj),
+              //   headers: {
+              //     Accept: 'application/json',
+              //     'Content-Type': 'application/json'
+              //   }
+              // });
             }
 
             // Checking out Listing Rules...

@@ -104,7 +104,6 @@ export class ListingData extends Model<ListingData> {
   description?: string;
 
   @Default(0)
-  @AllowNull(false)
   @Column
   isAbsorvedFee?: number;
 
@@ -119,7 +118,6 @@ export class ListingData extends Model<ListingData> {
   meetingRooms?: number;
 
   @Default(0)
-  @AllowNull(false)
   @Column
   isFurnished?: number;
 
