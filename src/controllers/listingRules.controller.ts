@@ -13,7 +13,7 @@ class ListingRulesController {
 
   private intializeRoutes() {
     /**
-     * Get listing Amenities by listing ID.
+     * Get listing Rules by listing ID.
      */
     this.router.get(
       `/listings/rules/:listingId`,

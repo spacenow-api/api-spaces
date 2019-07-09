@@ -50,8 +50,9 @@ class ListingController {
           }
           const listingObj: Listing = await Listing.findOne({ where });
           res.send(listingObj);
-        } catch (error) {
-          sequelizeErrorMiddleware(error, req, res, next);
+        } catch (err) {
+          console.error(err);
+          sequelizeErrorMiddleware(err, req, res, next);
         }
       }
     );
@@ -69,8 +70,9 @@ class ListingController {
             }
           });
           res.send(listingDataObj);
-        } catch (error) {
-          sequelizeErrorMiddleware(error, req, res, next);
+        } catch (err) {
+          console.error(err);
+          sequelizeErrorMiddleware(err, req, res, next);
         }
       }
     );
@@ -110,6 +112,7 @@ class ListingController {
           });
           res.send(listingObj);
         } catch (err) {
+          console.error(err);
           sequelizeErrorMiddleware(err, req, res, next);
         }
       }
