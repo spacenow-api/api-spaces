@@ -1,5 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
 
+import axios from 'axios';
+
 import * as config from './../config';
 
 import HttpException from '../helpers/exceptions/HttpException';
@@ -193,18 +195,11 @@ class ListingController {
               data.listingExceptionDates != null &&
               data.listingExceptionDates !== undefined
             ) {
-              const availabilityObj = {
+              // Updating Availabilities API...
+              await axios.post(config.availabilitiesAPI, {
                 listingId: data.listingId.toString(),
                 blockedDates: data.listingExceptionDates
-              };
-              // await fetch(`${config.availabilitiesAPI}`, {
-              //   method: 'POST',
-              //   body: JSON.stringify(availabilityObj),
-              //   headers: {
-              //     Accept: 'application/json',
-              //     'Content-Type': 'application/json'
-              //   }
-              // });
+              });
             }
 
             // Checking out Listing Rules...
@@ -257,6 +252,7 @@ class ListingController {
             res.send(listingObj);
           }
         } catch (err) {
+          console.error(err);
           sequelizeErrorMiddleware(err, req, res, next);
         }
       }
