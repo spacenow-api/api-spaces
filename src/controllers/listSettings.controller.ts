@@ -37,9 +37,9 @@ class ListSettingsController {
             category: categoryObj,
             subcategory: subCategoryObj
           });
-        } catch (error) {
-          console.error(error);
-          sequelizeErrorMiddleware(error, request, response, next);
+        } catch (err) {
+          console.error(err);
+          sequelizeErrorMiddleware(err, request, response, next);
         }
       }
     );

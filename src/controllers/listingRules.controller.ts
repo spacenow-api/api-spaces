@@ -2,9 +2,9 @@ import { Router, Request, Response, NextFunction } from 'express';
 
 import sequelizeErrorMiddleware from '../helpers/middlewares/sequelize-error-middleware';
 
-import { ListSettings, ListingAmenities } from '../models';
+import { ListSettings, ListingRules } from '../models';
 
-class ListingAmenitiesController {
+class ListingRulesController {
   private router = Router();
 
   constructor() {
@@ -16,15 +16,15 @@ class ListingAmenitiesController {
      * Get listing Amenities by listing ID.
      */
     this.router.get(
-      `/listings/amenities/:listingId`,
+      `/listings/rules/:listingId`,
       async (req: Request, res: Response, next: NextFunction) => {
         try {
-          const amenitiesArray: Array<ListingAmenities> = await ListingAmenities.findAll({
+          const rulesArray: Array<ListingRules> = await ListingRules.findAll({
             where: { listingId: req.params.listingId },
             raw: true
           });
           const result = new Array<any>();
-          for (const item of amenitiesArray) {
+          for (const item of rulesArray) {
             const settingsObj: ListSettings = await ListSettings.findOne({
               where: { id: item.listSettingsId },
               raw: true
@@ -41,4 +41,4 @@ class ListingAmenitiesController {
   }
 }
 
-export default ListingAmenitiesController;
+export default ListingRulesController;

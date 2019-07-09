@@ -25,7 +25,7 @@ export class ListingRules extends Model<ListingRules> {
 
   @AllowNull(false)
   @Column
-  listSettingsId?: number;
+  listSettingsId!: number;
 
   @CreatedAt
   @AllowNull(false)
