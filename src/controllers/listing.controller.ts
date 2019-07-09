@@ -17,7 +17,6 @@ import {
   ListingAccessHours,
   ListingRules,
   ListingPhotos,
-  ListSettings
 } from '../models';
 
 import {
@@ -41,7 +40,7 @@ class ListingController {
       `/listings/:id`,
       async (req: Request, res: Response, next: NextFunction) => {
         try {
-          const where: { id: number; [key: string]: any } = {
+          const where: { id: number;[key: string]: any } = {
             id: req.params.id
           };
           const { isPublished } = req.query;
