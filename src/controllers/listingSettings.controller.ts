@@ -4,7 +4,7 @@ import sequelizeErrorMiddleware from '../helpers/middlewares/sequelize-error-mid
 
 import { Listing, ListSettings, ListSettingsParent } from '../models';
 
-class ListSettingsController {
+class ListingSettingsController {
   private router = Router();
 
   constructor() {
@@ -46,4 +46,4 @@ class ListSettingsController {
   }
 }
 
-export default ListSettingsController;
+export default ListingSettingsController;
