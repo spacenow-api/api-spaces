@@ -4,9 +4,14 @@ import App from './App';
 
 import ListingController from './controllers/listing.controller';
 import ListSettingsController from './controllers/listSettings.controller';
+import ListingAmenities from './controllers/listingAmenities.controller';
 
 const app = new App(
-  [new ListingController(), new ListSettingsController()],
+  [
+    new ListingController(),
+    new ListSettingsController(),
+    new ListingAmenities()
+  ],
   PORT,
   '0.0.0.0'
 );
