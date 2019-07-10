@@ -27,7 +27,7 @@ class ListingAccessDaysController {
             where: { listingAccessDaysId: daysObj.id },
             raw: true
           });
-          res.send({ listingAccessDays: { ...daysObj, listingAccessHours: hoursArray } });
+          res.send({ ...daysObj, listingAccessHours: hoursArray });
         } catch (err) {
           console.error(err);
           sequelizeErrorMiddleware(err, req, res, next);
