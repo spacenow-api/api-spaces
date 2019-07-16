@@ -13,3 +13,5 @@ export const dbHost = process.env.DATABASE_HOST;
 
 // API Bookings
 export const availabilitiesAPI = process.env.API_AVAILABILITIES || '#API_AVAILABILITIES#';
+
+export const USERS_AUTHENTICATION_API_HOST = process.env.USERS_API_HOST || "http://localhost:6001";
