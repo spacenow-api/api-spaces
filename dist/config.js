@@ -9,10 +9,12 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv = __importStar(require("dotenv"));
 dotenv.config();
-exports.PORT = process.env.PORT ? parseInt(process.env.PORT) : 6001;
+exports.DEBUG = process.env.DEBUG ? Boolean(process.env.DEBUG) : false;
+exports.PORT = process.env.PORT ? parseInt(process.env.PORT) : 6002;
 // Database Parameters
-exports.dbSchema = process.env.DATABASE_SCHEMA || 'spacenow-api-users';
-exports.dbUsername = process.env.DATABASE_USERNAME || 'spacenowtest';
-exports.dbPassword = process.env.DATABASE_PASSWORD || 'Spac.918273!';
-exports.dbEndpoint = process.env.DATABASE_ENDPOINT ||
-    'spacenow-test.cjo4zy3wnflc.ap-southeast-2.rds.amazonaws.com';
+exports.dbSchema = process.env.DATABASE_SCHEMA;
+exports.dbUsername = process.env.DATABASE_USERNAME;
+exports.dbPassword = process.env.DATABASE_PASSWORD;
+exports.dbHost = process.env.DATABASE_HOST;
+// API Bookings
+exports.availabilitiesAPI = process.env.API_AVAILABILITIES || '#API_AVAILABILITIES#';

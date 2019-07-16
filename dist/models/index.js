@@ -1,30 +1,37 @@
 "use strict";
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const sequelize_typescript_1 = require("sequelize-typescript");
-const config = __importStar(require("../config"));
-const role_model_1 = require("./role.model");
-const user_model_1 = require("./user.model");
-exports.sequelize = new sequelize_typescript_1.Sequelize({
-    host: config.dbEndpoint,
-    database: config.dbSchema,
-    dialect: 'mysql',
-    username: config.dbUsername,
-    password: config.dbPassword,
-    logging: false,
-    storage: ':memory:'
-});
-exports.sequelize.addModels([
-    role_model_1.Role,
-    user_model_1.User
-]);
-var role_model_2 = require("./role.model");
-exports.Role = role_model_2.Role;
-var user_model_2 = require("./user.model");
-exports.User = user_model_2.User;
+const listing_model_1 = require("./listing.model");
+exports.Listing = listing_model_1.Listing;
+const listingData_model_1 = require("./listingData.model");
+exports.ListingData = listingData_model_1.ListingData;
+const listSettings_model_1 = require("./listSettings.model");
+exports.ListSettings = listSettings_model_1.ListSettings;
+const listSettingsParent_model_1 = require("./listSettingsParent.model");
+exports.ListSettingsParent = listSettingsParent_model_1.ListSettingsParent;
+const location_model_1 = require("./location.model");
+exports.Location = location_model_1.Location;
+const listingAccessDays_model_1 = require("./listingAccessDays.model");
+exports.ListingAccessDays = listingAccessDays_model_1.ListingAccessDays;
+const listingAccessHours_model_1 = require("./listingAccessHours.model");
+exports.ListingAccessHours = listingAccessHours_model_1.ListingAccessHours;
+const listingAmenities_model_1 = require("./listingAmenities.model");
+exports.ListingAmenities = listingAmenities_model_1.ListingAmenities;
+const listingExceptionDates_model_1 = require("./listingExceptionDates.model");
+exports.ListingExceptionDates = listingExceptionDates_model_1.ListingExceptionDates;
+const listingRules_model_1 = require("./listingRules.model");
+exports.ListingRules = listingRules_model_1.ListingRules;
+const listingPhotos_model_1 = require("./listingPhotos.model");
+exports.ListingPhotos = listingPhotos_model_1.ListingPhotos;
+exports.arrayOfModels = [
+    listing_model_1.Listing,
+    listingData_model_1.ListingData,
+    listSettings_model_1.ListSettings,
+    listSettingsParent_model_1.ListSettingsParent,
+    location_model_1.Location,
+    listingAccessDays_model_1.ListingAccessDays,
+    listingAccessHours_model_1.ListingAccessHours,
+    listingAmenities_model_1.ListingAmenities,
+    listingExceptionDates_model_1.ListingExceptionDates,
+    listingRules_model_1.ListingRules,
+    listingPhotos_model_1.ListingPhotos
+];

@@ -14,10 +14,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const AuthenticationTokenMissingException_1 = __importDefault(require("../exceptions/AuthenticationTokenMissingException"));
 const WrongAuthenticationTokenException_1 = __importDefault(require("../exceptions/WrongAuthenticationTokenException"));
-const token_controller_1 = __importDefault(require("../../controllers/token/token.controller"));
+const token_1 = __importDefault(require("../utils/token"));
 function authMiddleware(request, response, next) {
     return __awaiter(this, void 0, void 0, function* () {
-        const token = new token_controller_1.default().getToken(request);
+        const token = new token_1.default().getToken(request);
         if (token) {
             const secret = process.env.JWT_SECRET || 'Spacenow';
             try {

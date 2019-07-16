@@ -27,7 +27,7 @@ fi
 set -eo pipefail
 # region=ap-southeast-2
 region=$1
-stack_name=$(echo "$2-SPACENOW-API-USERS-${4:-master}" | tr '[:lower:]' '[:upper:]')
+stack_name=$(echo "$2-SPACENOW-API-SPACES-${4:-master}" | tr '[:lower:]' '[:upper:]')
 HostedZoneName=$(echo "$2.cloud.spacenow.com" | tr '[:upper:]' '[:lower:]')
 
 # get ssm parameters from env
@@ -38,7 +38,6 @@ DB_PASSWORD=$(get_ssm_parameter /rds/spacenow/mysql/MasterUserPassword)
 DB_HOST=$(get_ssm_parameter /$2/SPACENOW/DATABASE_HOST)
 DB_SCHEMA=$(get_ssm_parameter /$2/SPACENOW/DATABASE_SCHEMA)
 JWT_SECRET=$(get_ssm_parameter /$2/SPACENOW/JWT_SECRET)
-S3_BUCKET=$(get_ssm_parameter /$2/SPACENOW/S3_BUCKET)
 ACM_CERTIFICATE=$(get_ssm_parameter /$2/ACM_CERTIFICATE)
 echo "ENV ${2}"
 CF_PARAMS="ParameterKey=ImageUrl,ParameterValue=$3 \
@@ -50,7 +49,6 @@ CF_PARAMS="ParameterKey=ImageUrl,ParameterValue=$3 \
           ParameterKey=DbHost,ParameterValue=$DB_HOST \
           ParameterKey=DbSchema,ParameterValue=$DB_SCHEMA \
           ParameterKey=JwtSecret,ParameterValue=$JWT_SECRET \
-          ParameterKey=S3Bucket,ParameterValue=$S3_BUCKET \
           ParameterKey=Certificate,ParameterValue=$ACM_CERTIFICATE \
           ParameterKey=HostedZoneName,ParameterValue=$HostedZoneName"
 echo "Checking if stack exists ..."
@@ -61,7 +59,7 @@ echo -e "\nStack does not exist, creating ..."
     --region $region \
     --stack-name $stack_name \
     --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM \
-    --template-body file:///$PWD/scripts/spacenow-api-users-cf.yml \
+    --template-body file:///$PWD/scripts/spacenow-api-spaces-cf.yml \
     --parameters $CF_PARAMS \
 
 echo "Waiting for stack to be created ..."
@@ -76,7 +74,7 @@ echo -e "\nStack exists, attempting update ..."
     --region $region \
     --stack-name $stack_name \
     --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM \
-    --template-body=file:///$PWD/scripts/spacenow-api-users-cf.yml \
+    --template-body=file:///$PWD/scripts/spacenow-api-spaces-cf.yml \
     --parameters $CF_PARAMS  2>&1)
   status=$?
   set -e

@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const body_parser_1 = __importDefault(require("body-parser"));
+const sequelize_1 = __importDefault(require("./helpers/database/sequelize"));
 const logger_middleware_1 = __importDefault(require("./helpers/middlewares/logger-middleware"));
 const error_middleware_1 = __importDefault(require("./helpers/middlewares/error-middleware"));
 const sequelize_middleware_1 = __importDefault(require("./helpers/middlewares/sequelize-middleware"));
@@ -17,6 +18,7 @@ class App {
         this.initializeMiddlewares();
         this.initializeControllers(controllers);
         this.initializeErrorHandling();
+        this.initializeDatabase();
     }
     initializeMiddlewares() {
         this.app.use(logger_middleware_1.default);
@@ -27,14 +29,15 @@ class App {
     initializeErrorHandling() {
         this.app.use(error_middleware_1.default);
     }
+    initializeDatabase() {
+        sequelize_1.default.initialize();
+    }
     initializeControllers(controllers) {
-        controllers.forEach((controller) => {
-            this.app.use("/", controller.router);
-        });
+        controllers.forEach((c) => this.app.use('/', c.router));
     }
     listen() {
         this.app.listen(this.port, this.host, () => {
-            console.log(`API * Users * listening on ${this.host}:${this.port}`);
+            console.log(`API * Spaces * listening on ${this.host}:${this.port}`);
         });
     }
 }
