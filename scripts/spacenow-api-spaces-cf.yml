@@ -142,26 +142,6 @@ Resources:
             Action: "sts:AssumeRole"
       ManagedPolicyArns:
         - "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-        - "arn:aws:iam::aws:policy/AmazonS3FullAccess"
-      Policies:
-        - PolicyName: "S3Access"
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: "Allow"
-                Action:
-                  - "s3:GetBucketLocation"
-                  - "s3:ListAllMyBuckets"
-                  - "s3:ListBucket"
-                Resource:
-                  - "arn:aws:arn:aws:s3:::*"
-              - Effect: "Allow"
-                Action:
-                  - "s3:PutObject"
-                  - "s3:GetObject"
-                  - "s3:DeleteObject"
-                Resource:
-                  - "arn:aws:s3:::*spacenow-api-spaces/*"
 
   LogGroup:
     Type: AWS::Logs::LogGroup
