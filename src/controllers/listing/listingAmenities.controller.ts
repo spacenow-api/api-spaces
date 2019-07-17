@@ -27,7 +27,7 @@ class ListingAmenitiesController {
           });
           const result = new Array<any>();
           for (const item of amenitiesArray) {
-            const settingsObj: ListSettings = await ListSettings.findOne({
+            const settingsObj: ListSettings | null = await ListSettings.findOne({
               where: { id: item.listSettingsId },
               raw: true
             });

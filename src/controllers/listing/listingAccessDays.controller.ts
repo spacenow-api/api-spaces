@@ -1,5 +1,6 @@
 import { Router, Request, Response, NextFunction } from "express";
 
+import HttpException from "../../helpers/exceptions/HttpException";
 import sequelizeErrorMiddleware from "../../helpers/middlewares/sequelize-error-middleware";
 
 import { ListingAccessDays, ListingAccessHours } from "../../models";
@@ -19,17 +20,28 @@ class ListingAccessDaysController {
       `/listings/access/:listingId`,
       async (req: Request, res: Response, next: NextFunction) => {
         try {
-          const daysObj: ListingAccessDays = await ListingAccessDays.findOne({
-            where: { listingId: req.params.listingId },
-            raw: true
-          });
-          const hoursArray: Array<
-            ListingAccessHours
-          > = await ListingAccessHours.findAll({
-            where: { listingAccessDaysId: daysObj.id },
-            raw: true
-          });
-          res.send({ ...daysObj, listingAccessHours: hoursArray });
+          const daysObj: ListingAccessDays | null = await ListingAccessDays.findOne(
+            {
+              where: { listingId: req.params.listingId },
+              raw: true
+            }
+          );
+          if (daysObj) {
+            const hoursArray: Array<
+              ListingAccessHours
+            > = await ListingAccessHours.findAll({
+              where: { listingAccessDaysId: daysObj.id },
+              raw: true
+            });
+            res.send({ ...daysObj, listingAccessHours: hoursArray });
+          } else {
+            next(
+              new HttpException(
+                400,
+                `Listing ${req.params.listingId} not found.`
+              )
+            );
+          }
         } catch (err) {
           console.error(err);
           sequelizeErrorMiddleware(err, req, res, next);

@@ -47,7 +47,7 @@ class ListingController {
           if (isPublished) {
             where.isPublished = isPublished === "true";
           }
-          const listingObj: Listing = await Listing.findOne({ where });
+          const listingObj: Listing | null = await Listing.findOne({ where });
           res.send(listingObj);
         } catch (err) {
           console.error(err);
@@ -63,7 +63,7 @@ class ListingController {
       `/listings/data/:listingId`,
       async (req: Request, res: Response, next: NextFunction) => {
         try {
-          const listingDataObj: ListingData = await ListingData.findOne({
+          const listingDataObj: ListingData | null = await ListingData.findOne({
             where: {
               listingId: req.params.listingId
             }
@@ -86,7 +86,7 @@ class ListingController {
         try {
           if (!data.locationId)
             next(new HttpException(400, "A location must be provided."));
-          const locationObj: Location = await Location.findOne({
+          const locationObj: Location | null = await Location.findOne({
             where: { id: data.locationId }
           });
           if (!locationObj)
@@ -126,7 +126,7 @@ class ListingController {
         const data: IUpdateRequest = req.body;
         try {
           // Getting listing record...
-          const listingObj: Listing = await Listing.findOne({
+          const listingObj: Listing | null = await Listing.findOne({
             where: { id: data.listingId }
           });
           if (!listingObj) {
@@ -245,22 +245,25 @@ class ListingController {
                   }
                 }
               );
-              const accessDayObj = await ListingAccessDays.findOne({
-                where: { listingId: data.listingId }
-              });
 
-              // Checking out Access Hours...
-              await ListingAccessHours.destroy({
-                where: { listingAccessDaysId: accessDayObj.id }
-              });
-              for (const item of listingAccessDays.listingAccessHours) {
-                await ListingAccessHours.create({
-                  listingAccessDaysId: accessDayObj.id,
-                  weekday: item.weekday,
-                  openHour: new Date(parseInt(item.openHour, 10)),
-                  closeHour: new Date(parseInt(item.closeHour, 10)),
-                  allday: item.allday
+              const accessDayObj: ListingAccessDays | null = await ListingAccessDays.findOne(
+                { where: { listingId: data.listingId } }
+              );
+
+              if (accessDayObj) {
+                // Checking out Access Hours...
+                await ListingAccessHours.destroy({
+                  where: { listingAccessDaysId: accessDayObj.id }
                 });
+                for (const item of listingAccessDays.listingAccessHours) {
+                  await ListingAccessHours.create({
+                    listingAccessDaysId: accessDayObj.id,
+                    weekday: item.weekday,
+                    openHour: new Date(parseInt(item.openHour, 10)),
+                    closeHour: new Date(parseInt(item.closeHour, 10)),
+                    allday: item.allday
+                  });
+                }
               }
             }
 
