@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "ts-node-dev ./src/server.ts",
     "start": "ts-node ./src/server.ts",
-    "build": "tsc",
+    "prod": "node ./dist/server.js",
     "debug": "tsnd --inspect --respawn src/server.ts",
     "build": "tsc",
     "migrate:up": "db-migrate up --config ./src/helpers/configs/database.json -m ./src/helpers/migrations",
