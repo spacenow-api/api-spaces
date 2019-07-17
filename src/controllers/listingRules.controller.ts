@@ -25,7 +25,7 @@ class ListingRulesController {
           });
           const result = new Array<any>();
           for (const item of rulesArray) {
-            const settingsObj: ListSettings = await ListSettings.findOne({
+            const settingsObj: ListSettings | null = await ListSettings.findOne({
               where: { id: item.listSettingsId },
               raw: true
             });

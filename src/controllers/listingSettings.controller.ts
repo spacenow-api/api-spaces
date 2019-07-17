@@ -1,5 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
 
+import HttpException from '../helpers/exceptions/HttpException';
 import sequelizeErrorMiddleware from '../helpers/middlewares/sequelize-error-middleware';
 
 import { Listing, ListSettings, ListSettingsParent } from '../models';
@@ -17,29 +18,37 @@ class ListingSettingsController {
      */
     this.router.get(
       `/listings/settings/:listingId`,
-      async (request: Request, response: Response, next: NextFunction) => {
+      async (req: Request, res: Response, next: NextFunction) => {
         try {
-          const listingObj: Listing = await Listing.findOne({
-            where: { id: request.params.listingId },
+          const listingObj: Listing | null = await Listing.findOne({
+            where: { id: req.params.listingId },
             attributes: ['listSettingsParentId']
           });
-          const parentObj: ListSettingsParent = await ListSettingsParent.findOne({
-            where: { id: listingObj.listSettingsParentId }
-          });
-          const categoryObj: ListSettings = await ListSettings.findOne({
-            where: { id: parentObj.listSettingsParentId }
-          });
-          const subCategoryObj: ListSettings = await ListSettings.findOne({
-            where: { id: parentObj.listSettingsChildId }
-          });
-          response.send({
-            id: parentObj.id,
-            category: categoryObj,
-            subcategory: subCategoryObj
-          });
+          if (listingObj) {
+            const parentObj: ListSettingsParent | null = await ListSettingsParent.findOne({
+              where: { id: listingObj.listSettingsParentId }
+            });
+            if (parentObj) {
+              const categoryObj: ListSettings | null = await ListSettings.findOne({
+                where: { id: parentObj.listSettingsParentId }
+              });
+              const subCategoryObj: ListSettings | null = await ListSettings.findOne({
+                where: { id: parentObj.listSettingsChildId }
+              });
+              res.send({
+                id: parentObj.id,
+                category: categoryObj,
+                subcategory: subCategoryObj
+              });
+            } else {
+              next(new HttpException(400, `Listing Parent record ${listingObj.listSettingsParentId} not found.`));
+            }
+          } else {
+            next(new HttpException(400, `Listing ${req.params.listingId} not found.`));
+          }
         } catch (err) {
           console.error(err);
-          sequelizeErrorMiddleware(err, request, response, next);
+          sequelizeErrorMiddleware(err, req, res, next);
         }
       }
     );
