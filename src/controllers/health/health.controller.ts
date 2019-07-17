@@ -18,7 +18,7 @@ class HealthController {
     response: Response,
     next: NextFunction
   ) => {
-    response.send(new HealthException());
+    next(new HealthException());
   };
 }
 
