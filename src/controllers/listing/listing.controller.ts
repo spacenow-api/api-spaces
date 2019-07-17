@@ -1,12 +1,12 @@
-import { Router, Request, Response, NextFunction } from 'express';
+import { Router, Request, Response, NextFunction } from "express";
 
-import axios from 'axios';
+import axios from "axios";
 
-import * as config from './../config';
+import * as config from "../../config";
 
-import HttpException from '../helpers/exceptions/HttpException';
+import HttpException from "../../helpers/exceptions/HttpException";
 
-import sequelizeErrorMiddleware from '../helpers/middlewares/sequelize-error-middleware';
+import sequelizeErrorMiddleware from "../../helpers/middlewares/sequelize-error-middleware";
 
 import {
   Listing,
@@ -16,14 +16,14 @@ import {
   ListingAmenities,
   ListingAccessHours,
   ListingRules,
-  ListingPhotos,
-} from '../models';
+  ListingPhotos
+} from "../../models";
 
 import {
   IDraftRequest,
   IUpdateRequest,
   IAccessDaysRequest
-} from '../interfaces/listing.interface';
+} from "../../interfaces/listing.interface";
 
 class ListingController {
   private router = Router();
@@ -40,12 +40,12 @@ class ListingController {
       `/listings/:id`,
       async (req: Request, res: Response, next: NextFunction) => {
         try {
-          const where: { id: number;[key: string]: any } = {
+          const where: { id: number; [key: string]: any } = {
             id: req.params.id
           };
           const { isPublished } = req.query;
           if (isPublished) {
-            where.isPublished = isPublished === 'true';
+            where.isPublished = isPublished === "true";
           }
           const listingObj: Listing = await Listing.findOne({ where });
           res.send(listingObj);
@@ -80,17 +80,17 @@ class ListingController {
      * Creating a new listing as a draft only with basic informations.
      */
     this.router.post(
-      '/listings/draft',
+      "/listings/draft",
       async (req: Request, res: Response, next: NextFunction) => {
         const data: IDraftRequest = req.body;
         try {
           if (!data.locationId)
-            next(new HttpException(400, 'A location must be provided.'));
+            next(new HttpException(400, "A location must be provided."));
           const locationObj: Location = await Location.findOne({
             where: { id: data.locationId }
           });
           if (!locationObj)
-            next(new HttpException(400, 'A location must be provided.'));
+            next(new HttpException(400, "A location must be provided."));
           // Creating listing record...
           const listingObj: Listing = await Listing.create({
             userId: data.userId,
@@ -121,14 +121,18 @@ class ListingController {
      * Update a Listing with all data required.
      */
     this.router.put(
-      '/listings/update',
+      "/listings/update",
       async (req: Request, res: Response, next: NextFunction) => {
         const data: IUpdateRequest = req.body;
         try {
           // Getting listing record...
-          const listingObj: Listing = await Listing.findOne({ where: { id: data.listingId } });
+          const listingObj: Listing = await Listing.findOne({
+            where: { id: data.listingId }
+          });
           if (!listingObj) {
-            next(new HttpException(400, `Listing ${data.listingId} not found.`));
+            next(
+              new HttpException(400, `Listing ${data.listingId} not found.`)
+            );
           } else {
             // Updating isReady rule...
             const isReady: boolean = await this.isReadyCheck(
@@ -184,7 +188,9 @@ class ListingController {
               data.listingAmenities != null &&
               data.listingAmenities !== undefined
             ) {
-              await ListingAmenities.destroy({ where: { listingId: data.listingId } });
+              await ListingAmenities.destroy({
+                where: { listingId: data.listingId }
+              });
               data.listingAmenities.map(async item => {
                 await ListingAmenities.create({
                   listingId: data.listingId,
@@ -207,7 +213,9 @@ class ListingController {
 
             // Checking out Listing Rules...
             if (data.listingRules != null && data.listingRules !== undefined) {
-              await ListingRules.destroy({ where: { listingId: data.listingId } });
+              await ListingRules.destroy({
+                where: { listingId: data.listingId }
+              });
               data.listingRules.map(async item => {
                 await ListingRules.create({
                   listing: data.listingId,
@@ -218,7 +226,8 @@ class ListingController {
 
             // Checking out Access Days...
             if (data.listingAccessDays) {
-              const listingAccessDays: IAccessDaysRequest = data.listingAccessDays;
+              const listingAccessDays: IAccessDaysRequest =
+                data.listingAccessDays;
               await ListingAccessDays.update(
                 {
                   mon: listingAccessDays.mon,
@@ -236,10 +245,14 @@ class ListingController {
                   }
                 }
               );
-              const accessDayObj = await ListingAccessDays.findOne({ where: { listingId: data.listingId } });
+              const accessDayObj = await ListingAccessDays.findOne({
+                where: { listingId: data.listingId }
+              });
 
               // Checking out Access Hours...
-              await ListingAccessHours.destroy({ where: { listingAccessDaysId: accessDayObj.id } });
+              await ListingAccessHours.destroy({
+                where: { listingAccessDaysId: accessDayObj.id }
+              });
               for (const item of listingAccessDays.listingAccessHours) {
                 await ListingAccessHours.create({
                   listingAccessDaysId: accessDayObj.id,
@@ -262,7 +275,13 @@ class ListingController {
     );
   }
 
-  async isReadyCheck(listingId: number, title?: string, bookingType?: string, basePrice?: number, listingAccessDays?: IAccessDaysRequest): Promise<boolean> {
+  async isReadyCheck(
+    listingId: number,
+    title?: string,
+    bookingType?: string,
+    basePrice?: number,
+    listingAccessDays?: IAccessDaysRequest
+  ): Promise<boolean> {
     // One photo at least...
     const photosCount = await ListingPhotos.count({ where: { listingId } });
     if (photosCount <= 0) {

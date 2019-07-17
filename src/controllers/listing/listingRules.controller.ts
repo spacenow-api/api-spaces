@@ -1,8 +1,8 @@
-import { Router, Request, Response, NextFunction } from 'express';
+import { Router, Request, Response, NextFunction } from "express";
 
-import sequelizeErrorMiddleware from '../helpers/middlewares/sequelize-error-middleware';
+import sequelizeErrorMiddleware from "../../helpers/middlewares/sequelize-error-middleware";
 
-import { ListSettings, ListingRules } from '../models';
+import { ListSettings, ListingRules } from "../../models";
 
 class ListingRulesController {
   private router = Router();

@@ -1,8 +1,8 @@
-import { Router, Request, Response, NextFunction } from 'express';
+import { Router, Request, Response, NextFunction } from "express";
 
-import sequelizeErrorMiddleware from '../helpers/middlewares/sequelize-error-middleware';
+import sequelizeErrorMiddleware from "../../helpers/middlewares/sequelize-error-middleware";
 
-import { ListSettings, ListingAmenities } from '../models';
+import { ListSettings, ListingAmenities } from "../../models";
 
 class ListingAmenitiesController {
   private router = Router();
@@ -19,7 +19,9 @@ class ListingAmenitiesController {
       `/listings/amenities/:listingId`,
       async (req: Request, res: Response, next: NextFunction) => {
         try {
-          const amenitiesArray: Array<ListingAmenities> = await ListingAmenities.findAll({
+          const amenitiesArray: Array<
+            ListingAmenities
+          > = await ListingAmenities.findAll({
             where: { listingId: req.params.listingId },
             raw: true
           });

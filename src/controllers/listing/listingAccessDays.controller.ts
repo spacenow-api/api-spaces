@@ -1,8 +1,8 @@
-import { Router, Request, Response, NextFunction } from 'express';
+import { Router, Request, Response, NextFunction } from "express";
 
-import sequelizeErrorMiddleware from '../helpers/middlewares/sequelize-error-middleware';
+import sequelizeErrorMiddleware from "../../helpers/middlewares/sequelize-error-middleware";
 
-import { ListingAccessDays, ListingAccessHours } from '../models';
+import { ListingAccessDays, ListingAccessHours } from "../../models";
 
 class ListingAccessDaysController {
   private router = Router();
@@ -23,7 +23,9 @@ class ListingAccessDaysController {
             where: { listingId: req.params.listingId },
             raw: true
           });
-          const hoursArray: Array<ListingAccessHours> = await ListingAccessHours.findAll({
+          const hoursArray: Array<
+            ListingAccessHours
+          > = await ListingAccessHours.findAll({
             where: { listingAccessDaysId: daysObj.id },
             raw: true
           });

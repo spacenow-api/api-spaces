@@ -1,8 +1,8 @@
-import { Router, Request, Response, NextFunction } from 'express';
+import { Router, Request, Response, NextFunction } from "express";
 
-import sequelizeErrorMiddleware from '../helpers/middlewares/sequelize-error-middleware';
+import sequelizeErrorMiddleware from "../../helpers/middlewares/sequelize-error-middleware";
 
-import { Listing, ListSettings, ListSettingsParent } from '../models';
+import { Listing, ListSettings, ListSettingsParent } from "../../models";
 
 class ListingSettingsController {
   private router = Router();
@@ -21,11 +21,13 @@ class ListingSettingsController {
         try {
           const listingObj: Listing = await Listing.findOne({
             where: { id: request.params.listingId },
-            attributes: ['listSettingsParentId']
+            attributes: ["listSettingsParentId"]
           });
-          const parentObj: ListSettingsParent = await ListSettingsParent.findOne({
-            where: { id: listingObj.listSettingsParentId }
-          });
+          const parentObj: ListSettingsParent = await ListSettingsParent.findOne(
+            {
+              where: { id: listingObj.listSettingsParentId }
+            }
+          );
           const categoryObj: ListSettings = await ListSettings.findOne({
             where: { id: parentObj.listSettingsParentId }
           });
