@@ -43,7 +43,7 @@ class App {
 
   public listen() {
     this.app.listen(this.port, this.host, () => {
-      console.log(`API * Spaces * listening on ${this.host}:${this.port}`);
+      console.info(`API * Spaces * listening on ${this.host}:${this.port}`);
     });
   }
 }
