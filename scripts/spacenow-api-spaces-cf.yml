@@ -99,6 +99,11 @@ Parameters:
     Type: String
     Default: ""
     NoEcho: true
+  UsersApiHost:
+    Description: "USERS_API_HOST"
+    Type: String
+    Default: ""
+    NoEcho: true
 Conditions:
   isMaster: !Equals [!Ref SliceName, master]
   isFeature: !Not [Condition: isMaster]
@@ -209,6 +214,8 @@ Resources:
               Value: !Ref DbSchema
             - Name: JWT_SECRET
               Value: !Ref JwtSecret
+            - Name: USERS_API_HOST
+              Value: !Ref UsersApiHost
 
           LogConfiguration:
             LogDriver: awslogs

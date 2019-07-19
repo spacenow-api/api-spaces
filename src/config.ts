@@ -1,4 +1,4 @@
-import * as dotenv from 'dotenv';
+import * as dotenv from "dotenv";
 dotenv.config();
 
 export const DEBUG = process.env.DEBUG ? Boolean(process.env.DEBUG) : false;
@@ -12,6 +12,9 @@ export const dbPassword = process.env.DATABASE_PASSWORD;
 export const dbHost = process.env.DATABASE_HOST;
 
 // API Bookings
-export const availabilitiesAPI = process.env.API_AVAILABILITIES || '#API_AVAILABILITIES#';
+export const availabilitiesAPI =
+  process.env.API_AVAILABILITIES ||
+  "https://api-availabilities.sandpit.cloud.spacenow.com/availabilities";
 
-export const USERS_AUTHENTICATION_API_HOST = process.env.USERS_API_HOST || "http://localhost:6001";
+export const USERS_AUTHENTICATION_API_HOST =
+  process.env.USERS_API_HOST || "http://localhost:6001";
