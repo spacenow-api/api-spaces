@@ -17,7 +17,8 @@ import {
   ListingAmenities,
   ListingAccessHours,
   ListingRules,
-  ListingPhotos
+  ListingPhotos,
+  ListSettings
 } from "../../models";
 
 import {
@@ -65,6 +66,19 @@ class ListingController {
           }
         });
         res.send(listingDataObj);
+      } catch (err) {
+        console.error(err);
+        sequelizeErrorMiddleware(err, req, res, next);
+      }
+    });
+
+    /**
+     * Get all rules from sub-category ID
+     */
+    this.router.get(`/listings/fetch/accesstypes`, authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const result: Array<ListSettings> = await ListSettings.findAll({ where: { typeId: 113 } });
+        res.send(result);
       } catch (err) {
         console.error(err);
         sequelizeErrorMiddleware(err, req, res, next);

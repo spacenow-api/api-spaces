@@ -36,6 +36,19 @@ class ListingRulesController {
         sequelizeErrorMiddleware(err, req, res, next);
       }
     });
+
+    /**
+     * Get all rules from sub-category ID
+     */
+    this.router.get(`/listings/fetch/rules`, authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const result: Array<ListSettings> = await ListSettings.findAll({ where: { typeId: 14 } });
+        res.send(result);
+      } catch (err) {
+        console.error(err);
+        sequelizeErrorMiddleware(err, req, res, next);
+      }
+    });
   }
 }
 
