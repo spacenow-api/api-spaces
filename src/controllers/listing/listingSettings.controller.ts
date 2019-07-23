@@ -4,7 +4,7 @@ import authMiddleware from '../../helpers/middlewares/auth-middleware';
 import HttpException from "../../helpers/exceptions/HttpException";
 import sequelizeErrorMiddleware from "../../helpers/middlewares/sequelize-error-middleware";
 
-import { Listing, ListSettings, ListSettingsParent } from "../../models";
+import { Listing, ListSettings, ListSettingsParent, SubcategorySpecifications } from "../../models";
 
 class ListingSettingsController {
   private router = Router();
@@ -24,45 +24,51 @@ class ListingSettingsController {
           attributes: ["listSettingsParentId"]
         });
         if (listingObj) {
-          const parentObj: ListSettingsParent | null = await ListSettingsParent.findOne(
-            {
-              where: { id: listingObj.listSettingsParentId }
-            }
-          );
+          const parentObj: ListSettingsParent | null = await ListSettingsParent.findOne({
+            where: { id: listingObj.listSettingsParentId }
+          });
           if (parentObj) {
-            const categoryObj: ListSettings | null = await ListSettings.findOne(
-              {
-                where: { id: parentObj.listSettingsParentId }
-              }
-            );
-            const subCategoryObj: ListSettings | null = await ListSettings.findOne(
-              {
-                where: { id: parentObj.listSettingsChildId }
-              }
-            );
+            const categoryObj: ListSettings | null = await ListSettings.findOne({
+              where: { id: parentObj.listSettingsParentId }
+            });
+            const subCategoryObj: ListSettings | null = await ListSettings.findOne({
+              where: { id: parentObj.listSettingsChildId }
+            });
             res.send({
               id: parentObj.id,
               category: categoryObj,
               subcategory: subCategoryObj
             });
           } else {
-            next(
-              new HttpException(
-                400,
-                `Listing Parent record ${
-                listingObj.listSettingsParentId
-                } not found.`
-              )
-            );
+            next(new HttpException(400, `Listing Parent record ${listingObj.listSettingsParentId} not found.`));
           }
         } else {
-          next(
-            new HttpException(
-              400,
-              `Listing ${req.params.listingId} not found.`
-            )
-          );
+          next(new HttpException(400, `Listing ${req.params.listingId} not found.`));
         }
+      } catch (err) {
+        console.error(err);
+        sequelizeErrorMiddleware(err, req, res, next);
+      }
+    });
+
+    /**
+     * Get all specifications from sub-category ID
+     */
+    this.router.get(`/listings/settings/specifications/:listSettingsParentId`, authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const specificationsArray: Array<SubcategorySpecifications> = await SubcategorySpecifications.findAll({
+          where: { listSettingsParentId: req.params.listSettingsParentId },
+          raw: true
+        })
+        const result = new Array<any>();
+        for (const item of specificationsArray) {
+          const settingsObj: ListSettings | null = await ListSettings.findOne({
+            where: { id: item.listSettingsSpecificationId },
+            raw: true
+          });
+          result.push(settingsObj);
+        }
+        res.send(result);
       } catch (err) {
         console.error(err);
         sequelizeErrorMiddleware(err, req, res, next);
