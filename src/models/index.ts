@@ -10,6 +10,7 @@ import { ListingExceptionDates } from './listingExceptionDates.model';
 import { ListingRules } from './listingRules.model';
 import { ListingPhotos } from './listingPhotos.model';
 import { SubcategorySpecifications } from './subcategorySpecifications.model'
+import { SubcategoryBookingPeriod } from './subcategoryBookingPeriod.model'
 
 export {
   Listing,
@@ -23,7 +24,8 @@ export {
   ListingExceptionDates,
   ListingRules,
   ListingPhotos,
-  SubcategorySpecifications
+  SubcategorySpecifications,
+  SubcategoryBookingPeriod
 };
 
 export const arrayOfModels = [
@@ -38,5 +40,6 @@ export const arrayOfModels = [
   ListingExceptionDates,
   ListingRules,
   ListingPhotos,
-  SubcategorySpecifications
+  SubcategorySpecifications,
+  SubcategoryBookingPeriod
 ];

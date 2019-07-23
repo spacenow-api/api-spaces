@@ -4,7 +4,7 @@ import authMiddleware from '../../helpers/middlewares/auth-middleware';
 import HttpException from "../../helpers/exceptions/HttpException";
 import sequelizeErrorMiddleware from "../../helpers/middlewares/sequelize-error-middleware";
 
-import { Listing, ListSettings, ListSettingsParent, SubcategorySpecifications } from "../../models";
+import { Listing, ListSettings, ListSettingsParent, SubcategorySpecifications, SubcategoryBookingPeriod } from "../../models";
 
 class ListingSettingsController {
   private router = Router();
@@ -34,16 +34,20 @@ class ListingSettingsController {
             const subCategoryObj: ListSettings | null = await ListSettings.findOne({
               where: { id: parentObj.listSettingsChildId }
             });
+            const bookingPeriodObj: SubcategoryBookingPeriod | null = await SubcategoryBookingPeriod.findOne({
+              where: { listSettingsParentId: listingObj.listSettingsParentId }
+            });
             res.send({
               id: parentObj.id,
               category: categoryObj,
-              subcategory: subCategoryObj
+              subcategory: subCategoryObj,
+              bookingPeriod: bookingPeriodObj
             });
           } else {
-            next(new HttpException(400, `Listing Parent record ${listingObj.listSettingsParentId} not found.`));
+            throw new HttpException(400, `Listing Parent record ${listingObj.listSettingsParentId} not found.`);
           }
         } else {
-          next(new HttpException(400, `Listing ${req.params.listingId} not found.`));
+          throw new HttpException(400, `Listing ${req.params.listingId} not found.`);
         }
       } catch (err) {
         console.error(err);
