@@ -323,11 +323,7 @@ Resources:
     Condition: isMaster
     Properties:
       HostedZoneName: !Join ["", [!Ref HostedZoneName, .]]
-      Name:
-        !Join [
-          "",
-          [!Ref ServiceName, "-", !Ref Subdomain, ., !Ref HostedZoneName, .],
-        ]
+      Name: !Join ["", [!Ref ServiceName, ., !Ref HostedZoneName, .]]
       Type: A
       AliasTarget:
         DNSName: !GetAtt LoadBalancer.DNSName
