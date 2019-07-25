@@ -30,6 +30,7 @@ interface IAccessDaysRequest {
 interface IUpdateRequest {
   listingId: number;
   title?: string;
+  bookingPeriod?: string;
   accessType?: string;
   bookingNoticeTime?: string;
   minTerm?: number;

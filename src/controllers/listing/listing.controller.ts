@@ -132,9 +132,11 @@ class ListingController {
           );
           let isPublished: boolean = listingObj.isPublished;
           if (!isReady) isPublished = false;
+          const bookingPeriod = data.bookingPeriod !== undefined ? data.bookingPeriod : listingObj.bookingPeriod;
           await Listing.update({
             title: data.title,
             bookingType: data.bookingType,
+            bookingPeriod,
             isReady,
             isPublished
           }, { where: { id: data.listingId } });
