@@ -1,43 +1,47 @@
 {
-  "name": "api-spaces",
-  "version": "1.0.0",
-  "main": "dist/app.js",
-  "license": "MIT",
-  "scripts": {
-    "dev": "ts-node-dev ./src/server.ts",
-    "start": "ts-node ./src/server.ts",
-    "prod": "node ./dist/server.js",
-    "debug": "tsnd --inspect --respawn src/server.ts",
-    "build": "tsc",
-    "migrate:up": "db-migrate up --config ./src/helpers/configs/database.json -m ./src/helpers/migrations",
-    "migrate:down": "db-migrate down -c 999 --config ./src/helpers/configs/database.json -m ./src/helpers/migrations",
-    "db:prepare": "yarn migrate:down && yarn migrate:up"
-  },
-  "dependencies": {
-    "await-to-js": "~2.1.1",
-    "axios": "^0.19.0",
-    "body-parser": "~1.19.0",
-    "cookie-parser": "~1.4.4",
-    "db-migrate": "~0.11.6",
-    "dotenv": "~8.0.0",
-    "express": "~4.17.0",
-    "jsonwebtoken": "~8.5.1",
-    "mysql2": "~1.6.5",
-    "reflect-metadata": "~0.1.13",
-    "sequelize": "~5.8.10",
-    "sequelize-typescript": "~1.0.0-beta.3",
-    "uuid": "~3.3.2"
-  },
-  "devDependencies": {
-    "@types/bluebird": "~3.5.27",
-    "@types/cookie-parser": "~1.4.1",
-    "@types/dotenv": "~6.1.1",
-    "@types/express": "~4.16.1",
-    "@types/jsonwebtoken": "~8.3.2",
-    "@types/uuid": "~3.4.4",
-    "@types/validator": "~10.11.1",
-    "db-migrate-mysql": "~1.1.10",
-    "ts-node-dev": "~1.0.0-pre.39",
-    "typescript": "~3.4.5"
-  }
+	"name": "api-spaces",
+	"version": "1.0.0",
+	"main": "dist/server.js",
+	"license": "MIT",
+	"engines": {
+		"node": ">=10.16.0",
+		"npm": ">=6.9.0"
+	},
+	"scripts": {
+		"build": "tsc",
+		"debug": "tsnd --inspect --respawn src/server.ts",
+		"dev": "tsnd ./src/server.ts",
+		"start": "tsn ./src/server.ts",
+		"prod": "node ./dist/server.js",
+		"migrate:up": "db-migrate up --config ./src/helpers/configs/database.json -m ./src/helpers/migrations",
+		"migrate:down": "db-migrate down -c 999 --config ./src/helpers/configs/database.json -m ./src/helpers/migrations",
+		"db:prepare": "yarn migrate:down && yarn migrate:up"
+	},
+	"dependencies": {
+		"await-to-js": "~2.1.1",
+		"axios": "^0.19.0",
+		"body-parser": "~1.19.0",
+		"cookie-parser": "~1.4.4",
+		"db-migrate": "~0.11.6",
+		"dotenv": "~8.0.0",
+		"express": "~4.17.0",
+		"jsonwebtoken": "~8.5.1",
+		"mysql2": "~1.6.5",
+		"reflect-metadata": "~0.1.13",
+		"sequelize": "~5.8.10",
+		"sequelize-typescript": "~1.0.0-beta.3",
+		"uuid": "~3.3.2"
+	},
+	"devDependencies": {
+		"@types/bluebird": "~3.5.27",
+		"@types/cookie-parser": "~1.4.1",
+		"@types/dotenv": "~6.1.1",
+		"@types/express": "~4.16.1",
+		"@types/jsonwebtoken": "~8.3.2",
+		"@types/uuid": "~3.4.4",
+		"@types/validator": "~10.11.1",
+		"db-migrate-mysql": "~1.1.10",
+		"ts-node-dev": "~1.0.0-pre.39",
+		"typescript": "~3.4.5"
+	}
 }
