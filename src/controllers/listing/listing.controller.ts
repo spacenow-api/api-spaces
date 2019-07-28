@@ -50,9 +50,9 @@ class ListingController {
         if (!listingObj) {
           throw new HttpException(400, `Listing ${listingId} not found.`);
         }
-        if (listingObj.userId !== req.userIdDecoded) {
-          throw new HttpException(403, `Listing ${listingId} does not belong to the logged in user.`);
-        }
+        // if (listingObj.userId !== req.userIdDecoded) {
+        //   throw new HttpException(403, `Listing ${listingId} does not belong to the logged in user.`);
+        // }
         res.send(listingObj);
       } catch (err) {
         console.error(err);
