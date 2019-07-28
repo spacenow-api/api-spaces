@@ -39,13 +39,20 @@ class ListingController {
      * Get listing by ID.
      */
     this.router.get(`/listings/:id`, authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
+      const listingId = req.params.id;
       try {
-        const where: { id: number;[key: string]: any } = { id: req.params.id };
+        const where: { id: number;[key: string]: any } = { id: listingId };
         const { isPublished } = req.query;
         if (isPublished) {
           where.isPublished = isPublished === "true";
         }
         const listingObj: Listing | null = await Listing.findOne({ where });
+        if (!listingObj) {
+          throw new HttpException(400, `Listing ${listingId} not found.`);
+        }
+        if (listingObj.userId !== req.userIdDecoded) {
+          throw new HttpException(403, `Listing ${listingId} does not belong to the logged in user.`);
+        }
         res.send(listingObj);
       } catch (err) {
         console.error(err);
