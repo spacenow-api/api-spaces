@@ -32,6 +32,7 @@ export class Listing extends Model<Listing> {
   @Column
   listSettingsParentId!: number;
 
+  @Default('daily')
   @Column
   bookingPeriod?: string;
 
@@ -130,6 +131,7 @@ export class Listing extends Model<Listing> {
   @Column
   coverPhotoId?: number;
 
+  @Default(1)
   @Column
   quantity?: number;
 
