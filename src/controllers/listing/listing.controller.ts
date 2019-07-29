@@ -248,9 +248,13 @@ class ListingController {
         if (!listingObj) {
           throw new HttpException(400, `Listing ${listingId} not found.`);
         }
-        if (listingObj.isReady) {
-          const isToPublished: Boolean = req.params.status;
-          await Listing.update({ isPublished: isToPublished }, { where: { id: listingId } });
+        const isToPublished: Boolean = /true/i.test(req.params.status);
+        if (isToPublished) {
+          if (await this.isReady(listingObj)) {
+            await Listing.update({ isPublished: true }, { where: { id: listingId } });
+          } else {
+            throw new HttpException(400, `Listing ${listingId} is not ready to publish.`);
+          }
         } else {
           await Listing.update({ isPublished: false }, { where: { id: listingId } });
         }
@@ -263,7 +267,25 @@ class ListingController {
     });
   }
 
-  async isReadyCheck(listingId: number, title?: string, bookingType?: string, basePrice?: number, listingAccessDays?: IAccessDaysRequest): Promise<boolean> {
+  async isReady(listing: Listing): Promise<boolean> {
+    const listingId = listing.id;
+
+    const listingDataObj: ListingData | null = await ListingData.findOne({ where: { listingId: listing.id }, raw: true });
+    if (!listingDataObj)
+      throw new HttpException(400, `Listing ${listingId} does not have a 'Listing Data' associated.`);
+    const basePrice = listingDataObj.basePrice;
+
+    const accessDayObj: ListingAccessDays | null = await ListingAccessDays.findOne({ where: { listingId: listing.id } });
+    if (!listingDataObj)
+      throw new HttpException(400, `Listing ${listingId} does not have an 'Access Days' associated.`);
+    const listingAccessDay = accessDayObj;
+
+    const title = listing.title;
+    const bookingType = listing.bookingType;
+    return this.isReadyCheck(listingId, title, bookingType, basePrice, listingAccessDay);
+  }
+
+  async isReadyCheck(listingId: number, title?: string, bookingType?: string, basePrice?: number, listingAccessDays?: any): Promise<boolean> {
     // One photo at least...
     const photosCount = await ListingPhotos.count({ where: { listingId } });
     if (photosCount <= 0) {
@@ -285,7 +307,7 @@ class ListingController {
     return true;
   }
 
-  private isOpenForWork(listingAccessDays?: IAccessDaysRequest) {
+  private isOpenForWork(listingAccessDays?: any) {
     if (!listingAccessDays) return false;
     const { mon, tue, wed, thu, fri, sat, sun, all247 } = listingAccessDays;
     return mon || tue || wed || thu || fri || sat || sun || all247;
