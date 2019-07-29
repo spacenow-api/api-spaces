@@ -130,12 +130,15 @@ class ListingController {
           throw new HttpException(400, `Listing ${data.listingId} not found.`);
         } else {
           // Updating isReady rule...
+          let accessDaysToValidate: any = data.listingAccessDays;
+          if (!accessDaysToValidate)
+            accessDaysToValidate = await ListingAccessDays.findOne({ where: { listingId: data.listingId } });
           const isReady: boolean = await this.isReadyCheck(
             data.listingId,
             data.title,
             data.bookingType,
             data.basePrice,
-            data.listingAccessDays
+            accessDaysToValidate
           );
           let isPublished: boolean = listingObj.isPublished;
           if (!isReady) isPublished = false;
