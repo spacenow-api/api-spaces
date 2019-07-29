@@ -240,6 +240,27 @@ class ListingController {
         sequelizeErrorMiddleware(err, req, res, next);
       }
     });
+
+    this.router.put("/listings/:listingId/publish/:status", authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
+      const listingId = req.params.listingId;
+      try {
+        const listingObj: Listing | null = await Listing.findOne({ where: { id: listingId } });
+        if (!listingObj) {
+          throw new HttpException(400, `Listing ${listingId} not found.`);
+        }
+        if (listingObj.isReady) {
+          const isToPublished: Boolean = req.params.status;
+          await Listing.update({ isPublished: isToPublished }, { where: { id: listingId } });
+        } else {
+          await Listing.update({ isPublished: false }, { where: { id: listingId } });
+        }
+        const listingUpdated = await Listing.findOne({ where: { id: listingId } });
+        res.send(listingUpdated);
+      } catch (err) {
+        console.error(err);
+        sequelizeErrorMiddleware(err, req, res, next);
+      }
+    });
   }
 
   async isReadyCheck(listingId: number, title?: string, bookingType?: string, basePrice?: number, listingAccessDays?: IAccessDaysRequest): Promise<boolean> {
