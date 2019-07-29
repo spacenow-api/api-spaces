@@ -250,9 +250,9 @@ class ListingController {
         }
         const isToPublished: Boolean = /true/i.test(req.params.status);
         if (isToPublished) {
-          if (await this.isReady(listingObj)) {
-            await Listing.update({ isPublished: true }, { where: { id: listingId } });
-          } else {
+          const isReadyConditional = await this.isReady(listingObj);
+          await Listing.update({ isPublished: isReadyConditional }, { where: { id: listingId } });
+          if (!isReadyConditional) {
             throw new HttpException(400, `Listing ${listingId} is not ready to publish.`);
           }
         } else {
