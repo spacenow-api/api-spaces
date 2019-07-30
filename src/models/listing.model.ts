@@ -32,7 +32,6 @@ export class Listing extends Model<Listing> {
   @Column
   listSettingsParentId!: number;
 
-  @Default('daily')
   @Column
   bookingPeriod?: string;
 
