@@ -132,8 +132,11 @@ class ListingController {
         } else {
           // Updating isReady rule...
           let accessDaysToValidate: any = data.listingAccessDays;
-          if (!accessDaysToValidate)
+          if (!accessDaysToValidate) {
             accessDaysToValidate = await ListingAccessDays.findOne({ where: { listingId: data.listingId } });
+            const accessHoursToValidate = await ListingAccessHours.findAll({ where: { listingAccessDaysId: accessDaysToValidate.id } });
+            accessDaysToValidate.listingAccessHours = accessHoursToValidate;
+          }
           const isReady: boolean = await this.isReadyCheck(
             data.listingId,
             data.title,
@@ -328,7 +331,13 @@ class ListingController {
   private isOpenForWork(listingAccessDays?: any) {
     if (!listingAccessDays) return false;
     const { mon, tue, wed, thu, fri, sat, sun, all247 } = listingAccessDays;
-    return mon || tue || wed || thu || fri || sat || sun || all247;
+    if (!mon && !tue && !wed && !thu && !fri && !sat && !sun && !all247) return false;
+    if (!listingAccessDays.listingAccessHours) return false;
+    const aWrongPeriod: Array<any> = listingAccessDays.listingAccessHours
+      .filter((o: { openHour: string; closeHour: string; }) => {
+        return new Date(parseInt(o.openHour)).getTime() > new Date(parseInt(o.closeHour)).getTime();
+      })
+    return !(aWrongPeriod.length > 0);
   }
 }
 
