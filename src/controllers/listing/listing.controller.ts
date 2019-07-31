@@ -50,9 +50,6 @@ class ListingController {
         if (!listingObj) {
           throw new HttpException(400, `Listing ${listingId} not found.`);
         }
-        // if (listingObj.userId !== req.userIdDecoded) {
-        //   throw new HttpException(403, `Listing ${listingId} does not belong to the logged in user.`);
-        // }
         res.send(listingObj);
       } catch (err) {
         console.error(err);
@@ -127,127 +124,128 @@ class ListingController {
       try {
         // Getting listing record...
         const listingObj: Listing | null = await Listing.findOne({ where: { id: data.listingId } });
-        if (!listingObj) {
-          throw new HttpException(400, `Listing ${data.listingId} not found.`);
-        } else {
-          // Updating isReady rule...
-          let accessDaysToValidate: any = data.listingAccessDays;
-          if (!accessDaysToValidate) {
-            accessDaysToValidate = await ListingAccessDays.findOne({ where: { listingId: data.listingId } });
-            const accessHoursToValidate = await ListingAccessHours.findAll({ where: { listingAccessDaysId: accessDaysToValidate.id } });
-            accessDaysToValidate.listingAccessHours = accessHoursToValidate;
-          }
-          const isReady: boolean = await this.isReadyCheck(
-            data.listingId,
-            data.title,
-            data.bookingType,
-            data.basePrice,
-            accessDaysToValidate
-          );
-          let isPublished: boolean = listingObj.isPublished;
-          if (!isReady) isPublished = false;
-          const bookingPeriod = data.bookingPeriod !== undefined ? data.bookingPeriod : listingObj.bookingPeriod;
-          await Listing.update({
-            title: data.title,
-            bookingType: data.bookingType,
-            bookingPeriod,
-            isReady,
-            isPublished
-          }, { where: { id: data.listingId } });
+        if (!listingObj) throw new HttpException(400, `Listing ${data.listingId} not found.`);
 
-          // Updating listing data informations...
-          await ListingData.update({
-            listingId: data.listingId,
-            accessType: data.accessType,
-            bookingNoticeTime: data.bookingNoticeTime,
-            minTerm: data.minTerm,
-            maxTerm: data.maxTerm,
-            description: data.description,
-            basePrice: data.basePrice,
-            currency: data.currency,
-            isAbsorvedFee: data.isAbsorvedFee,
-            capacity: data.capacity,
-            size: data.size,
-            meetingRooms: data.meetingRooms,
-            isFurnished: data.isFurnished,
-            carSpace: data.carSpace,
-            sizeOfVehicle: data.sizeOfVehicle,
-            maxEntranceHeight: data.maxEntranceHeight,
-            spaceType: data.spaceType,
-            bookingType: data.bookingType
+        // Updating isReady rule...
+        let accessDaysToValidate: any = data.listingAccessDays;
+        if (!accessDaysToValidate) {
+          accessDaysToValidate = await ListingAccessDays.findOne({ where: { listingId: data.listingId } });
+          const accessHoursToValidate = await ListingAccessHours.findAll({ where: { listingAccessDaysId: accessDaysToValidate.id } });
+          accessDaysToValidate.listingAccessHours = accessHoursToValidate;
+        }
+        const isReady: boolean = await this.isReadyCheck(
+          data.listingId,
+          data.title,
+          data.bookingType,
+          data.basePrice,
+          accessDaysToValidate
+        );
+        let isPublished: boolean = listingObj.isPublished;
+        if (!isReady) isPublished = false;
+        const bookingPeriod = data.bookingPeriod !== undefined ? data.bookingPeriod : listingObj.bookingPeriod;
+        await Listing.update({
+          title: data.title,
+          bookingType: data.bookingType,
+          bookingPeriod,
+          isReady,
+          isPublished
+        }, { where: { id: data.listingId } });
+
+        // Updating listing data informations...
+        await ListingData.update({
+          listingId: data.listingId,
+          accessType: data.accessType,
+          bookingNoticeTime: data.bookingNoticeTime,
+          minTerm: data.minTerm,
+          maxTerm: data.maxTerm,
+          description: data.description,
+          basePrice: data.basePrice,
+          currency: data.currency,
+          isAbsorvedFee: data.isAbsorvedFee,
+          capacity: data.capacity,
+          size: data.size,
+          meetingRooms: data.meetingRooms,
+          isFurnished: data.isFurnished,
+          carSpace: data.carSpace,
+          sizeOfVehicle: data.sizeOfVehicle,
+          maxEntranceHeight: data.maxEntranceHeight,
+          spaceType: data.spaceType,
+          bookingType: data.bookingType
+        }, { where: { listingId: data.listingId } });
+
+        // Checking out Amenities...
+        if (data.listingAmenities) {
+          await ListingAmenities.destroy({ where: { listingId: data.listingId } });
+          data.listingAmenities.map(async item => {
+            await ListingAmenities.create({
+              listingId: data.listingId,
+              listSettingsId: item
+            });
+          });
+        }
+
+        // Checking out Exception Dates...
+        if (data.listingExceptionDates) {
+          // Updating Availabilities API...
+          await axios.post(config.availabilitiesAPI, {
+            listingId: data.listingId.toString(),
+            blockedDates: data.listingExceptionDates
+          });
+        }
+
+        // Checking out Listing Rules...
+        if (data.listingRules) {
+          await ListingRules.destroy({ where: { listingId: data.listingId } });
+          data.listingRules.map(async item => {
+            await ListingRules.create({
+              listingId: data.listingId,
+              listSettingsId: item
+            });
+          });
+        }
+
+        // Checking out Access Days...
+        if (data.listingAccessDays) {
+          const listingAccessDays: IAccessDaysRequest = data.listingAccessDays;
+          await ListingAccessDays.update({
+            mon: listingAccessDays.mon,
+            tue: listingAccessDays.tue,
+            wed: listingAccessDays.wed,
+            thu: listingAccessDays.thu,
+            fri: listingAccessDays.fri,
+            sat: listingAccessDays.sat,
+            sun: listingAccessDays.sun,
+            all247: listingAccessDays.all247
           }, { where: { listingId: data.listingId } });
 
-          // Checking out Amenities...
-          if (data.listingAmenities) {
-            await ListingAmenities.destroy({ where: { listingId: data.listingId } });
-            data.listingAmenities.map(async item => {
-              await ListingAmenities.create({
-                listingId: data.listingId,
-                listSettingsId: item
+          const accessDayObj: ListingAccessDays | null = await ListingAccessDays.findOne({ where: { listingId: data.listingId } });
+
+          if (accessDayObj) {
+            // Checking out Access Hours...
+            await ListingAccessHours.destroy({ where: { listingAccessDaysId: accessDayObj.id } });
+            for (const item of listingAccessDays.listingAccessHours) {
+              await ListingAccessHours.create({
+                listingAccessDaysId: accessDayObj.id,
+                weekday: item.weekday,
+                openHour: new Date(parseInt(item.openHour, 10)),
+                closeHour: new Date(parseInt(item.closeHour, 10)),
+                allday: item.allday
               });
-            });
-          }
-
-          // Checking out Exception Dates...
-          if (data.listingExceptionDates) {
-            // Updating Availabilities API...
-            await axios.post(config.availabilitiesAPI, {
-              listingId: data.listingId.toString(),
-              blockedDates: data.listingExceptionDates
-            });
-          }
-
-          // Checking out Listing Rules...
-          if (data.listingRules) {
-            await ListingRules.destroy({ where: { listingId: data.listingId } });
-            data.listingRules.map(async item => {
-              await ListingRules.create({
-                listingId: data.listingId,
-                listSettingsId: item
-              });
-            });
-          }
-
-          // Checking out Access Days...
-          if (data.listingAccessDays) {
-            const listingAccessDays: IAccessDaysRequest = data.listingAccessDays;
-            await ListingAccessDays.update({
-              mon: listingAccessDays.mon,
-              tue: listingAccessDays.tue,
-              wed: listingAccessDays.wed,
-              thu: listingAccessDays.thu,
-              fri: listingAccessDays.fri,
-              sat: listingAccessDays.sat,
-              sun: listingAccessDays.sun,
-              all247: listingAccessDays.all247
-            }, { where: { listingId: data.listingId } });
-
-            const accessDayObj: ListingAccessDays | null = await ListingAccessDays.findOne({ where: { listingId: data.listingId } });
-
-            if (accessDayObj) {
-              // Checking out Access Hours...
-              await ListingAccessHours.destroy({ where: { listingAccessDaysId: accessDayObj.id } });
-              for (const item of listingAccessDays.listingAccessHours) {
-                await ListingAccessHours.create({
-                  listingAccessDaysId: accessDayObj.id,
-                  weekday: item.weekday,
-                  openHour: new Date(parseInt(item.openHour, 10)),
-                  closeHour: new Date(parseInt(item.closeHour, 10)),
-                  allday: item.allday
-                });
-              }
             }
           }
-
-          // Finish.
-          res.send(listingObj);
         }
+
+        // Finish.
+        res.send(listingObj);
       } catch (err) {
         console.error(err);
         sequelizeErrorMiddleware(err, req, res, next);
       }
     });
 
+    /**
+     * Publish listing.
+     */
     this.router.put("/listings/:listingId/publish/:status", authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
       const listingId = req.params.listingId;
       try {
@@ -309,9 +307,7 @@ class ListingController {
   async isReadyCheck(listingId: number, title?: string, bookingType?: string, basePrice?: number, listingAccessDays?: any): Promise<boolean> {
     // One photo at least...
     const photosCount = await ListingPhotos.count({ where: { listingId } });
-    if (photosCount <= 0) {
-      return false;
-    }
+    if (photosCount <= 0) return false;
 
     // Title content...
     if (!title) return false;
