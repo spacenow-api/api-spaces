@@ -1,5 +1,5 @@
 import { Router, Request, Response, NextFunction } from "express";
-
+import { format } from 'date-fns';
 import axios from "axios";
 
 import * as config from "../../config";
@@ -110,7 +110,8 @@ class ListingController {
         // Creating listing-data record...
         await ListingData.findOrCreate({ where: { listingId: listingObj.id } });
         // Creating access-days record...
-        await ListingAccessDays.findOrCreate({ where: { listingId: listingObj.id } });
+        const [accessDaysCreated, _] = await ListingAccessDays.findOrCreate({ where: { listingId: listingObj.id } });
+        await this.fillDefaultTimeTable(accessDaysCreated);
         res.send(listingObj);
       } catch (err) {
         console.error(err);
@@ -268,6 +269,20 @@ class ListingController {
         sequelizeErrorMiddleware(err, req, res, next);
       }
     });
+  }
+
+  private async fillDefaultTimeTable(accessDays: ListingAccessDays) {
+    let index: number = 1;
+    while (index < 6) {
+      await ListingAccessHours.create({
+        listingAccessDaysId: accessDays.id,
+        weekday: index,
+        openHour: new Date(`${format(new Date(), 'MM/DD/YYYY')} 08:00`),
+        closeHour: new Date(`${format(new Date(), 'MM/DD/YYYY')} 17:00`),
+        allday: false
+      });
+      index++;
+    }
   }
 
   async isReady(listing: Listing): Promise<boolean> {

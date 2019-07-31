@@ -24,27 +24,27 @@ export class ListingAccessDays extends Model<ListingAccessDays> {
   @Column
   listingId!: number;
 
-  @Default(0)
+  @Default(1)
   @AllowNull(false)
   @Column
   mon!: number;
 
-  @Default(0)
+  @Default(1)
   @AllowNull(false)
   @Column
   tue!: number;
 
-  @Default(0)
+  @Default(1)
   @AllowNull(false)
   @Column
   wed!: number;
 
-  @Default(0)
+  @Default(1)
   @AllowNull(false)
   @Column
   thu!: number;
 
-  @Default(0)
+  @Default(1)
   @AllowNull(false)
   @Column
   fri!: number;
