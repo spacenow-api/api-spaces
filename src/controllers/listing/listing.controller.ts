@@ -282,15 +282,15 @@ class ListingController {
   }
 
   private async fillDefaultTimeTable(accessDays: ListingAccessDays) {
-    const openHour: Date = new Date(`${format(new Date(), 'YYYY-MM-DD')}T08:00`);
-    const closeHour: Date = new Date(`${format(new Date(), 'YYYY-MM-DD')}T17:00`);
+    const openHour = new Date(`${format(new Date(), 'YYYY-MM-DD')}T22:00`);
+    const closeHour = new Date(`${format(new Date(), 'YYYY-MM-DD')}T07:00`);
     let index: number = 1;
     while (index < 6) {
       await ListingAccessHours.create({
         listingAccessDaysId: accessDays.id,
         weekday: index,
-        openHour: new Date(openHour.toUTCString()),
-        closeHour: new Date(closeHour.toUTCString()),
+        openHour: openHour,
+        closeHour: closeHour,
         allday: false
       });
       index++;
