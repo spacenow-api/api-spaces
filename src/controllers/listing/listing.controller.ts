@@ -126,6 +126,9 @@ class ListingController {
         const listingObj: Listing | null = await Listing.findOne({ where: { id: data.listingId } });
         if (!listingObj) throw new HttpException(400, `Listing ${data.listingId} not found.`);
 
+        // User Validation...
+        this.onlyOwner(req, listingObj);
+
         // Updating isReady rule...
         let accessDaysToValidate: any = data.listingAccessDays;
         if (!accessDaysToValidate) {
@@ -272,6 +275,12 @@ class ListingController {
     });
   }
 
+  private onlyOwner(req: Request, listingObj: Listing) {
+    const loggedUser: string | undefined = req.userIdDecoded;
+    if (!loggedUser || (loggedUser !== listingObj.userId))
+      throw new HttpException(403, `Space ${listingObj.id} does not belong to user ${loggedUser}.`);
+  }
+
   private async fillDefaultTimeTable(accessDays: ListingAccessDays) {
     let index: number = 1;
     while (index < 6) {
@@ -295,9 +304,11 @@ class ListingController {
     const basePrice = listingDataObj.basePrice;
 
     const accessDayObj: ListingAccessDays | null = await ListingAccessDays.findOne({ where: { listingId: listing.id } });
-    if (!listingDataObj)
+    if (!accessDayObj)
       throw new HttpException(400, `Listing ${listingId} does not have an 'Access Days' associated.`);
-    const listingAccessDay = accessDayObj;
+    const listingAccessDay: any = accessDayObj;
+    const accessHoursToValidate = await ListingAccessHours.findAll({ where: { listingAccessDaysId: listingAccessDay.id } });
+    listingAccessDay.listingAccessHours = accessHoursToValidate;
 
     const title = listing.title;
     const bookingType = listing.bookingType;
