@@ -287,8 +287,8 @@ class ListingController {
       await ListingAccessHours.create({
         listingAccessDaysId: accessDays.id,
         weekday: index,
-        openHour: new Date().setHours(8, 0, 0),
-        closeHour: new Date().setHours(17, 0, 0),
+        openHour: new Date(`${format(new Date(), 'YYYY-MM-DD')}T08:00`),
+        closeHour: new Date(`${format(new Date(), 'YYYY-MM-DD')}T17:00`),
         allday: false
       });
       index++;
