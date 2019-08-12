@@ -9,7 +9,7 @@ export const PORT = process.env.PORT ? parseInt(process.env.PORT) : 6002;
 export const dbSchema = process.env.DATABASE_SCHEMA;
 export const dbUsername = process.env.DATABASE_USERNAME;
 export const dbPassword = process.env.DATABASE_PASSWORD;
-export const dbHost = process.env.DATABASE_HOST;
+export const dbHost = process.env.DATABASE_ENDPOINT;
 
 // API Bookings
 export const availabilitiesAPI =

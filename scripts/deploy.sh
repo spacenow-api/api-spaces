@@ -35,7 +35,7 @@ echo "Getting SSM Parameters "
 
 DB_USERNAME=$(get_ssm_parameter /$2/SPACENOW/DATABASE_USER)
 DB_PASSWORD=$(get_ssm_parameter /rds/spacenow/mysql/MasterUserPassword)
-DB_HOST=$(get_ssm_parameter /$2/SPACENOW/DATABASE_HOST)
+DB_HOST=$(get_ssm_parameter /$2/SPACENOW/DATABASE_ENDPOINT)
 DB_SCHEMA=$(get_ssm_parameter /$2/SPACENOW/DATABASE_SCHEMA)
 JWT_SECRET=$(get_ssm_parameter /$2/SPACENOW/JWT_SECRET)
 USERS_API_HOST=$(get_ssm_parameter /$2/SPACENOW/USERS_API_HOST)
