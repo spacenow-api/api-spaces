@@ -208,7 +208,7 @@ Resources:
               Value: !Ref DbUser
             - Name: DATABASE_PASSWORD
               Value: !Ref DbPassword
-            - Name: DATABASE_ENDPOINT
+            - Name: DATABASE_HOST
               Value: !Ref DbHost
             - Name: DATABASE_SCHEMA
               Value: !Ref DbSchema
