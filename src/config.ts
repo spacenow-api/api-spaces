@@ -16,5 +16,5 @@ export const availabilitiesAPI =
   process.env.API_AVAILABILITIES ||
   "https://api-availabilities.sandpit.cloud.spacenow.com/availabilities";
 
-export const USERS_AUTHENTICATION_API_HOST =
-  process.env.USERS_AUTHENTICATION_API_HOST || "http://localhost:6001";
+export const USERS_API_HOST =
+  process.env.USERS_API_HOST || "http://localhost:6001";

@@ -100,7 +100,7 @@ Parameters:
     Default: ""
     NoEcho: true
   UsersApiHost:
-    Description: "USERS_AUTHENTICATION_API_HOST"
+    Description: "USERS_API_HOST"
     Type: String
     Default: ""
     NoEcho: true
@@ -214,7 +214,7 @@ Resources:
               Value: !Ref DbSchema
             - Name: JWT_SECRET
               Value: !Ref JwtSecret
-            - Name: USERS_AUTHENTICATION_API_HOST
+            - Name: USERS_API_HOST
               Value: !Ref UsersApiHost
 
           LogConfiguration:
