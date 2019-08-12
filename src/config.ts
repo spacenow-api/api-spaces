@@ -3,7 +3,7 @@ dotenv.config();
 
 export const DEBUG = process.env.DEBUG ? /true/i.test(process.env.DEBUG) : false;
 
-export const PORT = process.env.PORT ? parseInt(process.env.PORT) : 6002;
+export const PORT = 6002;
 
 // Database Parameters
 export const dbSchema = process.env.DATABASE_SCHEMA;
