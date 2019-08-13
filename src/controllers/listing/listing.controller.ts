@@ -73,7 +73,7 @@ class ListingController {
     });
 
     /**
-     * Get all rules from sub-category ID
+     * Get all Access Types for a Listing.
      */
     this.router.get(`/listings/fetch/accesstypes`, authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
       try {
