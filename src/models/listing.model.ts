@@ -8,11 +8,15 @@ import {
   PrimaryKey,
   AllowNull,
   Default,
-  DataType
-} from 'sequelize-typescript';
+  DataType,
+  BelongsTo,
+  ForeignKey
+} from "sequelize-typescript";
+
+import { Location } from "./";
 
 @Table({
-  tableName: 'Listing'
+  tableName: "Listing"
 })
 export class Listing extends Model<Listing> {
   @PrimaryKey
@@ -21,6 +25,7 @@ export class Listing extends Model<Listing> {
   @Column
   id!: number;
 
+  @ForeignKey(() => Location)
   @Column
   locationId?: number;
 
@@ -113,8 +118,8 @@ export class Listing extends Model<Listing> {
   coverPhoto?: number;
 
   @AllowNull(false)
-  @Default('instant')
-  @Column(DataType.ENUM('instant', 'request'))
+  @Default("instant")
+  @Column(DataType.ENUM("instant", "request"))
   bookingType!: string;
 
   @AllowNull(false)
@@ -134,7 +139,10 @@ export class Listing extends Model<Listing> {
   @Column
   quantity?: number;
 
-  @Default('active')
-  @Column(DataType.ENUM('active', 'deleted'))
+  @Default("active")
+  @Column(DataType.ENUM("active", "deleted"))
   status?: string;
+
+  @BelongsTo(() => Location)
+  location!: Location;
 }

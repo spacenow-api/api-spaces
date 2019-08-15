@@ -6,11 +6,13 @@ import {
   CreatedAt,
   UpdatedAt,
   PrimaryKey,
-  AllowNull
-} from 'sequelize-typescript';
+  AllowNull,
+  HasMany
+} from "sequelize-typescript";
+import { Listing } from "./";
 
 @Table({
-  tableName: 'Location'
+  tableName: "Location"
 })
 export class Location extends Model<Location> {
   @PrimaryKey
@@ -57,4 +59,7 @@ export class Location extends Model<Location> {
   @UpdatedAt
   @Column
   updatedAt?: Date;
+
+  @HasMany(() => Listing)
+  listing!: Listing[];
 }
