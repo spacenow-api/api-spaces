@@ -28,35 +28,45 @@ import {
 } from "../../interfaces/listing.interface";
 
 class ListingController {
+
+  private path = '/listings'
   private router = Router();
 
   constructor() {
     this.intializeRoutes();
   }
 
-  private intializeRoutes() {
-    /**
-     * Get listing by ID.
-     */
-    this.router.get(`/listings/:id`, authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
-      const listingId = req.params.id;
-      try {
-        const where: { id: number;[key: string]: any } = { id: listingId };
-        const { isPublished } = req.query;
-        if (isPublished) {
-          where.isPublished = isPublished === "true";
-        }
-        const listingObj: Listing | null = await Listing.findOne({ where });
-        if (!listingObj) {
-          throw new HttpException(400, `Listing ${listingId} not found.`);
-        }
-        res.send(listingObj);
-      } catch (err) {
-        console.error(err);
-        sequelizeErrorMiddleware(err, req, res, next);
+  /**
+   * Get listing by ID.
+   */
+  private getListingById = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const listingId = req.params.id;
+    try {
+      const where: { id: number;[key: string]: any } = { id: listingId };
+      const { isPublished } = req.query;
+      if (isPublished) {
+        where.isPublished = isPublished === "true";
       }
-    });
+      const listingObj: Listing | null = await Listing.findOne({ where });
+      if (!listingObj) {
+        throw new HttpException(400, `Listing ${listingId} not found.`);
+      }
+      res.send(listingObj);
+    } catch (err) {
+      console.error(err);
+      sequelizeErrorMiddleware(err, req, res, next);
+    }
+  };
+    
+  private intializeRoutes() { 
+    this.router.get(`/listings/:id`, authMiddleware, this.getListingById)
+    this.router.get(`/listings/public/:id`, this.getListingById)
 
+  
     /**
      * Get listing data by listing ID.
      */
@@ -73,7 +83,7 @@ class ListingController {
     });
 
     /**
-     * Get all rules from sub-category ID
+     * Get all Access Types for a Listing.
      */
     this.router.get(`/listings/fetch/accesstypes`, authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
       try {
@@ -273,6 +283,7 @@ class ListingController {
         sequelizeErrorMiddleware(err, req, res, next);
       }
     });
+  
   }
 
   private onlyOwner(req: Request, listingObj: Listing) {
@@ -348,6 +359,7 @@ class ListingController {
       })
     return !(aWrongPeriod.length > 0);
   }
+  
 }
 
 export default ListingController;
