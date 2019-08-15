@@ -16,7 +16,7 @@ class ListingAmenitiesController {
     /**
      * Get listing Amenities by listing ID.
      */
-    this.router.get(`/listings/amenities/:listingId`, authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
+    this.router.get(`/listings/amenities/:listingId`, async (req: Request, res: Response, next: NextFunction) => {
       try {
         const amenitiesArray: Array<ListingAmenities> = await ListingAmenities.findAll({
           where: { listingId: req.params.listingId },

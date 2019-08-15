@@ -16,7 +16,7 @@ class ListingRulesController {
     /**
      * Get listing Rules by listing ID.
      */
-    this.router.get(`/listings/rules/:listingId`, authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
+    this.router.get(`/listings/rules/:listingId`, async (req: Request, res: Response, next: NextFunction) => {
       try {
         const rulesArray: Array<ListingRules> = await ListingRules.findAll({
           where: { listingId: req.params.listingId },

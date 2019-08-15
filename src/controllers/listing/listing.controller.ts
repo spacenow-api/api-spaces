@@ -68,9 +68,10 @@ class ListingController {
 
   
     /**
+     * 
      * Get listing data by listing ID.
      */
-    this.router.get(`/listings/data/:listingId`, authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
+    this.router.get(`/listings/data/:listingId`, async (req: Request, res: Response, next: NextFunction) => {
       try {
         const listingDataObj: ListingData | null = await ListingData.findOne({
           where: { listingId: req.params.listingId }

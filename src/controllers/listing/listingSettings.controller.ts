@@ -17,7 +17,7 @@ class ListingSettingsController {
     /**
      * Get list settings by listing id.
      */
-    this.router.get(`/listings/settings/:listingId`, authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
+    this.router.get(`/listings/settings/:listingId`, async (req: Request, res: Response, next: NextFunction) => {
       try {
         const listingObj: Listing | null = await Listing.findOne({
           where: { id: req.params.listingId },

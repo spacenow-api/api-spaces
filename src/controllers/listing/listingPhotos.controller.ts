@@ -18,7 +18,6 @@ class ListingPhotosController {
 		 */
 		this.router.get(
 			`/listings/photos/:listingId`,
-			authMiddleware,
 			async (req: Request, res: Response, next: NextFunction) => {
 				try {
 					const photosArray: Array<ListingPhotos> = await ListingPhotos.findAll(

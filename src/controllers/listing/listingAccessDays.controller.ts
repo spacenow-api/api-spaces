@@ -17,7 +17,7 @@ class ListingAccessDaysController {
     /**
      * Get listing Access Days and Hours by listing ID.
      */
-    this.router.get(`/listings/access/:listingId`, authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
+    this.router.get(`/listings/access/:listingId`, async (req: Request, res: Response, next: NextFunction) => {
       try {
         const daysObj: ListingAccessDays | null = await ListingAccessDays.findOne(
           {
