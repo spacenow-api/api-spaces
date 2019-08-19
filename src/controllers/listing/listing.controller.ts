@@ -44,7 +44,7 @@ class ListingController {
     res: Response,
     next: NextFunction
   ) => {
-    const listingId = req.params.id;
+    const listingId = <number><unknown>req.params.id;
     try {
       const where: { id: number;[key: string]: any } = { id: listingId };
       const { isPublished } = req.query;
