@@ -1,0 +1,17 @@
+{
+  "dev": {
+    "username": {
+      "ENV": "DATABASE_USERNAME"
+    },
+    "password": {
+      "ENV": "DATABASE_PASSWORD"
+    },
+    "database": {
+      "ENV": "DATABASE_SCHEMA"
+    },
+    "host": {
+      "ENV": "DATABASE_HOST"
+    },
+    "driver": "mysql"
+  }
+}
