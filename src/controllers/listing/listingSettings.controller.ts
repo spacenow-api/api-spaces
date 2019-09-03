@@ -58,7 +58,7 @@ class ListingSettingsController {
     /**
      * Get all specifications from sub-category ID
      */
-    this.router.get(`/listings/settings/specifications/:listSettingsParentId`, authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
+    this.router.get(`/listings/settings/specifications/:listSettingsParentId`, async (req: Request, res: Response, next: NextFunction) => {
       try {
         const specificationsArray: Array<SubcategorySpecifications> = await SubcategorySpecifications.findAll({
           where: { listSettingsParentId: req.params.listSettingsParentId },

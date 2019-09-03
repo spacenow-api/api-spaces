@@ -86,7 +86,7 @@ class ListingController {
     /**
      * Get all Access Types for a Listing.
      */
-    this.router.get(`/listings/fetch/accesstypes`, authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
+    this.router.get(`/listings/fetch/accesstypes`, async (req: Request, res: Response, next: NextFunction) => {
       try {
         const result: Array<ListSettings> = await ListSettings.findAll({ where: { typeId: 113 } });
         res.send(result);
