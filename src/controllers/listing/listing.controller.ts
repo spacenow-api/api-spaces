@@ -1,6 +1,7 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { format } from 'date-fns';
 import axios from "axios";
+import Sequelize from 'sequelize';
 
 import * as config from "../../config";
 
@@ -68,7 +69,26 @@ class ListingController {
 
   
     /**
-     * 
+     * Get three letter listings created for a specific 'State' eq. NSW.
+     */
+    this.router.get(`/listings/letter/state/:state`, authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
+      const state: string = req.params.state;
+      try {
+        const locationsArray: Array<Location> | null = await Location.findAll({ where: { state }, attributes: ['id'] });
+        const locationsID: Array<number> = locationsArray.map(o => o.id);
+        const listingsArray: Array<Listing> | null = await Listing.findAll({
+          where: { locationId: { [Sequelize.Op.in]: locationsID }, isPublished: true },
+          order: [['createdAt', 'DESC']],
+          limit: 3
+        });
+        res.send(listingsArray);
+      } catch (err) {
+        console.error(err);
+        sequelizeErrorMiddleware(err, req, res, next);
+      }
+    });
+
+    /**
      * Get listing data by listing ID.
      */
     this.router.get(`/listings/data/:listingId`, async (req: Request, res: Response, next: NextFunction) => {
