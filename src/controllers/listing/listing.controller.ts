@@ -71,8 +71,12 @@ class ListingController {
     next: NextFunction
   ) => {
     const userId = <string>(<unknown>req.params.userId);
+    const status = "active";
     try {
-      const where: { userId: string; [key: string]: any } = { userId };
+      const where: { userId: string; status: string; [key: string]: any } = {
+        userId,
+        status
+      };
       const results: {
         rows: Listing[];
         count: number;
