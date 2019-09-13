@@ -94,58 +94,7 @@ jobs:
             source scripts/assume-role.sh
             ./scripts/deploy.sh $AWS_DEFAULT_REGION ${TARGET_ENV} ${FULL_IMAGE_NAME} ${APP_SLICE}
           no_output_timeout: 15m
-  deploy-qa:
-    docker:
-      - image: circleci/python:3.6.1
-    environment:
-      AWS_DEFAULT_OUTPUT: json
-      TARGET_ENV: NONPROD
-      STACK_NAME: ${CIRCLE_BRANCH}
-    steps:
-      - setup_remote_docker
-      - attach_workspace:
-          at: .
-      - restore_cache:
-          key: v1-awscli
-      - run:
-          name: Install awscli
-          command: |
-            python3 -m venv venv
-            . venv/bin/activate
-            pip install awscli
-      - save_cache:
-          key: v1-awscli
-          paths:
-            - "venv"
-      - run:
-          name: Load image
-          command: |
-            docker load --input docker-image/image.tar
-      - run:
-          name: Setup common environment variables
-          command: |
-            echo 'export ECR_REPOSITORY_NAME="${AWS_RESOURCE_NAME_PREFIX}"' >> $BASH_ENV
-            echo 'export APP_SLICE="$(echo ${CIRCLE_BRANCH} | tr -dc '[:alnum:]\n\r' | tr '[:upper:]' '[:lower:]' )"' >> $BASH_ENV
-            echo 'export IMAGE_TAG="${APP_SLICE}-$(echo $CIRCLE_SHA1 | cut -c -7)"' >> $BASH_ENV
-            echo 'export FULL_IMAGE_NAME="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${ECR_REPOSITORY_NAME}:${IMAGE_TAG}"' >> $BASH_ENV
-      - run:
-          name: Push image
-          command: |
-            . venv/bin/activate
-            eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
-            docker push ${FULL_IMAGE_NAME}
-            if [ "${CIRCLE_BRANCH}" = "master" ]; then
-              docker tag  ${FULL_IMAGE_NAME} "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${ECR_REPOSITORY_NAME}:latest"
-              docker push "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${ECR_REPOSITORY_NAME}:latest"
-            fi
-      - run:
-          name: Deploy
-          command: |
-            . venv/bin/activate
-            export ACCOUNT_ID=211853473677
-            source scripts/assume-role.sh
-            ./scripts/deploy.sh $AWS_DEFAULT_REGION ${TARGET_ENV} ${FULL_IMAGE_NAME} ${APP_SLICE}
-          no_output_timeout: 15m
+
   deploy-prod:
     docker:
       - image: circleci/python:3.6.1
@@ -210,25 +159,10 @@ workflows:
       - deploy-dev:
           requires:
             - build
-      - qa-approval:
-          type: approval
-          requires:
-            - deploy-dev
-          filters:
-            branches:
-              only:
-                - master
-      - deploy-qa:
-          requires:
-            - qa-approval
-          filters:
-            branches:
-              only:
-                - master
       - prod-approval:
           type: approval
           requires:
-            - deploy-qa
+            - deploy-dev
           filters:
             branches:
               only:
