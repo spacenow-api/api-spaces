@@ -46,7 +46,7 @@ class ListingController {
   ) => {
     const listingId = <number>(<unknown>req.params.id);
     try {
-      const where: { id: number; [key: string]: any } = { id: listingId };
+      const where: { id: number;[key: string]: any } = { id: listingId };
       const { isPublished } = req.query;
       if (isPublished) {
         where.isPublished = isPublished === "true";
@@ -73,7 +73,7 @@ class ListingController {
     const userId = <string>(<unknown>req.params.userId);
     const status = "active";
     try {
-      const where: { userId: string; status: string; [key: string]: any } = {
+      const where: { userId: string; status: string;[key: string]: any } = {
         userId,
         status
       };
@@ -369,6 +369,20 @@ class ListingController {
         }
       }
     );
+
+    this.router.delete("/listings/:listingId", authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const listingId = req.params.listingId;
+        const listingObj = await Listing.findOne({ where: { id: listingId } })
+        if (!listingObj) throw new HttpException(400, `Listing ${listingId} not found.`);
+        this.onlyOwner(req, listingObj);
+        await Listing.update({ status: 'deleted', isPublished: false }, { where: { id: listingId } })
+        res.end();
+      } catch (err) {
+        console.error(err);
+        sequelizeErrorMiddleware(err, req, res, next);
+      }
+    });
 
     /**
      * Publish listing.
