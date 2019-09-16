@@ -377,7 +377,7 @@ class ListingController {
         if (!listingObj) throw new HttpException(400, `Listing ${listingId} not found.`);
         this.onlyOwner(req, listingObj);
         await Listing.update({ status: 'deleted', isPublished: false }, { where: { id: listingId } })
-        res.end();
+        res.send({ status: 'OK' });
       } catch (err) {
         console.error(err);
         sequelizeErrorMiddleware(err, req, res, next);
