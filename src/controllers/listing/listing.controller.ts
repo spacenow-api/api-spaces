@@ -80,7 +80,7 @@ class ListingController {
       const results: {
         rows: Listing[];
         count: number;
-      } | null = await Listing.findAndCountAll({ where });
+      } | null = await Listing.findAndCountAll({ where, order: [['updatedAt', 'DESC']] });
       res.send(results);
     } catch (err) {
       console.error(err);
