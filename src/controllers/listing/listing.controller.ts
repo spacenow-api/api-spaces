@@ -20,7 +20,8 @@ import {
   ListingRules,
   ListingPhotos,
   ListSettings,
-  ListSettingsParent
+  ListSettingsParent,
+  UserProfile
 } from "../../models";
 
 import {
@@ -147,6 +148,11 @@ class ListingController {
           const listingsObj = await Listing.findAndCountAll({
             attributes: ["id", "title", "bookingPeriod"],
             include: [
+              {
+                model: UserProfile,
+                as: "host",
+                attributes: ["firstName", "lastName", "picture"]
+              },
               {
                 model: Location,
                 as: "location",

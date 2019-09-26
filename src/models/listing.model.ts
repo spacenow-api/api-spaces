@@ -15,7 +15,13 @@ import {
   HasMany
 } from "sequelize-typescript";
 
-import { Location, ListingData, ListingPhotos, ListSettingsParent } from "./";
+import {
+  Location,
+  ListingData,
+  ListingPhotos,
+  ListSettingsParent,
+  UserProfile
+} from "./";
 
 @Table({
   tableName: "Listing"
@@ -31,6 +37,7 @@ export class Listing extends Model<Listing> {
   @Column
   locationId?: number;
 
+  @ForeignKey(() => UserProfile)
   @AllowNull(false)
   @Column
   userId!: string;
@@ -151,6 +158,9 @@ export class Listing extends Model<Listing> {
 
   @HasOne(() => ListingData)
   listingData!: ListingData;
+
+  @BelongsTo(() => UserProfile)
+  host!: UserProfile;
 
   @HasMany(() => ListingPhotos)
   listingPhotos!: ListingPhotos;
