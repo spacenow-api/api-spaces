@@ -8,11 +8,15 @@ import {
   PrimaryKey,
   AllowNull,
   Default,
-  DataType
-} from 'sequelize-typescript';
+  DataType,
+  BelongsTo,
+  ForeignKey
+} from "sequelize-typescript";
+
+import { Listing } from "./";
 
 @Table({
-  tableName: 'ListingData'
+  tableName: "ListingData"
 })
 export class ListingData extends Model<ListingData> {
   @PrimaryKey
@@ -21,6 +25,7 @@ export class ListingData extends Model<ListingData> {
   @Column
   id!: number;
 
+  @ForeignKey(() => Listing)
   @Column
   listingId?: number;
 
@@ -30,12 +35,12 @@ export class ListingData extends Model<ListingData> {
   @Column
   bookingNoticeTime?: string;
 
-  @Default('Flexible')
+  @Default("Flexible")
   @AllowNull(false)
   @Column
   checkInStart?: string;
 
-  @Default('Flexible')
+  @Default("Flexible")
   @AllowNull(false)
   @Column
   checkInEnd?: string;
@@ -77,15 +82,15 @@ export class ListingData extends Model<ListingData> {
   cleaningPrice?: number;
 
   @AllowNull(false)
-  @Default('unavailable')
+  @Default("unavailable")
   @Column(
     DataType.ENUM(
-      'unavailable',
-      '3months',
-      '6months',
-      '9months',
-      '12months',
-      'available'
+      "unavailable",
+      "3months",
+      "6months",
+      "9months",
+      "12months",
+      "available"
     )
   )
   maxDaysNotice?: string;
@@ -127,19 +132,22 @@ export class ListingData extends Model<ListingData> {
   @Column
   ListingDatacol?: string;
 
-  @Column(DataType.ENUM('Small', 'Medium', 'Large'))
+  @Column(DataType.ENUM("Small", "Medium", "Large"))
   sizeOfVehicle?: string;
 
   @Column
   maxEntranceHeight?: string;
 
-  @Column(DataType.ENUM('Cover', 'Undercover'))
+  @Column(DataType.ENUM("Cover", "Undercover"))
   spaceType?: string;
 
-  @Default('instant')
-  @Column(DataType.ENUM('request', 'instant'))
+  @Default("instant")
+  @Column(DataType.ENUM("request", "instant"))
   bookingType?: string;
 
   @Column
   accessType?: string;
+
+  @BelongsTo(() => Listing)
+  listing!: Listing;
 }

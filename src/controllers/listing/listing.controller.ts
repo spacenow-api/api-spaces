@@ -19,7 +19,8 @@ import {
   ListingAccessHours,
   ListingRules,
   ListingPhotos,
-  ListSettings
+  ListSettings,
+  ListSettingsParent
 } from "../../models";
 
 import {
@@ -27,6 +28,8 @@ import {
   IUpdateRequest,
   IAccessDaysRequest
 } from "../../interfaces/listing.interface";
+
+const Op = Sequelize.Op;
 
 class ListingController {
   private path = "/listings";
@@ -46,7 +49,7 @@ class ListingController {
   ) => {
     const listingId = <number>(<unknown>req.params.id);
     try {
-      const where: { id: number;[key: string]: any } = { id: listingId };
+      const where: { id: number; [key: string]: any } = { id: listingId };
       const { isPublished } = req.query;
       if (isPublished) {
         where.isPublished = isPublished === "true";
@@ -71,16 +74,19 @@ class ListingController {
     next: NextFunction
   ) => {
     const userId = <string>(<unknown>req.params.userId);
-    const status = "active";
+    const status = "deleted";
     try {
-      const where: { userId: string; status: string;[key: string]: any } = {
+      const where: { userId: string; status: any; [key: string]: any } = {
         userId,
-        status
+        status: { [Op.not]: status }
       };
       const results: {
         rows: Listing[];
         count: number;
-      } | null = await Listing.findAndCountAll({ where, order: [['updatedAt', 'DESC']] });
+      } | null = await Listing.findAndCountAll({
+        where,
+        order: [["updatedAt", "DESC"]]
+      });
       res.send(results);
     } catch (err) {
       console.error(err);
@@ -96,35 +102,6 @@ class ListingController {
       this.getAllListingsByUser
     );
     this.router.get(`/listings/public/:id`, this.getListingById);
-
-    /**
-     * Get three letter listings created for a specific 'State' eq. NSW.
-     */
-    this.router.get(
-      `/listings/letter/state/:state`,
-      authMiddleware,
-      async (req: Request, res: Response, next: NextFunction) => {
-        const state: string = req.params.state;
-        try {
-          const locationsArray: Array<Location> | null = await Location.findAll(
-            { where: { state }, attributes: ["id"] }
-          );
-          const locationsID: Array<number> = locationsArray.map(o => o.id);
-          const listingsArray: Array<Listing> | null = await Listing.findAll({
-            where: {
-              locationId: { [Sequelize.Op.in]: locationsID },
-              isPublished: true
-            },
-            order: [["createdAt", "DESC"]],
-            limit: 3
-          });
-          res.send(listingsArray);
-        } catch (err) {
-          console.error(err);
-          sequelizeErrorMiddleware(err, req, res, next);
-        }
-      }
-    );
 
     /**
      * Get listing data by listing ID.
@@ -157,6 +134,67 @@ class ListingController {
           res.send(result);
         } catch (err) {
           console.error(err);
+          sequelizeErrorMiddleware(err, req, res, next);
+        }
+      }
+    );
+
+    this.router.get(
+      "/listings/public/mulitple/ids",
+      async (req: Request, res: Response, next: NextFunction) => {
+        const data = req.body;
+        try {
+          const listingsObj = await Listing.findAndCountAll({
+            attributes: ["id", "title", "bookingPeriod"],
+            include: [
+              {
+                model: Location,
+                as: "location",
+                attributes: ["country", "city", "state"]
+              },
+              {
+                model: ListingData,
+                as: "listingData",
+                attributes: [
+                  "basePrice",
+                  "currency",
+                  "capacity",
+                  "size",
+                  "meetingRooms",
+                  "isFurnished",
+                  "carSpace",
+                  "bookingType",
+                  "accessType"
+                ]
+              },
+              {
+                model: ListingPhotos,
+                as: "listingPhotos",
+                attributes: ["name"],
+                limit: 1
+              },
+              {
+                model: ListSettingsParent,
+                as: "listingSettings",
+                attributes: ["id"],
+                include: [
+                  {
+                    model: ListSettings,
+                    as: "category",
+                    attributes: ["itemName"]
+                  },
+                  {
+                    model: ListSettings,
+                    as: "subcategory",
+                    attributes: ["itemName"]
+                  }
+                ]
+              }
+            ],
+            where: { id: data.ids }
+          });
+          res.send(listingsObj);
+        } catch (err) {
           sequelizeErrorMiddleware(err, req, res, next);
         }
       }
@@ -370,19 +408,29 @@ class ListingController {
       }
     );
 
-    this.router.delete("/listings/:listingId", authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
-      try {
-        const listingId = req.params.listingId;
-        const listingObj = await Listing.findOne({ where: { id: listingId } })
-        if (!listingObj) throw new HttpException(400, `Listing ${listingId} not found.`);
-        this.onlyOwner(req, listingObj);
-        await Listing.update({ status: 'deleted', isPublished: false }, { where: { id: listingId } })
-        res.send({ status: 'OK' });
-      } catch (err) {
-        console.error(err);
-        sequelizeErrorMiddleware(err, req, res, next);
+    this.router.delete(
+      "/listings/:listingId",
+      authMiddleware,
+      async (req: Request, res: Response, next: NextFunction) => {
+        try {
+          const listingId = req.params.listingId;
+          const listingObj = await Listing.findOne({
+            where: { id: listingId }
+          });
+          if (!listingObj)
+            throw new HttpException(400, `Listing ${listingId} not found.`);
+          this.onlyOwner(req, listingObj);
+          await Listing.update(
+            { status: "deleted", isPublished: false },
+            { where: { id: listingId } }
+          );
+          res.send({ status: "OK" });
+        } catch (err) {
+          console.error(err);
+          sequelizeErrorMiddleware(err, req, res, next);
+        }
       }
-    });
+    );
 
     /**
      * Publish listing.
@@ -422,6 +470,35 @@ class ListingController {
             where: { id: listingId }
           });
           res.send(listingUpdated);
+        } catch (err) {
+          console.error(err);
+          sequelizeErrorMiddleware(err, req, res, next);
+        }
+      }
+    );
+
+    /**
+     * Creating a new listing as a draft only with basic informations.
+     */
+    this.router.put(
+      "/listings/claim/:listingId",
+      async (req: Request, res: Response, next: NextFunction) => {
+        const listingId = req.params.listingId;
+        try {
+          if (!listingId)
+            throw new HttpException(400, "A Listing must be provided.");
+          const listingObj: Listing | null = await Listing.findOne({
+            where: { id: listingId }
+          });
+          if (!listingObj)
+            throw new HttpException(400, "A Listgin must be provided.");
+          // Updating listing record...
+          await Listing.update(
+            { status: "claimed" },
+            { where: { id: listingId } }
+          );
+
+          res.send(listingObj);
         } catch (err) {
           console.error(err);
           sequelizeErrorMiddleware(err, req, res, next);

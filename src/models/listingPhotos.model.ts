@@ -7,11 +7,15 @@ import {
   UpdatedAt,
   PrimaryKey,
   AllowNull,
-  Default
-} from 'sequelize-typescript';
+  Default,
+  BelongsTo,
+  ForeignKey
+} from "sequelize-typescript";
+
+import { Listing } from "./";
 
 @Table({
-  tableName: 'ListingPhotos'
+  tableName: "ListingPhotos"
 })
 export class ListingPhotos extends Model<ListingPhotos> {
   @PrimaryKey
@@ -20,6 +24,7 @@ export class ListingPhotos extends Model<ListingPhotos> {
   @Column
   id!: number;
 
+  @ForeignKey(() => Listing)
   @AllowNull(false)
   @Column
   listingId!: number;
@@ -57,4 +62,7 @@ export class ListingPhotos extends Model<ListingPhotos> {
   @AllowNull(false)
   @Column
   updatedAt!: Date;
+
+  @BelongsTo(() => Listing)
+  listing!: Listing;
 }

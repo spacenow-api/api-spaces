@@ -8,11 +8,14 @@ import {
   PrimaryKey,
   AllowNull,
   Default,
-  DataType
-} from 'sequelize-typescript';
+  DataType,
+  HasMany
+} from "sequelize-typescript";
+
+import { ListSettingsParent } from "./";
 
 @Table({
-  tableName: 'ListSettings'
+  tableName: "ListSettings"
 })
 export class ListSettings extends Model<ListSettings> {
   @PrimaryKey
@@ -49,7 +52,7 @@ export class ListSettings extends Model<ListSettings> {
   @Column
   step?: string;
 
-  @Default('1')
+  @Default("1")
   @Column
   isEnable?: string;
 
@@ -75,4 +78,7 @@ export class ListSettings extends Model<ListSettings> {
 
   @Column
   specData?: string;
+
+  @HasMany(() => ListSettingsParent)
+  listSettingsParent!: ListSettingsParent[];
 }

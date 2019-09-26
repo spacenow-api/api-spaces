@@ -10,10 +10,12 @@ import {
   Default,
   DataType,
   BelongsTo,
-  ForeignKey
+  ForeignKey,
+  HasOne,
+  HasMany
 } from "sequelize-typescript";
 
-import { Location } from "./";
+import { Location, ListingData, ListingPhotos, ListSettingsParent } from "./";
 
 @Table({
   tableName: "Listing"
@@ -33,6 +35,7 @@ export class Listing extends Model<Listing> {
   @Column
   userId!: string;
 
+  @ForeignKey(() => ListSettingsParent)
   @AllowNull(false)
   @Column
   listSettingsParentId!: number;
@@ -140,9 +143,18 @@ export class Listing extends Model<Listing> {
   quantity?: number;
 
   @Default("active")
-  @Column(DataType.ENUM("active", "deleted"))
+  @Column(DataType.ENUM("active", "deleted", "claimed"))
   status?: string;
 
   @BelongsTo(() => Location)
   location!: Location;
+
+  @HasOne(() => ListingData)
+  listingData!: ListingData;
+
+  @HasMany(() => ListingPhotos)
+  listingPhotos!: ListingPhotos;
+
+  @BelongsTo(() => ListSettingsParent)
+  listingSettings!: ListSettingsParent;
 }

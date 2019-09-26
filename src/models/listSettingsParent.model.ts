@@ -8,11 +8,16 @@ import {
   PrimaryKey,
   AllowNull,
   Default,
-  DataType
-} from 'sequelize-typescript';
+  DataType,
+  HasMany,
+  ForeignKey,
+  BelongsTo
+} from "sequelize-typescript";
+
+import { Listing, ListSettings } from "./";
 
 @Table({
-  tableName: 'ListSettingsParent'
+  tableName: "ListSettingsParent"
 })
 export class ListSettingsParent extends Model<ListSettingsParent> {
   @PrimaryKey
@@ -20,11 +25,13 @@ export class ListSettingsParent extends Model<ListSettingsParent> {
   @Column
   id!: number;
 
-  @Default('0')
+  @ForeignKey(() => ListSettings)
+  @Default("0")
   @AllowNull(false)
   @Column
   listSettingsParentId!: number;
 
+  @ForeignKey(() => ListSettings)
   @AllowNull(false)
   @Column
   listSettingsChildId!: number;
@@ -38,4 +45,13 @@ export class ListSettingsParent extends Model<ListSettingsParent> {
   @AllowNull(false)
   @Column
   updatedAt!: Date;
+
+  @HasMany(() => Listing)
+  listing!: Listing[];
+
+  @BelongsTo(() => ListSettings)
+  category!: ListSettings;
+
+  @BelongsTo(() => ListSettings)
+  subcategory!: ListSettings;
 }
