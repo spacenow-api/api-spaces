@@ -67,6 +67,26 @@ class ListingController {
   };
 
   /**
+   * Get listings.
+   */
+  private getAllListings = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const results: {
+        rows: Listing[];
+        count: number;
+      } | null = await Listing.findAndCountAll();
+      res.send(results);
+    } catch (err) {
+      console.error(err);
+      sequelizeErrorMiddleware(err, req, res, next);
+    }
+  };
+
+  /**
    * Get listing by ID.
    */
   private getAllListingsByUser = async (
@@ -102,6 +122,7 @@ class ListingController {
       authMiddleware,
       this.getAllListingsByUser
     );
+    this.router.get(`/listings`, this.getAllListings);
     this.router.get(`/listings/public/:id`, this.getListingById);
 
     /**
