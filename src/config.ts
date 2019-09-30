@@ -14,7 +14,7 @@ export const dbHost = process.env.DATABASE_HOST;
 // API Bookings
 export const availabilitiesAPI =
   process.env.API_AVAILABILITIES ||
-  "https://api-availabilities.sandpit.cloud.spacenow.com/availabilities";
+  "http://localhost:6011/availabilities";
 
 export const USERS_API_HOST =
   process.env.USERS_API_HOST || "http://localhost:6001";
