@@ -40,6 +40,7 @@ DB_SCHEMA=$(get_ssm_parameter /$2/SPACENOW/DATABASE_SCHEMA)
 JWT_SECRET=$(get_ssm_parameter /$2/SPACENOW/JWT_SECRET)
 USERS_API_HOST=$(get_ssm_parameter /$2/SPACENOW/USERS_API_HOST)
 ACM_CERTIFICATE=$(get_ssm_parameter /$2/SPACENOW/ACM_CERTIFICATE)
+API_AVAILABILITIES=$(get_ssm_parameter /$2/SPACENOW/API_AVAILABILITIES)
 echo "ENV ${2}"
 CF_PARAMS="ParameterKey=ImageUrl,ParameterValue=$3 \
           ParameterKey=ContainerPort,ParameterValue=6002 \
@@ -52,6 +53,7 @@ CF_PARAMS="ParameterKey=ImageUrl,ParameterValue=$3 \
           ParameterKey=JwtSecret,ParameterValue=$JWT_SECRET \
           ParameterKey=UsersApiHost,ParameterValue=$USERS_API_HOST \
           ParameterKey=Certificate,ParameterValue=$ACM_CERTIFICATE \
+          ParameterKey=AvailabilitiesApiHost,ParameterValue=$API_AVAILABILITIES \
           ParameterKey=HostedZoneName,ParameterValue=$HostedZoneName"
 echo "Checking if stack exists ..."
 if ! aws cloudformation describe-stacks --region $region --stack-name $stack_name ; then
