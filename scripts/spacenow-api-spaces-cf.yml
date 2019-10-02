@@ -104,6 +104,10 @@ Parameters:
     Type: String
     Default: ""
     NoEcho: true
+  AvailabilitiesApiHost:
+    Description: 'API_AVAILABILITIES'
+    Type: String
+    Default: ''
 Conditions:
   isMaster: !Equals [!Ref SliceName, master]
   isFeature: !Not [Condition: isMaster]
