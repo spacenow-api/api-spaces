@@ -129,7 +129,7 @@ export class Listing extends Model<Listing> {
 
   @AllowNull(false)
   @Default("instant")
-  @Column(DataType.ENUM("instant", "request"))
+  @Column(DataType.ENUM("instant", "request", "poa"))
   bookingType!: string;
 
   @AllowNull(false)
