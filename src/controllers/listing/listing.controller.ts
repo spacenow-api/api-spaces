@@ -313,8 +313,6 @@ class ListingController {
             listingObj.listSettingsParentId
           );
 
-          console.log("IS READY ===>>> ", isReady);
-
           let isPublished: boolean = listingObj.isPublished;
           if (!isReady) isPublished = false;
           const bookingPeriod =
