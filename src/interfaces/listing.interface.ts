@@ -54,4 +54,20 @@ interface IUpdateRequest {
   listingRules?: Array<number>;
 }
 
-export { IDraftRequest, IUpdateRequest, IAccessDaysRequest };
+interface IReviews {
+  id: number;
+  reservationId: number;
+  listId: number;
+  authorId: string;
+  userId: string;
+  reviewContent?: string;
+  rating: number;
+  privateFeedback?: string;
+  parentId?: number;
+  automated?: number;
+  createdAt: Date;
+  updatedAt: Date;
+  isAdmin?: number;
+}
+
+export { IDraftRequest, IUpdateRequest, IAccessDaysRequest, IReviews };
