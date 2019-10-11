@@ -626,7 +626,7 @@ class ListingController {
     if (bookingType != "poa" && (!basePrice || basePrice <= 0)) return false;
 
     // If got one day open for work...
-    if (listingCategory != 20)
+    if (listingCategory != 20 && listingCategory != 26)
       if (!this.isOpenForWork(listingAccessDays)) return false;
 
     return true;
