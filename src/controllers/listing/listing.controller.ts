@@ -303,13 +303,18 @@ class ListingController {
             });
             accessDaysToValidate.listingAccessHours = accessHoursToValidate;
           }
+
           const isReady: boolean = await this.isReadyCheck(
             data.listingId,
             data.title,
             data.bookingType,
             data.basePrice,
-            accessDaysToValidate
+            accessDaysToValidate,
+            listingObj.listSettingsParentId
           );
+
+          console.log("IS READY ===>>> ", isReady);
+
           let isPublished: boolean = listingObj.isPublished;
           if (!isReady) isPublished = false;
           const bookingPeriod =
@@ -563,7 +568,6 @@ class ListingController {
 
   async isReady(listing: Listing): Promise<boolean> {
     const listingId = listing.id;
-    const listingCategory = listing.listSettingsParentId;
 
     const listingDataObj: ListingData | null = await ListingData.findOne({
       where: { listingId: listing.id },
@@ -598,7 +602,7 @@ class ListingController {
       bookingType,
       basePrice,
       listingAccessDay,
-      listingCategory
+      listing.listSettingsParentId
     );
   }
 
@@ -624,13 +628,13 @@ class ListingController {
     if (bookingType != "poa" && (!basePrice || basePrice <= 0)) return false;
 
     // If got one day open for work...
-    if (!this.isOpenForWork(listingAccessDays, listingCategory)) return false;
+    if (listingCategory != 20)
+      if (!this.isOpenForWork(listingAccessDays)) return false;
 
     return true;
   }
 
-  private isOpenForWork(listingAccessDays?: any, listingCategory?: number) {
-    if (listingCategory === 20) return true;
+  private isOpenForWork(listingAccessDays?: any) {
     if (!listingAccessDays) return false;
     const { mon, tue, wed, thu, fri, sat, sun, all247 } = listingAccessDays;
     if (!mon && !tue && !wed && !thu && !fri && !sat && !sun && !all247)
