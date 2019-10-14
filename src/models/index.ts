@@ -13,6 +13,7 @@ import { SubcategorySpecifications } from "./subcategorySpecifications.model";
 import { SubcategoryBookingPeriod } from "./subcategoryBookingPeriod.model";
 import { UserProfile } from "./userProfile.model";
 import { Reviews } from './reviews.model';
+import { Bookings } from './bookings.model';
 
 export {
   Listing,
@@ -29,7 +30,8 @@ export {
   SubcategorySpecifications,
   SubcategoryBookingPeriod,
   UserProfile,
-  Reviews
+  Reviews,
+  Bookings
 };
 
 export const arrayOfModels = [
@@ -47,5 +49,6 @@ export const arrayOfModels = [
   SubcategorySpecifications,
   SubcategoryBookingPeriod,
   UserProfile,
-  Reviews
+  Reviews,
+  Bookings
 ];
