@@ -22,8 +22,7 @@ class ListingReviewsController {
   private getReviewsByListing = async (req: Request, res: Response, next: NextFunction) => {
     const listingId = parseInt(req.params.listingId, 10);
     try {
-      const reviews = await Reviews.findAll({ where: { listId: listingId } });
-      res.send({ count: reviews.length, data: reviews });
+      res.send(await Reviews.findAll({ where: { listId: listingId } }));
     } catch (err) {
       console.error(err)
       sequelizeErrorMiddleware(err, req, res, next)
@@ -48,8 +47,7 @@ class ListingReviewsController {
         privateFeedback: data.privateComment
       };
       await Reviews.create(reviewData);
-      const reviews = await Reviews.findAll({ where: { listId: bookingObj.listingId } });
-      res.send({ count: reviews.length, data: reviews });
+      res.send(await Reviews.findAll({ where: { listId: bookingObj.listingId } }));
     } catch (err) {
       console.error(err)
       sequelizeErrorMiddleware(err, req, res, next)
@@ -65,8 +63,7 @@ class ListingReviewsController {
     if (!userId)
       throw new HttpException(400, 'Authentication token missing exception!');
     try {
-      const reviews = await Reviews.findAll({ where: { listId: listingId, userId: userId } });
-      res.send({ count: reviews.length, data: reviews });
+      res.send(await Reviews.findAll({ where: { listId: listingId, userId: userId } }));
     } catch (err) {
       console.error(err)
       sequelizeErrorMiddleware(err, req, res, next)
