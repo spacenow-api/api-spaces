@@ -31,12 +31,17 @@ class ListingReviewsController {
 
   private createReviewByListing = async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.userIdDecoded;
+    if (!userId)
+      throw new HttpException(400, 'Authentication token missing exception!');
     const bookingId = req.params.bookingId;
     const data = req.body;
     try {
       const bookingObj: Bookings | null = await Bookings.findOne({ where: { bookingId } });
       if (!bookingObj)
         throw new HttpException(400, `Booking ${bookingId} not found.`);
+      const reviewsExisting = await Reviews.findAll({ where: { reservationId: bookingId, authorId: userId } })
+      if (reviewsExisting && reviewsExisting.length > 0)
+        throw new HttpException(400, `FEEDBACK_EXISTING`);
       const reviewData = {
         reservationId: bookingObj.bookingId,
         listId: bookingObj.listingId,
@@ -59,9 +64,9 @@ class ListingReviewsController {
    */
   private getPrivateReviewsByListing = async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.userIdDecoded;
-    const listingId = req.params.listingId;
     if (!userId)
       throw new HttpException(400, 'Authentication token missing exception!');
+    const listingId = req.params.listingId;
     try {
       res.send(await Reviews.findAll({ where: { listId: listingId, userId: userId }, order: [["createdAt", "DESC"]] }));
     } catch (err) {
