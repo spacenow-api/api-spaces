@@ -14,6 +14,7 @@ import {
   tableName: "Reviews"
 })
 export class Reviews extends Model<Reviews> {
+  
   @PrimaryKey
   @AutoIncrement
   @AllowNull(false)
@@ -40,13 +41,39 @@ export class Reviews extends Model<Reviews> {
   @Column
   reviewContent?: string;
 
-  @AllowNull(false)
-  @Column
-  rating!: false;
-
   @AllowNull(true)
   @Column
   privateFeedback?: string;
+
+  @Default(0)
+  @AllowNull(false)
+  @Column
+  ratingOverall!: number;
+
+  @Default(0)
+  @AllowNull(false)
+  @Column
+  ratingCheckIn!: number;
+
+  @Default(0)
+  @AllowNull(false)
+  @Column
+  ratingHost!: number;
+
+  @Default(0)
+  @AllowNull(false)
+  @Column
+  ratingValue!: number;
+
+  @Default(0)
+  @AllowNull(false)
+  @Column
+  ratingCleanliness!: number;
+
+  @Default(0)
+  @AllowNull(false)
+  @Column
+  ratingLocation!: number;
 
   @Default(0)
   @AllowNull(true)
@@ -58,6 +85,11 @@ export class Reviews extends Model<Reviews> {
   @Column
   automated?: number;
 
+  @Default(0)
+  @AllowNull(true)
+  @Column
+  isAdmin?: number;
+
   @AllowNull(false)
   @CreatedAt
   @Column
@@ -67,9 +99,4 @@ export class Reviews extends Model<Reviews> {
   @UpdatedAt
   @Column
   updatedAt!: Date;
-
-  @Default(0)
-  @AllowNull(true)
-  @Column
-  isAdmin?: number;
 }

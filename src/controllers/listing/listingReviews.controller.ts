@@ -48,8 +48,13 @@ class ListingReviewsController {
         authorId: userId,
         userId: bookingObj.hostId,
         reviewContent: data.publicComment,
-        rating: data.rating,
-        privateFeedback: data.privateComment
+        privateFeedback: data.privateComment,
+        ratingOverall: data.ratingOverall,
+        ratingCheckIn: data.ratingCheckIn,
+        ratingHost: data.ratingHost,
+        ratingValue: data.ratingValue,
+        ratingCleanliness: data.ratingCleanliness,
+        ratingLocation: data.ratingLocation
       };
       await Reviews.create(reviewData);
       res.send(await Reviews.findAll({ where: { listId: bookingObj.listingId }, order: [["createdAt", "DESC"]] }));
