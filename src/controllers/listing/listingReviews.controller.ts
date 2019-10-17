@@ -22,7 +22,7 @@ class ListingReviewsController {
   private getReviewsByListing = async (req: Request, res: Response, next: NextFunction) => {
     const listingId = parseInt(req.params.listingId, 10);
     try {
-      res.send(await Reviews.findAll({ where: { listId: listingId }, order: [["createdAt", "DESC"]] }));
+      res.send(await Reviews.findAll({ where: { listId: listingId, isAdmin: 0 }, order: [["createdAt", "DESC"]] }));
     } catch (err) {
       console.error(err)
       sequelizeErrorMiddleware(err, req, res, next)
@@ -31,17 +31,29 @@ class ListingReviewsController {
 
   private createReviewByListing = async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.userIdDecoded;
-    if (!userId)
+    if (!userId) {
       throw new HttpException(400, 'Authentication token missing exception!');
+    }
     const bookingId = req.params.bookingId;
     const data = req.body;
     try {
       const bookingObj: Bookings | null = await Bookings.findOne({ where: { bookingId } });
-      if (!bookingObj)
+      if (!bookingObj) {
         throw new HttpException(400, `Booking ${bookingId} not found.`);
-      const reviewsExisting = await Reviews.findAll({ where: { reservationId: bookingId, authorId: userId } })
-      if (reviewsExisting && reviewsExisting.length > 0)
-        throw new HttpException(400, `FEEDBACK_EXISTING`);
+      }
+      if (data.isAdmin) {
+        if (userId !== bookingObj.hostId) {
+          throw new HttpException(400, `You may only provide Private Reviews for the Spaces you own.`);
+        }
+      } else {
+        if (userId !== bookingObj.guestId) {
+          throw new HttpException(400, `You can only provide Reviews for the Spaces you have been to.`);
+        }
+        const reviewsExisting = await Reviews.findAll({ where: { reservationId: bookingId, authorId: userId }, limit: 1 })
+        if (reviewsExisting && reviewsExisting.length > 0) {
+          throw new HttpException(400, `FEEDBACK_EXISTING`);
+        }
+      }
       const reviewData = {
         reservationId: bookingObj.bookingId,
         listId: bookingObj.listingId,
@@ -54,7 +66,8 @@ class ListingReviewsController {
         ratingHost: data.ratingHost,
         ratingValue: data.ratingValue,
         ratingCleanliness: data.ratingCleanliness,
-        ratingLocation: data.ratingLocation
+        ratingLocation: data.ratingLocation,
+        isAdmin: data.isAdmin
       };
       await Reviews.create(reviewData);
       res.send(await Reviews.findAll({ where: { listId: bookingObj.listingId }, order: [["createdAt", "DESC"]] }));
