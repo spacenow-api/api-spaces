@@ -10,6 +10,7 @@ import ListingAmenities from "./controllers/listing/listingAmenities.controller"
 import ListingRulesController from "./controllers/listing/listingRules.controller";
 import ListingAccessDaysController from "./controllers/listing/listingAccessDays.controller";
 import ListingPhotosController from "./controllers/listing/listingPhotos.controller";
+import ListingReviews from './controllers/listing/listingReviews.controller';
 
 const app = new App(
   [
@@ -20,7 +21,8 @@ const app = new App(
     new ListingAmenities(),
     new ListingRulesController(),
     new ListingAccessDaysController(),
-    new ListingPhotosController()
+    new ListingPhotosController(),
+    new ListingReviews()
   ],
   PORT,
   "0.0.0.0"

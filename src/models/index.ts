@@ -12,6 +12,8 @@ import { ListingPhotos } from "./listingPhotos.model";
 import { SubcategorySpecifications } from "./subcategorySpecifications.model";
 import { SubcategoryBookingPeriod } from "./subcategoryBookingPeriod.model";
 import { UserProfile } from "./userProfile.model";
+import { Reviews } from './reviews.model';
+import { Bookings } from './bookings.model';
 
 export {
   Listing,
@@ -27,7 +29,9 @@ export {
   ListingPhotos,
   SubcategorySpecifications,
   SubcategoryBookingPeriod,
-  UserProfile
+  UserProfile,
+  Reviews,
+  Bookings
 };
 
 export const arrayOfModels = [
@@ -44,5 +48,7 @@ export const arrayOfModels = [
   ListingPhotos,
   SubcategorySpecifications,
   SubcategoryBookingPeriod,
-  UserProfile
+  UserProfile,
+  Reviews,
+  Bookings
 ];
