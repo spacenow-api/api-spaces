@@ -16,13 +16,36 @@ class ListingReviewsController {
     this.router.post('/listing/:bookingId/reviews', authMiddleware, this.createReviewByListing);
   }
 
+  private paginate(query: object, { page, pageSize }: any) {
+    if (pageSize <= 0)
+      return { ...query }
+    const offset = --page * pageSize;
+    const limit = offset + pageSize;
+    return {
+      ...query,
+      offset,
+      limit,
+    };
+  };
+
   /**
    * Getting public reviews for any Space.
    */
   private getReviewsByListing = async (req: Request, res: Response, next: NextFunction) => {
     const listingId = parseInt(req.params.listingId, 10);
+    const page = parseInt(req.query.page, 10) | 0;
+    const pageSize = parseInt(req.query.pageSize, 10) | 0;
+    const whereCondition = { where: { listId: listingId, isAdmin: 0 } };
     try {
-      res.send(await Reviews.findAll({ where: { listId: listingId, isAdmin: 0 }, order: [["createdAt", "DESC"]] }));
+      const totalReviews = await Reviews.count(whereCondition)
+      const reviewsResult = await Reviews.findAll(this.paginate({
+        ...whereCondition,
+        order: [["createdAt", "DESC"]]
+      }, { page, pageSize }));
+      let totalPages = 0;
+      if (pageSize > 0)
+        totalPages = Math.ceil(totalReviews / pageSize)
+      res.send({ totalPages, result: reviewsResult });
     } catch (err) {
       console.error(err)
       sequelizeErrorMiddleware(err, req, res, next)
