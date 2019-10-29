@@ -108,7 +108,7 @@ export class ListingData extends Model<ListingData> {
   @Column
   description?: string;
 
-  @Default(0)
+  @Default(1)
   @Column
   isAbsorvedFee?: number;
 
