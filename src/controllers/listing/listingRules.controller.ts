@@ -25,10 +25,14 @@ class ListingRulesController {
         const result = new Array<any>();
         for (const item of rulesArray) {
           const settingsObj: ListSettings | null = await ListSettings.findOne({
-            where: { id: item.listSettingsId },
+            where: { 
+              id: item.listSettingsId,
+              isEnable: 1
+            },
             raw: true
           });
-          result.push({ ...item, settingsData: { ...settingsObj } });
+          if (settingsObj)
+            result.push({ ...item, settingsData: { ...settingsObj } });
         }
         res.send(result);
       } catch (err) {
@@ -42,7 +46,7 @@ class ListingRulesController {
      */
     this.router.get(`/listings/fetch/rules`, authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
       try {
-        const result: Array<ListSettings> = await ListSettings.findAll({ where: { typeId: 14 } });
+        const result: Array<ListSettings> = await ListSettings.findAll({ where: { typeId: 14, isEnable: 1 } });
         res.send(result);
       } catch (err) {
         console.error(err);
