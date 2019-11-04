@@ -43,6 +43,7 @@ export class UserProfile extends Model<UserProfile> {
   @Column
   dateOfBirth?: string;
 
+  @Default('')
   @Column
   picture?: string;
 
