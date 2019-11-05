@@ -1,11 +1,14 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { subDays, format } from "date-fns";
+import Sequelize from "sequelize";
 import * as config from "../../config";
 import authMiddleware from "../../helpers/middlewares/auth-middleware";
 import HttpException from "../../helpers/exceptions/HttpException";
 import sequelizeErrorMiddleware from "../../helpers/middlewares/sequelize-error-middleware";
 
 import { Listing, Location, UserProfile } from "../../models";
+
+const Op = Sequelize.Op;
 
 class ListingLegacyController {
   private router = Router();
@@ -70,16 +73,16 @@ class ListingLegacyController {
     next: NextFunction
   ) => {
     const days = request.query.days
-    const sudDays = subDays(new Date(), days)
-    console.log(subDays);
-    const where = { 
-      where: { 
-        createdAt: { $gte: `${sudDays}` }
-      } 
-    }
+    const date = format(subDays(new Date(), days), "YYYY-MM-DD");
     try {
-      const data = await Listing.count(where);
-      response.send(data);
+      const data = await Listing.count({
+        where: { 
+          createdAt: { 
+            [Op.gte]: `${date}`
+          }
+        }
+      });
+      response.send({ count: data });
     } catch (error) {
       sequelizeErrorMiddleware(error, request, response, next);
     }
