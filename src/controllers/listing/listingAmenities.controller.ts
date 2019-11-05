@@ -25,10 +25,11 @@ class ListingAmenitiesController {
         const result = new Array<any>();
         for (const item of amenitiesArray) {
           const settingsObj: ListSettings | null = await ListSettings.findOne({
-            where: { id: item.listSettingsId },
+            where: { id: item.listSettingsId, isEnable: "1" },
             raw: true
           });
-          result.push({ ...item, settingsData: { ...settingsObj } });
+          if (settingsObj)
+            result.push({ ...item, settingsData: { ...settingsObj } });
         }
         res.send(result);
       } catch (err) {
@@ -49,10 +50,11 @@ class ListingAmenitiesController {
         const result = new Array<any>();
         for (const item of parentsArray) {
           const settingsObj: ListSettings | null = await ListSettings.findOne({
-            where: { id: item.listSettingsChildId },
+            where: { id: item.listSettingsChildId, isEnable: "1" },
             raw: true
           });
-          result.push(settingsObj);
+          if(settingsObj)
+            result.push(settingsObj);
         }
         res.send(result);
       } catch (err) {
