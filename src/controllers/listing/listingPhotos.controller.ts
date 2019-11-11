@@ -1,4 +1,5 @@
 import { Router, Request, Response, NextFunction } from 'express';
+import { Op } from 'sequelize'
 
 import sequelizeErrorMiddleware from '../../helpers/middlewares/sequelize-error-middleware';
 
@@ -19,7 +20,7 @@ class ListingPhotosController {
 		this.router.get('/listings/photos/:listingId', async (req: Request, res: Response, next: NextFunction) => {
 			try {
 				const photosArray: Array<ListingPhotos> = await ListingPhotos.findAll({
-					where: { listingId: req.params.listingId, type: 'image/jpeg' }
+					where: { listingId: req.params.listingId, type: { [Op.like]: 'image/%' } }
 				});
 				res.send(photosArray);
 			} catch (err) {
@@ -33,7 +34,7 @@ class ListingPhotosController {
 		this.router.get('/listings/video/:listingId', async (req: Request, res: Response, next: NextFunction) => {
 			try {
 				const videoObj: ListingPhotos | null = await ListingPhotos.findOne({
-					where: { listingId: req.params.listingId, type: 'video/mp4' },
+					where: { listingId: req.params.listingId, type: { [Op.like]: 'video/%' } },
 					limit: 1
 				});
 				res.send(videoObj);
