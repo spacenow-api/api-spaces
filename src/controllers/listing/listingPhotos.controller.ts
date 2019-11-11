@@ -26,6 +26,21 @@ class ListingPhotosController {
 				sequelizeErrorMiddleware(err, req, res, next);
 			}
 		});
+
+		/**
+		 * Get an unique Video by a Listing.
+		 */
+		this.router.get('/listings/video/:listingId', async (req: Request, res: Response, next: NextFunction) => {
+			try {
+				const videoObj: ListingPhotos | null = await ListingPhotos.findOne({
+					where: { listingId: req.params.listingId, type: 'video/mp4' },
+					limit: 1
+				});
+				res.send(videoObj);
+			} catch (err) {
+				sequelizeErrorMiddleware(err, req, res, next);
+			}
+		});
 	}
 }
 
