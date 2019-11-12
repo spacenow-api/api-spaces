@@ -1,4 +1,5 @@
 import express, { Application } from 'express';
+import compression from 'compression';
 import cookieParse from 'cookie-parser';
 import bodyParser from 'body-parser';
 
@@ -27,6 +28,7 @@ class App {
     this.app.use(sequelizeMiddleware);
     this.app.use(bodyParser.json());
     this.app.use(cookieParse());
+    this.app.use(compression());
   }
 
   private initializeErrorHandling(): void {
