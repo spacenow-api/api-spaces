@@ -72,33 +72,54 @@ class ListingLegacyController {
     response: Response,
     next: NextFunction
   ) => {
-    const days = request.query.days
+    const days = request.query.days || 10000
+    const category = request.query.category || null
     const date = format(subDays(new Date(), days), "YYYY-MM-DD");
+      
+    const where = {
+      where: { 
+        createdAt: { 
+          [Op.gte]: `${date}`
+        },
+      },
+      raw: true
+    }
+
+    const whereCategory = {
+      where: { 
+        createdAt: { 
+          [Op.gte]: `${date}`
+        },
+        listSettingsParentId: category
+      },
+      raw: true
+    }
+    
     try {
-      const data = await Listing.count({
-        where: { 
-          createdAt: { 
-            [Op.gte]: `${date}`
-          }
-        }
-      });
+      const data = await Listing.count(category === 'null' ? where : whereCategory);
       response.send({ count: data });
     } catch (error) {
       sequelizeErrorMiddleware(error, request, response, next);
     }
   };
 
-  // getAllListingsByCategory = async (
-  //   request: Request,
-  //   response: Response,
-  //   next: NextFunction
-  // ) => {
+  getAllListingsByCategory = async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ) => {
 
-  //   const where = { where: { listSettingsParentId } }
-  //   const data = await Listing.count(where);
+    const category = request.query.category
+    const where = { where: { listSettingsParentId: category }, raw: true }
 
-  //   return response.send(data);
-  // };
+    try {
+      const data = await Listing.count(where);
+      response.send({ count: data });
+    } catch (error) {
+      sequelizeErrorMiddleware(error, request, response, next);
+    }
+    
+  };
 
 }
 
