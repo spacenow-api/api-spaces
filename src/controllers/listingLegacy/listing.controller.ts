@@ -20,6 +20,7 @@ class ListingLegacyController {
   private intializeRoutes() {
     this.router.get(`/listings`, authMiddleware, this.getAllListings);
     this.router.get(`/listings/count/hosts`, authMiddleware, this.getAllHosts);
+    this.router.get(`/listings/count/hosts/date`, authMiddleware, this.getAllHostsByDate);
     this.router.get(`/listings/count/date`, authMiddleware, this.getAllListingsByDate);
   }
 
@@ -58,6 +59,29 @@ class ListingLegacyController {
   ) => {
     try {
       const data = await Listing.count({
+        distinct: true,
+        col: 'userId'
+      });
+      response.send({ count: data });
+    } catch (error) {
+      sequelizeErrorMiddleware(error, request, response, next);
+    }
+  };
+
+  getAllHostsByDate = async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ) => {
+    const days = request.query.days || 10000
+    const date = format(subDays(new Date(), days), "YYYY-MM-DD");
+    try {
+      const data = await Listing.count({
+        where: {
+          createdAt: { 
+            [Op.gte]: `${date}`
+          },
+        },
         distinct: true,
         col: 'userId'
       });
