@@ -10,9 +10,9 @@
   "scripts": {
     "build": "tsc",
     "debug": "tsnd --inspect --respawn src/server.ts",
-    "dev": "tsnd ./src/server.ts",
     "start": "tsn ./src/server.ts",
-    "prod": "node ./dist/server.js",
+    "dev": "NODE_ENV=development tsnd ./src/server.ts",
+    "prod": "NODE_ENV=production node ./dist/server.js",
     "migrate:up": "db-migrate up -c 999 --config ./src/helpers/config/database.json -m ./src/helpers/migrations",
     "migrate:down": "db-migrate down -c 999 --config ./src/helpers/config/database.json -m ./src/helpers/migrations",
     "db:prepare": "yarn migrate:down && yarn migrate:up"
