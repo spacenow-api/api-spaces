@@ -3,6 +3,7 @@ import { Router, Request, Response, NextFunction } from 'express'
 import sequelizeErrorMiddleware from '../../helpers/middlewares/sequelize-error-middleware'
 
 import { ListingPhotos } from '../../models'
+import { Op } from 'sequelize'
 
 class ListingPhotosController {
   private router = Router()
@@ -20,14 +21,7 @@ class ListingPhotosController {
         const photosArray: Array<ListingPhotos> = await ListingPhotos.findAll({
           where: {
             listingId: req.params.listingId,
-            $or: [
-              {
-                type: { $eq: 'image/jpeg' }
-              },
-              {
-                type: { $eq: 'image/png' }
-              }
-            ]
+            type: { [Op.like]: 'image/%' }
           }
         })
         res.send(photosArray)
