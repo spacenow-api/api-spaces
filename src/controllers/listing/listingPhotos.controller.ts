@@ -22,10 +22,10 @@ class ListingPhotosController {
             listingId: req.params.listingId,
             $or: [
               {
-                type: 'image/jpeg'
+                type: { $eq: 'image/jpeg' }
               },
               {
-                type: 'image/png'
+                type: { $eq: 'image/png' }
               }
             ]
           }
