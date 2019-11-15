@@ -11,143 +11,137 @@ import {
   DataType,
   BelongsTo,
   ForeignKey
-} from "sequelize-typescript";
+} from 'sequelize-typescript'
 
-import { Listing } from "./";
+import { Listing } from './'
 
 @Table({
-  tableName: "ListingData"
+  tableName: 'ListingData'
 })
 export class ListingData extends Model<ListingData> {
   @PrimaryKey
   @AutoIncrement
   @AllowNull(false)
   @Column
-  id!: number;
+  id!: number
 
   @ForeignKey(() => Listing)
   @Column
-  listingId?: number;
+  listingId?: number
 
   @Column
-  listId?: number;
+  listId?: number
 
   @Column
-  bookingNoticeTime?: string;
+  bookingNoticeTime?: string
 
-  @Default("Flexible")
+  @Default('Flexible')
   @AllowNull(false)
   @Column
-  checkInStart?: string;
+  checkInStart?: string
 
-  @Default("Flexible")
+  @Default('Flexible')
   @AllowNull(false)
   @Column
-  checkInEnd?: string;
+  checkInEnd?: string
 
   @Column
-  minNight?: number;
+  minNight?: number
 
   @Column
-  maxNight?: number;
+  maxNight?: number
 
   @Column
-  priceMode?: number;
+  priceMode?: number
 
   @Column
-  basePrice?: number;
+  basePrice?: number
 
   @Column
-  maxPrice?: number;
+  maxPrice?: number
 
   @Column
-  currency?: string;
+  currency?: string
 
   @Column
-  hostingFrequency?: string;
+  hostingFrequency?: string
 
   @Column
-  weeklyDiscount?: string;
+  weeklyDiscount?: string
 
   @Column
-  monthlyDiscount?: string;
+  monthlyDiscount?: string
 
   @Column
-  createdAt?: Date;
+  createdAt?: Date
 
   @Column
-  updatedAt?: Date;
+  updatedAt?: Date
 
   @Column
-  cleaningPrice?: number;
+  cleaningPrice?: number
 
   @AllowNull(false)
-  @Default("unavailable")
-  @Column(
-    DataType.ENUM(
-      "unavailable",
-      "3months",
-      "6months",
-      "9months",
-      "12months",
-      "available"
-    )
-  )
-  maxDaysNotice?: string;
+  @Default('unavailable')
+  @Column(DataType.ENUM('unavailable', '3months', '6months', '9months', '12months', 'available'))
+  maxDaysNotice?: string
 
   @Default(1)
   @Column
-  cancellationPolicy?: number;
+  cancellationPolicy?: number
 
   @Column
-  minTerm?: number;
+  minTerm?: number
 
   @Column
-  maxTerm?: number;
+  maxTerm?: number
 
   @Column
-  description?: string;
+  description?: string
 
   @Default(1)
   @Column
-  isAbsorvedFee?: number;
+  isAbsorvedFee?: number
 
   @Column
-  capacity?: number;
+  capacity?: number
 
   @Default(0)
   @Column
-  size?: number;
+  size?: number
 
   @Column
-  meetingRooms?: number;
+  meetingRooms?: number
 
   @Default(0)
   @Column
-  isFurnished?: number;
+  isFurnished?: number
 
   @Column
-  carSpace?: number;
+  carSpace?: number
 
   @Column
-  ListingDatacol?: string;
-
-  @Column(DataType.ENUM("Small", "Medium", "Large"))
-  sizeOfVehicle?: string;
+  ListingDatacol?: string
 
   @Column
-  maxEntranceHeight?: string;
+  link?: string
 
-  @Column(DataType.ENUM("Cover", "Undercover"))
-  spaceType?: string;
-
-  @Default("instant")
-  @Column(DataType.ENUM("request", "instant"))
-  bookingType?: string;
+  @Column(DataType.ENUM('Small', 'Medium', 'Large'))
+  sizeOfVehicle?: string
 
   @Column
-  accessType?: string;
+  maxEntranceHeight?: string
+
+  @Column(DataType.ENUM('Cover', 'Undercover'))
+  spaceType?: string
+
+  @Default('instant')
+  @Column(DataType.ENUM('request', 'instant'))
+  bookingType?: string
+
+  @Column
+  accessType?: string
 
   @BelongsTo(() => Listing)
-  listing!: Listing;
+  listing!: Listing
 }

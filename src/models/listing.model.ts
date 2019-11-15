@@ -121,9 +121,6 @@ export class Listing extends Model<Listing> {
   @Column
   coverPhoto?: number
 
-  @Column
-  link?: string
-
   @AllowNull(false)
   @Default('instant')
   @Column(DataType.ENUM('instant', 'request', 'poa'))
