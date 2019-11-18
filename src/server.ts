@@ -11,6 +11,7 @@ import ListingRulesController from "./controllers/listing/listingRules.controlle
 import ListingAccessDaysController from "./controllers/listing/listingAccessDays.controller";
 import ListingPhotosController from "./controllers/listing/listingPhotos.controller";
 import ListingReviews from './controllers/listing/listingReviews.controller';
+import ExternalClicks from './controllers/listing/externalClicks.controller';
 
 const app = new App(
   [
@@ -22,7 +23,8 @@ const app = new App(
     new ListingRulesController(),
     new ListingAccessDaysController(),
     new ListingPhotosController(),
-    new ListingReviews()
+    new ListingReviews(),
+    new ExternalClicks()
   ],
   PORT,
   "0.0.0.0"
