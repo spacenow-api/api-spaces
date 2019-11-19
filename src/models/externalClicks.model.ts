@@ -6,7 +6,10 @@ import {
   UpdatedAt,
   IsUUID,
   PrimaryKey,
-  AllowNull
+  AllowNull,
+  Default,
+  AutoIncrement,
+  DataType
 } from "sequelize-typescript";
 
 @Table({
@@ -15,6 +18,7 @@ import {
 export class ExternalClicks extends Model<ExternalClicks> {
 
   @IsUUID(4)
+  @Default(DataType.UUIDV4)
   @PrimaryKey
   @AllowNull(false)
   @Column
@@ -22,12 +26,13 @@ export class ExternalClicks extends Model<ExternalClicks> {
 
   @AllowNull(false)
   @Column
-  listingId!: number;
+  userId!: string;
 
   @AllowNull(false)
   @Column
-  userId!: string;
+  listingId!: number;
 
+  @Default(1)
   @AllowNull(false)
   @Column
   clicks!: number;
