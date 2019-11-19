@@ -14,6 +14,7 @@ import { SubcategoryBookingPeriod } from "./subcategoryBookingPeriod.model";
 import { UserProfile } from "./userProfile.model";
 import { Reviews } from './reviews.model';
 import { Bookings } from './bookings.model';
+import { ExternalClicks } from './externalClicks.model';
 
 export {
   Listing,
@@ -31,7 +32,8 @@ export {
   SubcategoryBookingPeriod,
   UserProfile,
   Reviews,
-  Bookings
+  Bookings,
+  ExternalClicks
 };
 
 export const arrayOfModels = [
@@ -50,5 +52,6 @@ export const arrayOfModels = [
   SubcategoryBookingPeriod,
   UserProfile,
   Reviews,
-  Bookings
+  Bookings,
+  ExternalClicks
 ];
