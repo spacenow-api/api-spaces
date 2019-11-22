@@ -17,8 +17,8 @@ class ExternalClicksController {
   private router = Router()
 
   constructor() {
-    this.router.get('/external/clicks/:userId', authMiddleware, this.getClickesByUserId);
-    this.router.post('/external/clicks', authMiddleware, this.saveClicksByListing);
+    this.router.get('/external/clicks/:userId', this.getClickesByUserId);
+    this.router.post('/external/clicks', this.saveClicksByListing);
   }
 
   private getClickesByUser = async (userId: string) => {
