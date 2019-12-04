@@ -20,8 +20,16 @@ class ListingLegacyController {
   private intializeRoutes() {
     this.router.get(`/listings`, authMiddleware, this.getAllListings);
     this.router.get(`/listings/count/hosts`, authMiddleware, this.getAllHosts);
-    this.router.get(`/listings/count/hosts/date`, authMiddleware, this.getAllHostsByDate);
-    this.router.get(`/listings/count/date`, authMiddleware, this.getAllListingsByDate);
+    this.router.get(
+      `/listings/count/hosts/date`,
+      authMiddleware,
+      this.getAllHostsByDate
+    );
+    this.router.get(
+      `/listings/count/date`,
+      authMiddleware,
+      this.getAllListingsByDate
+    );
   }
 
   getAllListings = async (
@@ -60,7 +68,7 @@ class ListingLegacyController {
     try {
       const data = await Listing.count({
         distinct: true,
-        col: 'userId'
+        col: "userId"
       });
       response.send({ count: data });
     } catch (error) {
@@ -73,17 +81,17 @@ class ListingLegacyController {
     response: Response,
     next: NextFunction
   ) => {
-    const days = request.query.days || 10000
+    const days = request.query.days || 10000;
     const date = format(subDays(new Date(), days), "YYYY-MM-DD");
     try {
       const data = await Listing.count({
         where: {
-          createdAt: { 
+          createdAt: {
             [Op.gte]: `${date}`
-          },
+          }
         },
         distinct: true,
-        col: 'userId'
+        col: "userId"
       });
       response.send({ count: data });
     } catch (error) {
@@ -96,32 +104,35 @@ class ListingLegacyController {
     response: Response,
     next: NextFunction
   ) => {
-    const days = request.query.days || 10000
-    const category = request.query.category || null
+    const days = request.query.days || 10000;
+    const category = request.query.category || null;
     const date = format(subDays(new Date(), days), "YYYY-MM-DD");
-      
-    const where = {
-      where: { 
-        createdAt: { 
-          [Op.gte]: `${date}`
-        },
-      },
-      raw: true
+
+    let where = {
+      createdAt: {
+        [Op.gte]: `${date}`
+      }
+    };
+
+    if (category && category !== null && category !== "null") {
+      where = Object.assign({
+        ...where,
+        listSettingsParentId: { [Op.in]: [category] }
+      });
     }
 
-    const whereCategory = {
-      where: { 
-        createdAt: { 
-          [Op.gte]: `${date}`
-        },
-        listSettingsParentId: category
-      },
-      raw: true
-    }
-    
     try {
-      const data = await Listing.count(category === 'null' ? where : whereCategory);
-      response.send({ count: data });
+      const all = await Listing.count({ where: where });
+      const active = await Listing.count({
+        where: { ...where, status: "active" }
+      });
+      const deleted = await Listing.count({
+        where: { ...where, status: "deleted" }
+      });
+      const published = await Listing.count({
+        where: { ...where, isPublished: true }
+      });
+      response.send({ count: { all, active, deleted, published } });
     } catch (error) {
       sequelizeErrorMiddleware(error, request, response, next);
     }
@@ -132,9 +143,8 @@ class ListingLegacyController {
     response: Response,
     next: NextFunction
   ) => {
-
-    const category = request.query.category
-    const where = { where: { listSettingsParentId: category }, raw: true }
+    const category = request.query.category;
+    const where = { where: { listSettingsParentId: category }, raw: true };
 
     try {
       const data = await Listing.count(where);
@@ -142,9 +152,7 @@ class ListingLegacyController {
     } catch (error) {
       sequelizeErrorMiddleware(error, request, response, next);
     }
-    
   };
-
 }
 
 export default ListingLegacyController;
