@@ -52,6 +52,9 @@ export class Location extends Model<Location> {
   @Column
   lng?: string;
 
+  @Column
+  placeId?: string;
+
   @CreatedAt
   @Column
   createdAt?: Date;
