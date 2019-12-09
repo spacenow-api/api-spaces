@@ -7,6 +7,7 @@ interface IUser {
   createdAt: Date;
   updatedAt: Date;
   userBanStatus: number;
+  role: string;
 }
 
 export { IUser };

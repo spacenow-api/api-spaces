@@ -2,7 +2,7 @@ import { Router, Request, Response, NextFunction } from "express";
 import { subDays, format } from "date-fns";
 import Sequelize from "sequelize";
 import * as config from "../../config";
-import authMiddleware from "../../helpers/middlewares/auth-middleware";
+import { authMiddleware } from "../../helpers/middlewares/auth-middleware";
 import HttpException from "../../helpers/exceptions/HttpException";
 import sequelizeErrorMiddleware from "../../helpers/middlewares/sequelize-error-middleware";
 

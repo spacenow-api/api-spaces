@@ -1,6 +1,6 @@
 import { Router, Request, Response, NextFunction } from "express";
 
-import authMiddleware from '../../helpers/middlewares/auth-middleware';
+import { authMiddleware } from '../../helpers/middlewares/auth-middleware';
 import sequelizeErrorMiddleware from "../../helpers/middlewares/sequelize-error-middleware";
 
 import { ListSettings, ListingRules } from "../../models";
