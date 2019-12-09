@@ -63,8 +63,19 @@ class ListingController {
    */
   private getAllListings = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const results: { rows: Listing[], count: number } | null = await Listing.findAndCountAll()
-      res.send(results)
+      const result = await Listing.findAll({
+        attributes: [
+          "id",
+          "userId",
+          "isPublished",
+          "locationId",
+          "title",
+          "createdAt",
+          "isReady",
+          "status"
+        ]
+      });
+      res.send(result);
     } catch (err) {
       console.error(err)
       sequelizeErrorMiddleware(err, req, res, next)

@@ -11,6 +11,7 @@ import { Listing, Location, UserProfile } from "../../models";
 const Op = Sequelize.Op;
 
 class ListingLegacyController {
+
   private router = Router();
 
   constructor() {
@@ -18,53 +19,36 @@ class ListingLegacyController {
   }
 
   private intializeRoutes() {
-    this.router.get(`/listings`, authMiddleware, this.getAllListings);
+    // this.router.get(`/listings`, authMiddleware, this.getAllListings);
     this.router.get(`/listings/count/hosts`, authMiddleware, this.getAllHosts);
-    this.router.get(
-      `/listings/count/hosts/date`,
-      authMiddleware,
-      this.getAllHostsByDate
-    );
-    this.router.get(
-      `/listings/count/date`,
-      authMiddleware,
-      this.getAllListingsByDate
-    );
+    this.router.get(`/listings/count/hosts/date`, authMiddleware, this.getAllHostsByDate);
+    this.router.get(`/listings/count/date`, authMiddleware, this.getAllListingsByDate);
   }
 
-  getAllListings = async (
-    request: Request,
-    response: Response,
-    next: NextFunction
-  ) => {
-    // next(new HttpException(200, `Listings test.`));
-    const data = await Listing.findAndCountAll({
-      attributes: [
-        "id",
-        "userId",
-        "isPublished",
-        "title",
-        "createdAt",
-        "isReady",
-        "status"
-      ],
-      include: [
-        {
-          model: Location,
-          as: "location",
-          attributes: ["country", "city", "state"]
-        }
-      ]
-    });
+  // getAllListings = async (request: Request, response: Response, next: NextFunction) => {
+  //   // next(new HttpException(200, `Listings test.`));
+  //   const data = await Listing.findAndCountAll({
+  //     attributes: [
+  //       "id",
+  //       "userId",
+  //       "isPublished",
+  //       "title",
+  //       "createdAt",
+  //       "isReady",
+  //       "status"
+  //     ],
+  //     include: [
+  //       {
+  //         model: Location,
+  //         as: "location",
+  //         attributes: ["country", "city", "state"]
+  //       }
+  //     ]
+  //   });
+  //   return response.send(data);
+  // };
 
-    return response.send(data);
-  };
-
-  getAllHosts = async (
-    request: Request,
-    response: Response,
-    next: NextFunction
-  ) => {
+  getAllHosts = async (request: Request, response: Response, next: NextFunction) => {
     try {
       const data = await Listing.count({
         distinct: true,
@@ -76,11 +60,7 @@ class ListingLegacyController {
     }
   };
 
-  getAllHostsByDate = async (
-    request: Request,
-    response: Response,
-    next: NextFunction
-  ) => {
+  getAllHostsByDate = async (request: Request, response: Response, next: NextFunction) => {
     const days = request.query.days || 10000;
     const date = format(subDays(new Date(), days), "YYYY-MM-DD");
     try {
@@ -99,28 +79,21 @@ class ListingLegacyController {
     }
   };
 
-  getAllListingsByDate = async (
-    request: Request,
-    response: Response,
-    next: NextFunction
-  ) => {
+  getAllListingsByDate = async (request: Request, response: Response, next: NextFunction) => {
     const days = request.query.days || 10000;
     const category = request.query.category || null;
     const date = format(subDays(new Date(), days), "YYYY-MM-DD");
-
     let where = {
       createdAt: {
         [Op.gte]: `${date}`
       }
     };
-
     if (category && category !== null && category !== "null") {
       where = Object.assign({
         ...where,
         listSettingsParentId: { [Op.in]: [category] }
       });
     }
-
     try {
       const all = await Listing.count({ where: where });
       const active = await Listing.count({
@@ -138,14 +111,9 @@ class ListingLegacyController {
     }
   };
 
-  getAllListingsByCategory = async (
-    request: Request,
-    response: Response,
-    next: NextFunction
-  ) => {
+  getAllListingsByCategory = async (request: Request, response: Response, next: NextFunction) => {
     const category = request.query.category;
     const where = { where: { listSettingsParentId: category }, raw: true };
-
     try {
       const data = await Listing.count(where);
       response.send({ count: data });
