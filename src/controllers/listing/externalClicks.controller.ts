@@ -3,7 +3,7 @@ import { format } from 'date-fns'
 import axios from 'axios'
 import Sequelize, { Op } from 'sequelize'
 
-import authMiddleware from '../../helpers/middlewares/auth-middleware'
+import { authMiddleware } from '../../helpers/middlewares/auth-middleware'
 import HttpException from '../../helpers/exceptions/HttpException'
 
 import sequelizeErrorMiddleware from '../../helpers/middlewares/sequelize-error-middleware'

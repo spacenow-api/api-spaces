@@ -5,7 +5,7 @@ import Sequelize from 'sequelize'
 
 import * as config from '../../config'
 
-import authMiddleware from '../../helpers/middlewares/auth-middleware'
+import { authMiddleware, authAdminMiddleware } from '../../helpers/middlewares/auth-middleware'
 import HttpException from '../../helpers/exceptions/HttpException'
 
 import sequelizeErrorMiddleware from '../../helpers/middlewares/sequelize-error-middleware'
@@ -42,7 +42,7 @@ class ListingController {
   private getListingById = async (req: Request, res: Response, next: NextFunction) => {
     const listingId = <number>(<unknown>req.params.id)
     try {
-      const where: { id: number; [key: string]: any } = { id: listingId }
+      const where: { id: number;[key: string]: any } = { id: listingId }
       const { isPublished } = req.query
       if (isPublished) {
         where.isPublished = isPublished === 'true'
@@ -63,11 +63,19 @@ class ListingController {
    */
   private getAllListings = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const results: {
-        rows: Listing[]
-        count: number
-      } | null = await Listing.findAndCountAll()
-      res.send(results)
+      const result = await Listing.findAll({
+        attributes: [
+          "id",
+          "userId",
+          "isPublished",
+          "locationId",
+          "title",
+          "createdAt",
+          "isReady",
+          "status"
+        ]
+      });
+      res.send(result);
     } catch (err) {
       console.error(err)
       sequelizeErrorMiddleware(err, req, res, next)
@@ -81,7 +89,7 @@ class ListingController {
     const userId = <string>(<unknown>req.params.userId)
     const status = 'deleted'
     try {
-      const where: { userId: string; status: any; [key: string]: any } = {
+      const where: { userId: string; status: any;[key: string]: any } = {
         userId,
         status: { [Op.not]: status }
       }
@@ -104,6 +112,7 @@ class ListingController {
     this.router.get(`/listings/user/:userId`, authMiddleware, this.getAllListingsByUser)
     this.router.get(`/listings`, this.getAllListings)
     this.router.get(`/listings/public/:id`, this.getListingById)
+    this.router.put('/listings/:listingId/status/:status', authAdminMiddleware, this.putChangeListingStatus)
 
     /**
      * Get listing data by listing ID.
@@ -392,25 +401,21 @@ class ListingController {
       }
     })
 
-    this.router.delete(
-      '/listings/:listingId',
-      authMiddleware,
-      async (req: Request, res: Response, next: NextFunction) => {
-        try {
-          const listingId = req.params.listingId
-          const listingObj = await Listing.findOne({
-            where: { id: listingId }
-          })
-          if (!listingObj) throw new HttpException(400, `Listing ${listingId} not found.`)
-          this.onlyOwner(req, listingObj)
-          await Listing.update({ status: 'deleted', isPublished: false }, { where: { id: listingId } })
-          res.send({ status: 'OK' })
-        } catch (err) {
-          console.error(err)
-          sequelizeErrorMiddleware(err, req, res, next)
+    this.router.delete('/listings/:listingId', authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const listingId = req.params.listingId
+        const listingObj = await Listing.findOne({ where: { id: listingId } })
+        if (!listingObj) {
+          throw new HttpException(400, `Listing ${listingId} not found.`)
         }
+        this.onlyOwner(req, listingObj)
+        await Listing.update({ status: 'deleted', isPublished: false }, { where: { id: listingId } })
+        res.send({ status: 'OK' })
+      } catch (err) {
+        console.error(err)
+        sequelizeErrorMiddleware(err, req, res, next)
       }
-    )
+    });
 
     /**
      * Publish listing.
@@ -468,6 +473,21 @@ class ListingController {
         sequelizeErrorMiddleware(err, req, res, next)
       }
     })
+  }
+
+  private async putChangeListingStatus(req: Request, res: Response, next: NextFunction) {
+    try {
+      const listingId = req.params.listingId
+      const listingObj = await Listing.findOne({ where: { id: listingId } })
+      if (!listingObj) {
+        throw new HttpException(400, `Listing ${listingId} not found.`)
+      }
+      await Listing.update({ status: req.params.status, isPublished: false }, { where: { id: listingId } })
+      res.send(await Listing.findOne({ where: { id: listingId } }))
+    } catch (err) {
+      console.error(err)
+      sequelizeErrorMiddleware(err, req, res, next)
+    }
   }
 
   private onlyOwner(req: Request, listingObj: Listing) {
