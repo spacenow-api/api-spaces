@@ -113,6 +113,11 @@ Parameters:
     Type: String
     Default: ""
     NoEcho: true
+  S3Bucket:
+    Description: 'S3_BUCKET'
+    Type: String
+    Default: ''
+    NoEcho: true
 Conditions:
   isMaster: !Equals [!Ref SliceName, master]
   isFeature: !Not [Condition: isMaster]
@@ -229,6 +234,8 @@ Resources:
               Value: !Ref AvailabilitiesApiHost
             - Name: GOOGLE_MAP_API
               Value: !Ref GoogleMapApi
+            - Name: S3_BUCKET
+              Value: !Ref S3Bucket
 
           LogConfiguration:
             LogDriver: awslogs
