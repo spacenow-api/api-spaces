@@ -16,3 +16,5 @@ export const availabilitiesAPI = process.env.API_AVAILABILITIES || "http://local
 export const USERS_API_HOST = process.env.USERS_API_HOST || "http://localhost:6001";
 
 export const googleMapAPI = process.env.GOOGLE_MAP_API;
+
+export const bucket = process.env.S3_BUCKET;
