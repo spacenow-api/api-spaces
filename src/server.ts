@@ -13,6 +13,7 @@ import ListingPhotosController from "./controllers/listing/listingPhotos.control
 import ListingReviews from './controllers/listing/listingReviews.controller';
 import ExternalClicks from './controllers/listing/externalClicks.controller';
 import LocationController from './controllers/locations/location.controller';
+import PhotosController from './controllers/photos/legacyPhotos.controller';
 
 const app = new App(
   [
@@ -26,7 +27,8 @@ const app = new App(
     new ListingPhotosController(),
     new ListingReviews(),
     new ExternalClicks(),
-    new LocationController()
+    new LocationController(),
+    new PhotosController()
   ],
   PORT,
   "0.0.0.0"
