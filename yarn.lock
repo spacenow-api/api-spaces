@@ -187,6 +187,13 @@
     "@types/express-serve-static-core" "*"
     "@types/mime" "*"
 
+"@types/sharp@~0.17.10":
+  version "0.17.10"
+  resolved "https://registry.yarnpkg.com/@types/sharp/-/sharp-0.17.10.tgz#4f546861c53fae2b1bffcdd1ae7e691cc68afa52"
+  integrity sha512-nISitptrYm6hUpiC+vN21cbT8Of54TubXY95N+pcqNCmmXZqd1hRk7fC5HYRRQwWJiKV/NLHx8f4CxPIsIQXqg==
+  dependencies:
+    "@types/node" "*"
+
 "@types/strip-bom@^3.0.0":
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@types/strip-bom/-/strip-bom-3.0.0.tgz#14a8ec3956c2e81edb7520790aecf21c290aebd2"
@@ -2559,7 +2566,7 @@ setprototypeof@1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/setprototypeof/-/setprototypeof-1.1.1.tgz#7e95acb24aa92f5885e0abef5ba131330d4ae683"
 
-sharp@0.20.8:
+sharp@0.20.8, sharp@~0.20.8:
   version "0.20.8"
   resolved "https://registry.yarnpkg.com/sharp/-/sharp-0.20.8.tgz#e853f10b53b730824f0c3c5e453c79fa0812a48b"
   integrity sha512-A8NaPGWRDKpmHTi8sl2xzozYXhTQWBb/GaJ8ZPU7L/vKW8wVvd4Yq+isJ0c7p9sX5gnjPQcM3eOfHuvvnZ2fOQ==
