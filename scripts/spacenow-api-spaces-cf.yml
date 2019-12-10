@@ -108,6 +108,11 @@ Parameters:
     Description: 'API_AVAILABILITIES'
     Type: String
     Default: ''
+  GoogleMapApi:
+    Description: "GOOGLE_MAP_API"
+    Type: String
+    Default: ""
+    NoEcho: true
 Conditions:
   isMaster: !Equals [!Ref SliceName, master]
   isFeature: !Not [Condition: isMaster]
@@ -222,6 +227,8 @@ Resources:
               Value: !Ref UsersApiHost
             - Name: API_AVAILABILITIES
               Value: !Ref AvailabilitiesApiHost
+            - Name: GOOGLE_MAP_API
+              Value: !Ref GoogleMapApi
 
           LogConfiguration:
             LogDriver: awslogs
