@@ -11,10 +11,11 @@ import {
   DataType,
   HasMany,
   ForeignKey,
-  BelongsTo
+  BelongsTo,
+  HasOne
 } from "sequelize-typescript";
 
-import { Listing, ListSettings } from "./";
+import { Listing, ListSettings, SubcategoryBookingPeriod } from "./";
 
 @Table({
   tableName: "ListSettingsParent"
@@ -49,9 +50,12 @@ export class ListSettingsParent extends Model<ListSettingsParent> {
   @HasMany(() => Listing)
   listing!: Listing[];
 
-  @BelongsTo(() => ListSettings)
+  @BelongsTo(() => ListSettings, "listSettingsParentId")
   category!: ListSettings;
 
-  @BelongsTo(() => ListSettings)
-  subcategory!: ListSettings;
+  @BelongsTo(() => ListSettings, "listSettingsChildId")
+  subCategory!: ListSettings;
+
+  @HasOne(() => SubcategoryBookingPeriod, "listSettingsParentId")
+  bookingPeriod!: SubcategoryBookingPeriod;
 }

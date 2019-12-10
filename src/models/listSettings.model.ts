@@ -80,5 +80,5 @@ export class ListSettings extends Model<ListSettings> {
   specData?: string;
 
   @HasMany(() => ListSettingsParent)
-  listSettingsParent!: ListSettingsParent[];
+  subCategories!: ListSettingsParent[];
 }

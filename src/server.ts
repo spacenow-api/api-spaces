@@ -2,8 +2,9 @@ import { PORT } from "./config";
 
 import App from "./App";
 
+import CategoriesController from "./controllers/legacy/category.controller";
 import HealthController from "./controllers/health/health.controller";
-import ListingLegacyController from "./controllers/listingLegacy/listing.controller";
+import ListingLegacyController from "./controllers/listing/listing.controller";
 import ListingController from "./controllers/listing/listing.controller";
 import ListingSettingsController from "./controllers/listing/listingSettings.controller";
 import ListingAmenities from "./controllers/listing/listingAmenities.controller";
@@ -17,6 +18,7 @@ import PhotosController from './controllers/photos/legacyPhotos.controller';
 
 const app = new App(
   [
+    new CategoriesController(),
     new HealthController(),
     new ListingLegacyController(),
     new ListingController(),
