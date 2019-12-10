@@ -25,7 +25,7 @@ COPY . .
 
 RUN yarn build
 
-EXPOSE 6007
+EXPOSE 6002
 
 ENV NODE_ENV "production"
 
