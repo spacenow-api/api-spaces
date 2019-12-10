@@ -52,10 +52,11 @@ class LocationController {
         res.send(locationObj);
       } else {
         // Creating a new location from Google API data...
-        let geoAddress: any;
+        let geoAddress: IGeoResponse;
         try {
-          geoAddress = await this.getGoogleGeoCodeAddress(data.suggestAddress);
+          geoAddress = await LocationController.getGoogleGeoCodeAddress(data.suggestAddress);
         } catch (err) {
+          console.error(err)
           throw new HttpException(400, `Address ${data.suggestAddress} not found by Google API.`);
         }
         const { dataValues }: any = await Location.create({
@@ -76,7 +77,7 @@ class LocationController {
     }
   }
 
-  private async getGoogleGeoCodeAddress(suggestAddress: string): Promise<IGeoResponse> {
+  static async getGoogleGeoCodeAddress(suggestAddress: string): Promise<IGeoResponse> {
     const URL = "https://maps.googleapis.com/maps/api/geocode/json?address=" + encodeURI(suggestAddress) + "&key=" + config.googleMapAPI;
     const resp = await axios.get(URL);
     const geoData: RootObject = await resp.data;
