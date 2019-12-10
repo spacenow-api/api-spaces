@@ -11,10 +11,10 @@ export const dbUsername = process.env.DATABASE_USERNAME;
 export const dbPassword = process.env.DATABASE_PASSWORD;
 export const dbHost = process.env.DATABASE_HOST;
 
-// API Bookings
-export const availabilitiesAPI =
-  process.env.API_AVAILABILITIES ||
-  "http://localhost:6011/availabilities";
+export const availabilitiesAPI = process.env.API_AVAILABILITIES || "http://localhost:6011/availabilities";
 
-export const USERS_API_HOST =
-  process.env.USERS_API_HOST || "http://localhost:6001";
+export const USERS_API_HOST = process.env.USERS_API_HOST || "http://localhost:6001";
+
+export const googleMapAPI = process.env.GOOGLE_MAP_API;
+
+export const bucket = process.env.S3_BUCKET;
