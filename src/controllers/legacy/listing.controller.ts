@@ -1,13 +1,10 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { subDays, format } from "date-fns";
 import Sequelize from "sequelize";
-import axios from "axios";
-import * as config from "../../config";
 import { authMiddleware } from "../../helpers/middlewares/auth-middleware";
-import HttpException from "../../helpers/exceptions/HttpException";
 import sequelizeErrorMiddleware from "../../helpers/middlewares/sequelize-error-middleware";
 
-import { Listing, Location, UserProfile } from "../../models";
+import { Listing, Location } from "../../models";
 
 const Op = Sequelize.Op;
 
