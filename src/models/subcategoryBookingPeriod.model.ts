@@ -8,10 +8,10 @@ import {
   PrimaryKey,
   AllowNull,
   Default
-} from 'sequelize-typescript';
+} from "sequelize-typescript";
 
 @Table({
-  tableName: 'SubcategoryBookingPeriod'
+  tableName: "SubcategoryBookingPeriod"
 })
 export class SubcategoryBookingPeriod extends Model<SubcategoryBookingPeriod> {
   @PrimaryKey
