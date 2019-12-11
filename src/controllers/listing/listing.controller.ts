@@ -1,14 +1,15 @@
 import { Router, Request, Response, NextFunction } from 'express'
-import { format } from 'date-fns'
+import { subDays, format } from "date-fns";
 import axios from 'axios'
 import Sequelize from 'sequelize'
 
 import * as config from '../../config'
 
 import { authMiddleware, authAdminMiddleware } from '../../helpers/middlewares/auth-middleware'
+import sequelizeErrorMiddleware from '../../helpers/middlewares/sequelize-error-middleware'
 import HttpException from '../../helpers/exceptions/HttpException'
 
-import sequelizeErrorMiddleware from '../../helpers/middlewares/sequelize-error-middleware'
+import { _getCategories } from './../categories/category.controller'
 
 import {
   Listing,
@@ -29,90 +30,24 @@ import { IDraftRequest, IUpdateRequest, IAccessDaysRequest } from '../../interfa
 const Op = Sequelize.Op
 
 class ListingController {
-  private path = '/listings'
+
   private router = Router()
 
   constructor() {
     this.intializeRoutes()
   }
 
-  /**
-   * Get listing by ID.
-   */
-  private getListingById = async (req: Request, res: Response, next: NextFunction) => {
-    const listingId = <number>(<unknown>req.params.id)
-    try {
-      const where: { id: number;[key: string]: any } = { id: listingId }
-      const { isPublished } = req.query
-      if (isPublished) {
-        where.isPublished = isPublished === 'true'
-      }
-      const listingObj: Listing | null = await Listing.findOne({ where })
-      if (!listingObj) {
-        throw new HttpException(400, `Listing ${listingId} not found.`)
-      }
-      res.send(listingObj)
-    } catch (err) {
-      console.error(err)
-      sequelizeErrorMiddleware(err, req, res, next)
-    }
-  }
-
-  /**
-   * Get listings.
-   */
-  private getAllListings = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const result = await Listing.findAll({
-        attributes: [
-          "id",
-          "userId",
-          "isPublished",
-          "locationId",
-          "title",
-          "createdAt",
-          "isReady",
-          "status"
-        ]
-      });
-      res.send(result);
-    } catch (err) {
-      console.error(err)
-      sequelizeErrorMiddleware(err, req, res, next)
-    }
-  }
-
-  /**
-   * Get listing by ID.
-   */
-  private getAllListingsByUser = async (req: Request, res: Response, next: NextFunction) => {
-    const userId = <string>(<unknown>req.params.userId)
-    const status = 'deleted'
-    try {
-      const where: { userId: string; status: any;[key: string]: any } = {
-        userId,
-        status: { [Op.not]: status }
-      }
-      const results: {
-        rows: Listing[]
-        count: number
-      } | null = await Listing.findAndCountAll({
-        where,
-        order: [['updatedAt', 'DESC']]
-      })
-      res.send(results)
-    } catch (err) {
-      console.error(err)
-      sequelizeErrorMiddleware(err, req, res, next)
-    }
-  }
-
   private intializeRoutes() {
+    this.router.get(`/listings`, this.getAllPlainListings)
     this.router.get(`/listings/:id`, authMiddleware, this.getListingById)
     this.router.get(`/listings/user/:userId`, authMiddleware, this.getAllListingsByUser)
-    this.router.get(`/listings`, this.getAllListings)
     this.router.get(`/listings/public/:id`, this.getListingById)
     this.router.put('/listings/:listingId/status/:status', authAdminMiddleware, this.putChangeListingStatus)
+    this.router.get(`/listings/count/all`, authMiddleware, this.getAllListings);
+    this.router.get(`/listings/count/hosts`, authMiddleware, this.getAllHosts);
+    this.router.get(`/listings/count/hosts/date`, authMiddleware, this.getAllHostsByDate);
+    this.router.get(`/listings/count/date`, authMiddleware, this.getAllListingsByDate);
+    this.router.get(`/listings/count/categories`, authMiddleware, this.getListingsCountCategories);
 
     /**
      * Get listing data by listing ID.
@@ -420,37 +355,34 @@ class ListingController {
     /**
      * Publish listing.
      */
-    this.router.put(
-      '/listings/:listingId/publish/:status',
-      authMiddleware,
-      async (req: Request, res: Response, next: NextFunction) => {
-        const listingId = req.params.listingId
-        try {
-          const listingObj: Listing | null = await Listing.findOne({
-            where: { id: listingId }
-          })
-          if (!listingObj) {
-            throw new HttpException(400, `Listing ${listingId} not found.`)
-          }
-          const isToPublished: Boolean = /true/i.test(req.params.status)
-          if (isToPublished) {
-            const isReadyConditional = await this.isReady(listingObj)
-            await Listing.update({ isPublished: isReadyConditional }, { where: { id: listingId } })
-            if (!isReadyConditional) {
-              throw new HttpException(400, `Listing ${listingId} is not ready to publish.`)
-            }
-          } else {
-            await Listing.update({ isPublished: false }, { where: { id: listingId } })
-          }
-          const listingUpdated = await Listing.findOne({
-            where: { id: listingId }
-          })
-          res.send(listingUpdated)
-        } catch (err) {
-          console.error(err)
-          sequelizeErrorMiddleware(err, req, res, next)
+    this.router.put('/listings/:listingId/publish/:status', authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
+      const listingId = req.params.listingId
+      try {
+        const listingObj: Listing | null = await Listing.findOne({
+          where: { id: listingId }
+        })
+        if (!listingObj) {
+          throw new HttpException(400, `Listing ${listingId} not found.`)
         }
+        const isToPublished: Boolean = /true/i.test(req.params.status)
+        if (isToPublished) {
+          const isReadyConditional = await this.isReady(listingObj)
+          await Listing.update({ isPublished: isReadyConditional }, { where: { id: listingId } })
+          if (!isReadyConditional) {
+            throw new HttpException(400, `Listing ${listingId} is not ready to publish.`)
+          }
+        } else {
+          await Listing.update({ isPublished: false }, { where: { id: listingId } })
+        }
+        const listingUpdated = await Listing.findOne({
+          where: { id: listingId }
+        })
+        res.send(listingUpdated)
+      } catch (err) {
+        console.error(err)
+        sequelizeErrorMiddleware(err, req, res, next)
       }
+    }
     )
 
     /**
@@ -473,6 +405,77 @@ class ListingController {
         sequelizeErrorMiddleware(err, req, res, next)
       }
     })
+  }
+
+  /**
+   * Get listing by ID.
+   */
+  private getListingById = async (req: Request, res: Response, next: NextFunction) => {
+    const listingId = <number>(<unknown>req.params.id)
+    try {
+      const where: { id: number;[key: string]: any } = { id: listingId }
+      const { isPublished } = req.query
+      if (isPublished) {
+        where.isPublished = isPublished === 'true'
+      }
+      const listingObj: Listing | null = await Listing.findOne({ where })
+      if (!listingObj) {
+        throw new HttpException(400, `Listing ${listingId} not found.`)
+      }
+      res.send(listingObj)
+    } catch (err) {
+      console.error(err)
+      sequelizeErrorMiddleware(err, req, res, next)
+    }
+  }
+
+  /**
+   * Get listings.
+   */
+  private getAllPlainListings = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = await Listing.findAll({
+        attributes: [
+          "id",
+          "userId",
+          "isPublished",
+          "locationId",
+          "title",
+          "createdAt",
+          "isReady",
+          "status"
+        ]
+      });
+      res.send(result);
+    } catch (err) {
+      console.error(err)
+      sequelizeErrorMiddleware(err, req, res, next)
+    }
+  }
+
+  /**
+   * Get listing by ID.
+   */
+  private getAllListingsByUser = async (req: Request, res: Response, next: NextFunction) => {
+    const userId = <string>(<unknown>req.params.userId)
+    const status = 'deleted'
+    try {
+      const where: { userId: string; status: any;[key: string]: any } = {
+        userId,
+        status: { [Op.not]: status }
+      }
+      const results: {
+        rows: Listing[]
+        count: number
+      } | null = await Listing.findAndCountAll({
+        where,
+        order: [['updatedAt', 'DESC']]
+      })
+      res.send(results)
+    } catch (err) {
+      console.error(err)
+      sequelizeErrorMiddleware(err, req, res, next)
+    }
   }
 
   private async putChangeListingStatus(req: Request, res: Response, next: NextFunction) {
@@ -574,6 +577,135 @@ class ListingController {
     )
     return !(aWrongPeriod.length > 0)
   }
+
+  getAllListings = async (request: Request, response: Response, next: NextFunction) => {
+    const data = await Listing.findAndCountAll({
+      attributes: [
+        "id",
+        "userId",
+        "isPublished",
+        "title",
+        "createdAt",
+        "isReady",
+        "status"
+      ],
+      include: [
+        {
+          model: Location,
+          as: "location",
+          attributes: ["country", "city", "state"]
+        }
+      ]
+    });
+    response.send(data);
+  };
+
+  getAllHosts = async (request: Request, response: Response, next: NextFunction) => {
+    try {
+      const data = await Listing.count({ distinct: true, col: "userId" });
+      response.send({ count: data });
+    } catch (error) {
+      sequelizeErrorMiddleware(error, request, response, next);
+    }
+  };
+
+  getAllHostsByDate = async (request: Request, response: Response, next: NextFunction) => {
+    const days = request.query.days || 10000;
+    const date = format(subDays(new Date(), days), "YYYY-MM-DD");
+    try {
+      const data = await Listing.count({
+        where: {
+          createdAt: {
+            [Op.gte]: `${date}`
+          }
+        },
+        distinct: true,
+        col: "userId"
+      });
+      response.send({ count: data });
+    } catch (error) {
+      sequelizeErrorMiddleware(error, request, response, next);
+    }
+  };
+
+  getAllListingsByDate = async (request: Request, response: Response, next: NextFunction) => {
+    const days = request.query.days || 10000;
+    const category = request.query.category || null;
+    const date = format(subDays(new Date(), days), "YYYY-MM-DD");
+    let where = {
+      createdAt: {
+        [Op.gte]: `${date}`
+      }
+    };
+    if (category && category !== null && category !== "null") {
+      where = Object.assign({
+        ...where,
+        listSettingsParentId: { [Op.in]: [category] }
+      });
+    }
+    try {
+      const all = await Listing.count({ where: where });
+      const active = await Listing.count({
+        where: { ...where, status: "active" }
+      });
+      const deleted = await Listing.count({
+        where: { ...where, status: "deleted" }
+      });
+      const published = await Listing.count({
+        where: { ...where, isPublished: true }
+      });
+      response.send({ count: { all, active, deleted, published } });
+    } catch (error) {
+      sequelizeErrorMiddleware(error, request, response, next);
+    }
+  };
+
+  getAllListingsByCategory = async (request: Request, response: Response, next: NextFunction) => {
+    const category = request.query.category;
+    const where = { where: { listSettingsParentId: category }, raw: true };
+    try {
+      const data = await Listing.count(where);
+      response.send({ count: data });
+    } catch (error) {
+      sequelizeErrorMiddleware(error, request, response, next);
+    }
+  };
+
+  getAllListingsCategories = async (request: Request, response: Response, next: NextFunction) => {
+    const category = request.query.category;
+    const where = { where: { listSettingsParentId: category }, raw: true };
+    try {
+      const data = await Listing.count(where);
+      response.send({ count: data });
+    } catch (error) {
+      sequelizeErrorMiddleware(error, request, response, next);
+    }
+  };
+
+  getListingsCountCategories = async (request: Request, response: Response, next: NextFunction) => {
+    var listingsCategory = new Array();
+    const categories = await _getCategories();
+    for (const category of categories) {
+      for (const item of category.subCategories) {
+        const where = { listSettingsParentId: item.id };
+        const all = await Listing.count({ where: where });
+        const active = await Listing.count({
+          where: { ...where, status: "active" }
+        });
+        const deleted = await Listing.count({
+          where: { ...where, status: "deleted" }
+        });
+        const published = await Listing.count({
+          where: { ...where, isPublished: true }
+        });
+        listingsCategory.push({
+          category: item.subCategory.itemName,
+          count: { all, active, deleted, published }
+        });
+      }
+    }
+    response.send(listingsCategory);
+  };
 }
 
 export default ListingController
