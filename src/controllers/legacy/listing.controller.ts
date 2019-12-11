@@ -3,6 +3,7 @@ import { subDays, format } from "date-fns";
 import Sequelize from "sequelize";
 import { authMiddleware } from "../../helpers/middlewares/auth-middleware";
 import sequelizeErrorMiddleware from "../../helpers/middlewares/sequelize-error-middleware";
+import { _getCategories } from "./category.controller";
 
 import { Listing, Location } from "../../models";
 
@@ -27,6 +28,11 @@ class ListingLegacyController {
       `/listings/count/date`,
       authMiddleware,
       this.getAllListingsByDate
+    );
+    this.router.get(
+      `/listings/count/categories`,
+      authMiddleware,
+      this.getListingsCountCategories
     );
   }
 
@@ -166,6 +172,36 @@ class ListingLegacyController {
     } catch (error) {
       sequelizeErrorMiddleware(error, request, response, next);
     }
+  };
+
+  getListingsCountCategories = async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ) => {
+    var listingsCategory = new Array();
+    const categories = await _getCategories();
+
+    for (const category of categories) {
+      for (const item of category.subCategories) {
+        const where = { listSettingsParentId: item.id };
+        const all = await Listing.count({ where: where });
+        const active = await Listing.count({
+          where: { ...where, status: "active" }
+        });
+        const deleted = await Listing.count({
+          where: { ...where, status: "deleted" }
+        });
+        const published = await Listing.count({
+          where: { ...where, isPublished: true }
+        });
+        listingsCategory.push({
+          category: item.subCategory.itemName,
+          count: { all, active, deleted, published }
+        });
+      }
+    }
+    response.send(listingsCategory);
   };
 }
 
