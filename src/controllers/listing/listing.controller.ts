@@ -128,7 +128,7 @@ class ListingController {
                 },
                 {
                   model: ListSettings,
-                  as: 'subcategory',
+                  as: 'subCategory',
                   attributes: ['itemName']
                 }
               ]
