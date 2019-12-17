@@ -30,14 +30,25 @@ import { IDraftRequest, IUpdateRequest, IAccessDaysRequest } from '../../interfa
 
 const Op = Sequelize.Op
 
+const cacheKeys = {
+  PLAIN_LIST: '_listings_plain_',
+  BY_USER: '_listings_by_user_',
+  COUNT_ALL: '_listings_count_'
+};
+
 class ListingController {
 
   private router = Router();
 
+  // Standard expiration time for 3 days...
   private cache: NodeCache = new NodeCache({ stdTTL: 259200 });
 
   constructor() {
     this.intializeRoutes()
+  }
+
+  private cleanCache() {
+    this.cache.flushAll();
   }
 
   private intializeRoutes() {
@@ -197,6 +208,7 @@ class ListingController {
     this.router.put('/listings/update', authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
       const data: IUpdateRequest = req.body
       try {
+        this.cleanCache();
         // Getting listing record...
         const listingObj: Listing | null = await Listing.findOne({
           where: { id: data.listingId }
@@ -350,6 +362,7 @@ class ListingController {
 
     this.router.delete('/listings/:listingId', authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
       try {
+        this.cleanCache();
         const listingId = req.params.listingId
         const listingObj = await Listing.findOne({ where: { id: listingId } })
         if (!listingObj) {
@@ -370,6 +383,7 @@ class ListingController {
     this.router.put('/listings/:listingId/publish/:status', authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
       const listingId = req.params.listingId
       try {
+        this.cleanCache();
         const listingObj: Listing | null = await Listing.findOne({
           where: { id: listingId }
         })
@@ -403,14 +417,12 @@ class ListingController {
     this.router.put('/listings/claim/:listingId', async (req: Request, res: Response, next: NextFunction) => {
       const listingId = req.params.listingId
       try {
+        this.cleanCache();
         if (!listingId) throw new HttpException(400, 'A Listing must be provided.')
-        const listingObj: Listing | null = await Listing.findOne({
-          where: { id: listingId }
-        })
+        const listingObj: Listing | null = await Listing.findOne({ where: { id: listingId } })
         if (!listingObj) throw new HttpException(400, 'A Listgin must be provided.')
         // Updating listing record...
         await Listing.update({ status: 'claimed' }, { where: { id: listingId } })
-
         res.send(listingObj)
       } catch (err) {
         console.error(err)
@@ -446,7 +458,13 @@ class ListingController {
    */
   private getAllPlainListings = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const cacheData = this.cache.get(cacheKeys.PLAIN_LIST);
+      if (cacheData) {
+        res.send(cacheData);
+        return;
+      }
       const result = await Listing.findAll({
+        raw: true,
         attributes: [
           "id",
           "userId",
@@ -458,6 +476,7 @@ class ListingController {
           "status"
         ]
       });
+      this.cache.set(cacheKeys.PLAIN_LIST, result);
       res.send(result);
     } catch (err) {
       console.error(err)
@@ -472,17 +491,21 @@ class ListingController {
     const userId = <string>(<unknown>req.params.userId)
     const status = 'deleted'
     try {
+      const cacheData = this.cache.get(`${cacheKeys.BY_USER}${userId}`);
+      if (cacheData) {
+        res.send(cacheData);
+        return;
+      }
       const where: { userId: string; status: any;[key: string]: any } = {
         userId,
         status: { [Op.not]: status }
       }
-      const results: {
-        rows: Listing[]
-        count: number
-      } | null = await Listing.findAndCountAll({
+      const results: { rows: Listing[], count: number } | null = await Listing.findAndCountAll({
         where,
-        order: [['updatedAt', 'DESC']]
-      })
+        order: [['updatedAt', 'DESC']],
+        raw: true
+      });
+      this.cache.set(`${cacheKeys.BY_USER}${userId}`, results);
       res.send(results)
     } catch (err) {
       console.error(err)
@@ -492,6 +515,7 @@ class ListingController {
 
   private async putChangeListingStatus(req: Request, res: Response, next: NextFunction) {
     try {
+      this.cleanCache();
       const listingId = req.params.listingId
       const listingObj = await Listing.findOne({ where: { id: listingId } })
       if (!listingObj) {
@@ -590,26 +614,37 @@ class ListingController {
     return !(aWrongPeriod.length > 0)
   }
 
-  getAllListings = async (request: Request, response: Response, next: NextFunction) => {
-    const data = await Listing.findAndCountAll({
-      attributes: [
-        "id",
-        "userId",
-        "isPublished",
-        "title",
-        "createdAt",
-        "isReady",
-        "status"
-      ],
-      include: [
-        {
-          model: Location,
-          as: "location",
-          attributes: ["country", "city", "state"]
-        }
-      ]
-    });
-    response.send(data);
+  getAllListings = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const cacheData = this.cache.get(cacheKeys.COUNT_ALL);
+      if (cacheData) {
+        res.send(cacheData);
+        return;
+      }
+      const data = await Listing.findAndCountAll({
+        raw: true,
+        attributes: [
+          "id",
+          "userId",
+          "isPublished",
+          "title",
+          "createdAt",
+          "isReady",
+          "status"
+        ],
+        include: [
+          {
+            model: Location,
+            as: "location",
+            attributes: ["country", "city", "state"]
+          }
+        ]
+      });
+      this.cache.set(cacheKeys.COUNT_ALL, data);
+      res.send(data);
+    } catch (err) {
+      sequelizeErrorMiddleware(err, req, res, next);
+    }
   };
 
   getAllHosts = async (request: Request, response: Response, next: NextFunction) => {
