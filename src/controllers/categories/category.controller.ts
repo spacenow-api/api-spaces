@@ -21,7 +21,7 @@ export const _getCategories = (): Promise<Array<ListSettings>> => {
         include: [
           {
             model: ListSettings,
-            as: "subCategory"
+            as: "subCategory",
           },
           {
             model: SubcategoryBookingPeriod
@@ -36,7 +36,7 @@ export const _getCategories = (): Promise<Array<ListSettings>> => {
     }
   };
   try {
-    return ListSettings.findAll({ ...where, ...include, raw: true });
+    return ListSettings.findAll({ ...where, ...include });
   } catch (err) {
     return err;
   }
@@ -66,7 +66,7 @@ class CategoriesController {
           sequelizeErrorMiddleware(data.err, req, res, next);
           return;
         }
-        this.cache.set(CACHE_KEY, data);
+        this.cache.set(CACHE_KEY, JSON.parse(JSON.stringify(data)));
       }
       res.send(data);
     } catch (err) {
