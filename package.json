@@ -36,7 +36,7 @@
     "node-cache": "~5.1.0",
     "pm2": "~4.1.2",
     "reflect-metadata": "~0.1.13",
-    "sequelize": "~5.8.10",
+    "sequelize": "~5.15.1",
     "sequelize-typescript": "~1.0.0-beta.3",
     "sharp": "~0.20.8",
     "uuid": "~3.3.2"
