@@ -2,6 +2,7 @@ import { Router, Request, Response, NextFunction } from 'express'
 import { subDays, format } from "date-fns";
 import axios from 'axios'
 import Sequelize from 'sequelize'
+import NodeCache from 'node-cache';
 
 import * as config from '../../config'
 
@@ -31,7 +32,9 @@ const Op = Sequelize.Op
 
 class ListingController {
 
-  private router = Router()
+  private router = Router();
+
+  private cache: NodeCache = new NodeCache({ stdTTL: 259200 });
 
   constructor() {
     this.intializeRoutes()
@@ -81,7 +84,14 @@ class ListingController {
 
     this.router.get('/listings/public/mulitple/ids', async (req: Request, res: Response, next: NextFunction) => {
       const data = req.body
+      const idString = JSON.stringify(data.ids);
+      const cacheKey = `_public_listings_by_id_${idString}_`;
       try {
+        const cacheData = this.cache.get(cacheKey);
+        if (cacheData) {
+          res.send(cacheData);
+          return;
+        }
         const listingsObj = await Listing.findAndCountAll({
           attributes: ['id', 'title', 'bookingPeriod'],
           include: [
@@ -134,8 +144,10 @@ class ListingController {
               ]
             }
           ],
-          where: { id: data.ids }
-        })
+          where: { id: data.ids },
+          raw: true
+        });
+        this.cache.set(cacheKey, listingsObj);
         res.send(listingsObj)
       } catch (err) {
         sequelizeErrorMiddleware(err, req, res, next)
