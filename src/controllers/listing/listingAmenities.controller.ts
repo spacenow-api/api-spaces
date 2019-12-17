@@ -1,4 +1,5 @@
 import { Router, Request, Response, NextFunction } from "express";
+import NodeCache from 'node-cache';
 
 import { authMiddleware } from '../../helpers/middlewares/auth-middleware';
 import sequelizeErrorMiddleware from "../../helpers/middlewares/sequelize-error-middleware";
@@ -6,7 +7,11 @@ import sequelizeErrorMiddleware from "../../helpers/middlewares/sequelize-error-
 import { ListSettings, ListSettingsParent, ListingAmenities } from "../../models";
 
 class ListingAmenitiesController {
+
   private router = Router();
+
+  // Standard expiration time for 3 days...
+  private cache: NodeCache = new NodeCache({ stdTTL: 259200 });
 
   constructor() {
     this.intializeRoutes();
@@ -42,7 +47,13 @@ class ListingAmenitiesController {
      * Get all amenities from sub-category ID
      */
     this.router.get(`/listings/fetch/amenities/:listSettingsParentId`, authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
+      const cacheKey = `_listing_amenities_${req.params.listSettingsParentId}_`;
       try {
+        const cacheData = this.cache.get(cacheKey);
+        if (cacheData) {
+          res.send(cacheData);
+          return;
+        }
         const parentsArray: Array<ListSettingsParent> = await ListSettingsParent.findAll({
           where: { listSettingsParentId: req.params.listSettingsParentId },
           raw: true
@@ -53,9 +64,11 @@ class ListingAmenitiesController {
             where: { id: item.listSettingsChildId, isEnable: "1" },
             raw: true
           });
-          if(settingsObj)
+          if (settingsObj) {
             result.push(settingsObj);
+          }
         }
+        this.cache.set(cacheKey, result);
         res.send(result);
       } catch (err) {
         console.error(err);
