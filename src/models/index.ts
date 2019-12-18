@@ -13,9 +13,14 @@ import { ListingPhotos } from "./listingPhotos.model";
 import { SubcategorySpecifications } from "./subcategorySpecifications.model";
 import { SubcategoryBookingPeriod } from "./subcategoryBookingPeriod.model";
 import { UserProfile } from "./userProfile.model";
-import { Reviews } from './reviews.model';
-import { Bookings } from './bookings.model';
-import { ExternalClicks } from './externalClicks.model';
+import { Reviews } from "./reviews.model";
+import { Bookings } from "./bookings.model";
+import { ExternalClicks } from "./externalClicks.model";
+import { Category } from "./category.model";
+import { CategorySpecification } from "./category_specification.model";
+import { CategoryBookingPeriod } from "./category_booking_period.model";
+import { Topic } from "./topic.model";
+import { ListingTopic } from "./listing_topic.model";
 
 export {
   Listing,
@@ -35,7 +40,12 @@ export {
   UserProfile,
   Reviews,
   Bookings,
-  ExternalClicks
+  ExternalClicks,
+  Category,
+  CategorySpecification,
+  CategoryBookingPeriod,
+  Topic,
+  ListingTopic
 };
 
 export const arrayOfModels = [
@@ -56,5 +66,10 @@ export const arrayOfModels = [
   UserProfile,
   Reviews,
   Bookings,
-  ExternalClicks
+  ExternalClicks,
+  Category,
+  CategorySpecification,
+  CategoryBookingPeriod,
+  Topic,
+  ListingTopic
 ];

@@ -2,6 +2,8 @@ import { Router, Request, Response, NextFunction } from "express";
 
 import sequelizeErrorMiddleware from "../../helpers/middlewares/sequelize-error-middleware";
 import {
+  Category,
+  CategoryBookingPeriod,
   ListSettings,
   ListSettingsParent,
   SubcategoryBookingPeriod
@@ -49,12 +51,30 @@ class CategoriesController {
 
   private intializeRoutes() {
     this.router.get(`/categories`, this.getCategories);
+    this.router.get(`/v2/categories`, this.getV2Categories);
   }
 
   getCategories = async (req: Request, res: Response, next: NextFunction) => {
     const data = await _getCategories();
     if (data.err) sequelizeErrorMiddleware(data.err, req, res, next);
     res.send(data);
+  };
+
+  getV2Categories = async (req: Request, res: Response, next: NextFunction) => {
+    const include = {
+      include: [
+        {
+          model: CategoryBookingPeriod
+        }
+      ]
+    };
+
+    try {
+      const data = await Category.findAll(include);
+      res.send(data);
+    } catch (error) {
+      sequelizeErrorMiddleware(error, req, res, next);
+    }
   };
 }
 

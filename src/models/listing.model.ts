@@ -12,153 +12,165 @@ import {
   BelongsTo,
   ForeignKey,
   HasOne,
-  HasMany
-} from 'sequelize-typescript'
+  HasMany,
+  BelongsToMany
+} from "sequelize-typescript";
 
-import { Location, ListingData, ListingPhotos, ListSettingsParent, UserProfile } from './'
+import {
+  Location,
+  ListingData,
+  ListingPhotos,
+  ListSettingsParent,
+  UserProfile,
+  ListingTopic,
+  Topic
+} from "./";
 
 @Table({
-  tableName: 'Listing'
+  tableName: "Listing"
 })
 export class Listing extends Model<Listing> {
   @PrimaryKey
   @AutoIncrement
   @AllowNull(false)
   @Column
-  id!: number
+  id!: number;
 
   @ForeignKey(() => Location)
   @Column
-  locationId?: number
+  locationId?: number;
 
   @ForeignKey(() => UserProfile)
   @AllowNull(false)
   @Column
-  userId!: string
+  userId!: string;
 
   @ForeignKey(() => ListSettingsParent)
   @AllowNull(false)
   @Column
-  listSettingsParentId!: number
+  listSettingsParentId!: number;
 
   @Column
-  bookingPeriod?: string
+  bookingPeriod?: string;
 
   @Column
-  roomType?: string
+  roomType?: string;
 
   @Column
-  houseType?: string
+  houseType?: string;
 
   @Column
-  residenceType?: string
+  residenceType?: string;
 
   @Column
-  bedrooms?: string
+  bedrooms?: string;
 
   @Column
-  buildingSize?: string
+  buildingSize?: string;
 
   @Column
-  bedType?: string
+  bedType?: string;
 
   @Column
-  beds?: number
+  beds?: number;
 
   @Column
-  personCapacity?: number
+  personCapacity?: number;
 
   @Column
-  bathrooms?: number
+  bathrooms?: number;
 
   @Column
-  bathroomType?: string
+  bathroomType?: string;
 
   @Column
-  country?: string
+  country?: string;
 
   @Column
-  street?: string
+  street?: string;
 
   @Column
-  buildingName?: string
+  buildingName?: string;
 
   @Column
-  city?: string
+  city?: string;
 
   @Column
-  state?: string
+  state?: string;
 
   @Column
-  zipcode?: string
+  zipcode?: string;
 
   @Column
-  lat?: string
+  lat?: string;
 
   @Column
-  lng?: string
+  lng?: string;
 
   @Default(false)
   @Column
-  isMapTouched?: boolean
+  isMapTouched?: boolean;
 
   @AllowNull(false)
   @CreatedAt
   @Column
-  createdAt!: Date
+  createdAt!: Date;
 
   @AllowNull(false)
   @UpdatedAt
   @Column
-  updatedAt!: Date
+  updatedAt!: Date;
 
   @Column
-  title?: string
+  title?: string;
 
   @Column
-  description?: string
+  description?: string;
 
   @Column
-  coverPhoto?: number
+  coverPhoto?: number;
 
   @AllowNull(false)
-  @Default('instant')
-  @Column(DataType.ENUM('instant', 'request', 'poa'))
-  bookingType!: string
-
-  @AllowNull(false)
-  @Default(false)
-  @Column
-  isPublished!: boolean
+  @Default("instant")
+  @Column(DataType.ENUM("instant", "request", "poa"))
+  bookingType!: string;
 
   @AllowNull(false)
   @Default(false)
   @Column
-  isReady!: boolean
+  isPublished!: boolean;
+
+  @AllowNull(false)
+  @Default(false)
+  @Column
+  isReady!: boolean;
 
   @Column
-  coverPhotoId?: number
+  coverPhotoId?: number;
 
   @Default(1)
   @Column
-  quantity?: number
+  quantity?: number;
 
-  @Default('active')
-  @Column(DataType.ENUM('active', 'deleted', 'claimed'))
-  status?: string
+  @Default("active")
+  @Column(DataType.ENUM("active", "deleted", "claimed"))
+  status?: string;
+
+  // @BelongsToMany(() => ListingTopic, "listingId")
+  // topics!: Topic[];
 
   @BelongsTo(() => Location)
-  location!: Location
+  location!: Location;
 
   @HasOne(() => ListingData)
-  listingData!: ListingData
+  listingData!: ListingData;
 
   @BelongsTo(() => UserProfile)
-  host!: UserProfile
+  host!: UserProfile;
 
   @HasMany(() => ListingPhotos)
-  listingPhotos!: ListingPhotos
+  listingPhotos!: ListingPhotos;
 
   @BelongsTo(() => ListSettingsParent)
-  listingSettings!: ListSettingsParent
+  listingSettings!: ListSettingsParent;
 }
