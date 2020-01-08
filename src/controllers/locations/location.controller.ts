@@ -8,7 +8,7 @@ import sequelizeErrorMiddleware from "../../helpers/middlewares/sequelize-error-
 
 import { IGeoResponse } from "../../interfaces/location.interface";
 import { RootObject } from "../../interfaces/geoCode.interface";
-import { Location, UniqueLocation } from "../../models";
+import { Location, UniqueLocation, Listing } from "../../models";
 
 import * as config from "../../config";
 
@@ -21,17 +21,27 @@ const getHash = (suggestAddress: string, userId: string = "") => {
 };
 
 class LocationController {
-
   private router = Router();
 
   constructor() {
     this.router.get("/locations/:id", this.getLocationById);
+    this.router.get(
+      "/locations/count/listings",
+      authMiddleware,
+      this.getLocationsCountListings
+    );
     this.router.post("/locations", authMiddleware, this.postNewLocation);
   }
 
-  private async getLocationById(req: Request, res: Response, next: NextFunction) {
+  private async getLocationById(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
-      const locationObj: Location | null = await Location.findOne({ where: { id: req.params.id } });
+      const locationObj: Location | null = await Location.findOne({
+        where: { id: req.params.id }
+      });
       res.send(locationObj);
     } catch (err) {
       console.error(err);
@@ -39,25 +49,38 @@ class LocationController {
     }
   }
 
-  private async postNewLocation(req: Request, res: Response, next: NextFunction) {
+  private async postNewLocation(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
     const data = req.body;
     try {
       if (!data || !data.suggestAddress) {
         throw new HttpException(400, "A reference address must be provided.");
       }
       const hash = getHash(data.suggestAddress, req.userIdDecoded);
-      const uniLocationObj = await UniqueLocation.findOne({ where: { id: hash } });
+      const uniLocationObj = await UniqueLocation.findOne({
+        where: { id: hash }
+      });
       if (uniLocationObj) {
-        const locationObj = await Location.findOne({ where: { id: uniLocationObj.locationId } });
+        const locationObj = await Location.findOne({
+          where: { id: uniLocationObj.locationId }
+        });
         res.send(locationObj);
       } else {
         // Creating a new location from Google API data...
         let geoAddress: IGeoResponse;
         try {
-          geoAddress = await LocationController.getGoogleGeoCodeAddress(data.suggestAddress);
+          geoAddress = await LocationController.getGoogleGeoCodeAddress(
+            data.suggestAddress
+          );
         } catch (err) {
-          console.error(err)
-          throw new HttpException(400, `Address ${data.suggestAddress} not found by Google API.`);
+          console.error(err);
+          throw new HttpException(
+            400,
+            `Address ${data.suggestAddress} not found by Google API.`
+          );
         }
         const { dataValues }: any = await Location.create({
           ...geoAddress,
@@ -77,8 +100,14 @@ class LocationController {
     }
   }
 
-  static async getGoogleGeoCodeAddress(suggestAddress: string): Promise<IGeoResponse> {
-    const URL = "https://maps.googleapis.com/maps/api/geocode/json?address=" + encodeURI(suggestAddress) + "&key=" + config.googleMapAPI;
+  static async getGoogleGeoCodeAddress(
+    suggestAddress: string
+  ): Promise<IGeoResponse> {
+    const URL =
+      "https://maps.googleapis.com/maps/api/geocode/json?address=" +
+      encodeURI(suggestAddress) +
+      "&key=" +
+      config.googleMapAPI;
     const resp = await axios.get(URL);
     const geoData: RootObject = await resp.data;
     const locationData: any = {};
@@ -95,9 +124,17 @@ class LocationController {
           }
         });
       });
-      const city = locationData.locality != undefined ? locationData.locality : locationData.administrative_area_level_2;
-      const buildingName = (locationData.subpremise != undefined ? locationData.subpremise : "") + " " + (locationData.premise != undefined ? locationData.premise : "");
-      const address1 = locationData.street_number ? locationData.street_number + " " + locationData.route : locationData.route;
+      const city =
+        locationData.locality != undefined
+          ? locationData.locality
+          : locationData.administrative_area_level_2;
+      const buildingName =
+        (locationData.subpremise != undefined ? locationData.subpremise : "") +
+        " " +
+        (locationData.premise != undefined ? locationData.premise : "");
+      const address1 = locationData.street_number
+        ? locationData.street_number + " " + locationData.route
+        : locationData.route;
       return Promise.resolve({
         address1: address1,
         buildingName: buildingName,
@@ -112,6 +149,56 @@ class LocationController {
       return Promise.reject();
     }
   }
+
+  private getLocationsCountListings = async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ) => {
+    var listingsLocations = new Array();
+
+    let where = {
+      attributes: ["state"],
+      group: ["state"]
+    };
+
+    const locations = await Location.findAll(where);
+    for (const location of locations) {
+      const where = {
+        include: [
+          {
+            model: Location,
+            as: "location",
+            attributes: ["state"],
+            where: {
+              state: location.state || ""
+            }
+          }
+        ]
+      };
+
+      const all = await Listing.count(where);
+      const active = await Listing.count({
+        ...where,
+        where: { status: "active" }
+      });
+      const deleted = await Listing.count({
+        ...where,
+        where: { status: "deleted" }
+      });
+      const published = await Listing.count({
+        ...where,
+        where: { isPublished: true }
+      });
+
+      listingsLocations.push({
+        state: location.state,
+        count: { all, active, deleted, published }
+      });
+    }
+
+    response.send(listingsLocations);
+  };
 }
 
 export default LocationController;

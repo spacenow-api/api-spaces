@@ -36,6 +36,8 @@ import {
 } from "../../interfaces/listing.interface";
 
 const Op = Sequelize.Op;
+const Fn = Sequelize.fn;
+const Col = Sequelize.col;
 
 const cacheKeys = {
   PLAIN_LIST: "_listings_plain_",
@@ -676,40 +678,28 @@ class ListingController {
     const photosCount = await ListingPhotos.count({ where: { listingId } });
     if (photosCount <= 0) return false;
 
-    console.log("photosCount ====>>>>");
-
     // Title content...
     if (!title) return false;
-
-    console.log("title ====>>>>");
 
     // A booking type selected...
     if (!bookingType) return false;
 
-    console.log("bookingType ====>>>>");
-
     // A base price defined...
     if (bookingType != "poa" && (!basePrice || basePrice <= 0)) return false;
-
-    console.log("bookingType POA ====>>>>");
 
     // If got one day open for work...
     if (listingCategory != 20)
       if (!this.isOpenForWork(listingAccessDays)) return false;
-
-    console.log("listingCategory ====>>>>");
 
     return true;
   }
 
   isOpenForWork(listingAccessDays?: any) {
     if (!listingAccessDays) return false;
-    console.log("listingAccessDays ====>>>>");
     const { mon, tue, wed, thu, fri, sat, sun, all247 } = listingAccessDays;
     if (!mon && !tue && !wed && !thu && !fri && !sat && !sun && !all247)
       return false;
     if (!listingAccessDays.listingAccessHours) return false;
-    console.log("listingAccessDays.listingAccessHours ====>>>>");
     const aWrongPeriod: Array<any> = listingAccessDays.listingAccessHours.filter(
       (o: { openHour: string; closeHour: string }) => {
         return (
@@ -718,7 +708,6 @@ class ListingController {
         );
       }
     );
-    console.log("aWrongPeriod ====>>>>", aWrongPeriod.length);
     return !(aWrongPeriod.length > 0);
   }
 
