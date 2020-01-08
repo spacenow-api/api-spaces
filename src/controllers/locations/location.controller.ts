@@ -159,7 +159,8 @@ class LocationController {
 
     let where = {
       attributes: ["state"],
-      group: ["state"]
+      group: ["state"],
+      where: { country: "AU" }
     };
 
     const locations = await Location.findAll(where);
