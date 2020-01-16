@@ -153,7 +153,7 @@ class ListingController {
   getListingById = async (req: Request, res: Response, next: NextFunction) => {
     const listingId = <number>(<unknown>req.params.id);
     try {
-      const where: { id: number; [key: string]: any } = { id: listingId };
+      const where: { id: number;[key: string]: any } = { id: listingId };
       const { isPublished } = req.query;
       if (isPublished) {
         where.isPublished = isPublished === "true";
@@ -172,30 +172,23 @@ class ListingController {
   /**
    * Get listings.
    */
-  getAllPlainListings = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
+  getAllPlainListings = async (req: Request, res: Response, next: NextFunction) => {
+    let page = 0;
+    let pageSize = 10;
     try {
-      const cacheData = this.cache.get(cacheKeys.PLAIN_LIST);
+      const q = req.query;
+      if (q) {
+        page = q.page ? parseInt(q.page, 10) : 0;
+        pageSize = q.limit ? parseInt(q.limit, 10) : 10;
+      }
+      const cacheKey = `${cacheKeys.PLAIN_LIST}page_${page}_size_${pageSize}_`;
+      const cacheData = this.cache.get(cacheKey);
       if (cacheData) {
         res.send(cacheData);
         return;
       }
-      const result = await Listing.findAll({
-        attributes: [
-          "id",
-          "userId",
-          "isPublished",
-          "locationId",
-          "title",
-          "createdAt",
-          "isReady",
-          "status"
-        ]
-      });
-      this.cache.set(cacheKeys.PLAIN_LIST, JSON.parse(JSON.stringify(result)));
+      const result = await Listing.findAndCountAll({ limit: pageSize, offset: page * pageSize });
+      this.cache.set(cacheKey, JSON.parse(JSON.stringify(result)));
       res.send(result);
     } catch (err) {
       console.error(err);
@@ -219,7 +212,7 @@ class ListingController {
         res.send(cacheData);
         return;
       }
-      const where: { userId: string; status: any; [key: string]: any } = {
+      const where: { userId: string; status: any;[key: string]: any } = {
         userId,
         status: { [Op.not]: status }
       };

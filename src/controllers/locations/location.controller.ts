@@ -1,6 +1,7 @@
 import { Router, Request, Response, NextFunction } from "express";
 import crypto from "crypto";
 import axios from "axios";
+import NodeCache from "node-cache";
 
 import { authMiddleware } from "./../../helpers/middlewares/auth-middleware";
 import HttpException from "../../helpers/exceptions/HttpException";
@@ -12,6 +13,10 @@ import { Location, UniqueLocation, Listing } from "../../models";
 
 import * as config from "../../config";
 
+const cacheKeys = {
+  BY_ID: '_location_by_id_'
+};
+
 const getHash = (suggestAddress: string, userId: string = "") => {
   const stringReference: string = suggestAddress + userId;
   return crypto
@@ -21,27 +26,27 @@ const getHash = (suggestAddress: string, userId: string = "") => {
 };
 
 class LocationController {
+
   private router = Router();
+
+  private cache: NodeCache = new NodeCache();
 
   constructor() {
     this.router.get("/locations/:id", this.getLocationById);
-    this.router.get(
-      "/locations/count/listings",
-      authMiddleware,
-      this.getLocationsCountListings
-    );
+    this.router.get("/locations/count/listings", authMiddleware, this.getLocationsCountListings);
     this.router.post("/locations", authMiddleware, this.postNewLocation);
   }
 
-  private async getLocationById(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
+  getLocationById = async (req: Request, res: Response, next: NextFunction) => {
+    const cacheKey = `${cacheKeys.BY_ID}${req.params.id}`
     try {
-      const locationObj: Location | null = await Location.findOne({
-        where: { id: req.params.id }
-      });
+      const cacheData = this.cache.get(cacheKey);
+      if (cacheData) {
+        res.send(cacheData);
+        return;
+      }
+      const locationObj: Location | null = await Location.findOne({ where: { id: req.params.id } });
+      this.cache.set(cacheKey, JSON.parse(JSON.stringify(locationObj)));
       res.send(locationObj);
     } catch (err) {
       console.error(err);
