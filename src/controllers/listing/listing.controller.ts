@@ -276,7 +276,7 @@ class ListingController {
         const isReadyConditional = await this.isReady(listingObj);
         await Listing.update(
           { isPublished: isReadyConditional },
-          { where: { id: listingId } }
+          { where: { id: listingId }, individualHooks: true }
         );
         if (!isReadyConditional) {
           throw new HttpException(
@@ -287,7 +287,7 @@ class ListingController {
       } else {
         await Listing.update(
           { isPublished: false },
-          { where: { id: listingId } }
+          { where: { id: listingId }, individualHooks: true }
         );
       }
       const listingUpdated = await Listing.findOne({
@@ -365,7 +365,7 @@ class ListingController {
           isReady,
           isPublished
         },
-        { where: { id: data.listingId } }
+        { where: { id: data.listingId }, individualHooks: true }
       );
       // Updating listing data informations...
       await ListingData.update(
@@ -601,10 +601,28 @@ class ListingController {
 
   onlyOwner(req: Request, listingObj: Listing) {
     const loggedUser: string | undefined = req.userIdDecoded;
-    if (!loggedUser || loggedUser !== listingObj.userId)
+    const loggedUserRole: string | undefined = req.userRoleDecoded;
+    if (
+      !loggedUser ||
+      (loggedUser !== listingObj.userId && loggedUserRole !== "admin")
+    )
       throw new HttpException(
         403,
         `Space ${listingObj.id} does not belong to user ${loggedUser}.`
+      );
+  }
+
+  onlyOwnerOrAdmin(req: Request, listingObj: Listing) {
+    const loggedUserId: string | undefined = req.userIdDecoded;
+    const loggedUserRole: string | undefined = req.userRoleDecoded;
+
+    if (
+      !loggedUserId ||
+      (loggedUserId !== listingObj.userId && loggedUserRole !== "admin")
+    )
+      throw new HttpException(
+        403,
+        `Space ${listingObj.id} does not belong to user ${loggedUserId}.`
       );
   }
 

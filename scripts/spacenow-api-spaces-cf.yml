@@ -118,6 +118,11 @@ Parameters:
     Type: String
     Default: ""
     NoEcho: true
+  EmailsApi:
+    Description: "EMAILS_API"
+    Type: String
+    Default: ""
+    NoEcho: true
 Conditions:
   isMaster: !Equals [!Ref SliceName, master]
   isFeature: !Not [Condition: isMaster]
@@ -277,6 +282,8 @@ Resources:
               Value: !Ref GoogleMapApi
             - Name: S3_BUCKET
               Value: !Ref S3Bucket
+            - Name: EMAILS_API
+              Value: !Ref EmailsApi
 
           LogConfiguration:
             LogDriver: awslogs

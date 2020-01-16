@@ -13,7 +13,8 @@ import {
   ForeignKey,
   HasOne,
   HasMany,
-  BelongsToMany
+  AfterBulkUpdate,
+  AfterUpdate
 } from "sequelize-typescript";
 
 import {
@@ -25,6 +26,9 @@ import {
   ListingTopic,
   Topic
 } from "./";
+
+import axios from "axios";
+import { emailsApi } from "../config";
 
 @Table({
   tableName: "Listing"
@@ -173,4 +177,13 @@ export class Listing extends Model<Listing> {
 
   @BelongsTo(() => ListSettingsParent)
   listingSettings!: ListSettingsParent;
+
+  @AfterUpdate
+  static sendPublishEmail(instance: Listing) {
+    if (
+      instance.previous("isPublished") === false &&
+      instance.isPublished === true
+    )
+      axios.post(`${emailsApi}/email/listing/${instance.id}/publish`);
+  }
 }
