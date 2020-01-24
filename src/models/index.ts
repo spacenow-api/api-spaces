@@ -21,6 +21,9 @@ import { CategorySpecification } from "./category_specification.model";
 import { CategoryBookingPeriod } from "./category_booking_period.model";
 import { Topic } from "./topic.model";
 import { ListingTopic } from "./listing_topic.model";
+import { AddonsBooking } from "./addonsBooking.model";
+import { AddonsListing } from "./addonsListing.model";
+import { AddonsSubCategorySuggestions } from "./addonsSubCategorySuggestions.model";
 
 export {
   Listing,
@@ -45,7 +48,10 @@ export {
   CategorySpecification,
   CategoryBookingPeriod,
   Topic,
-  ListingTopic
+  ListingTopic,
+  AddonsBooking,
+  AddonsListing,
+  AddonsSubCategorySuggestions
 };
 
 export const arrayOfModels = [
@@ -71,5 +77,8 @@ export const arrayOfModels = [
   CategorySpecification,
   CategoryBookingPeriod,
   Topic,
-  ListingTopic
+  ListingTopic,
+  AddonsBooking,
+  AddonsListing,
+  AddonsSubCategorySuggestions
 ];
