@@ -55,6 +55,7 @@
     "@types/sharp": "~0.17.10",
     "@types/uuid": "~3.4.4",
     "@types/validator": "~10.11.1",
+    "@types/sequelize": "~4.28.8",
     "db-migrate-mysql": "~1.1.10",
     "ts-node-dev": "~1.0.0-pre.39",
     "typescript": "~3.4.5"
