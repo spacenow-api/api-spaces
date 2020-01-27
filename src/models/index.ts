@@ -21,6 +21,20 @@ import { CategorySpecification } from "./category_specification.model";
 import { CategoryBookingPeriod } from "./category_booking_period.model";
 import { Topic } from "./topic.model";
 import { ListingTopic } from "./listing_topic.model";
+import { User } from "./user.model";
+import { Role } from "./role.model";
+
+import {
+  V2Listing,
+  V2ListingAccessDays,
+  V2ListingAccessHours,
+  V2ListingData,
+  V2ListingPhotos,
+  V2ListingSteps,
+  V2ListingAmenities,
+  V2ListingRules,
+  V2ListingExceptionDates
+} from "./v2";
 
 export {
   Listing,
@@ -45,7 +59,18 @@ export {
   CategorySpecification,
   CategoryBookingPeriod,
   Topic,
-  ListingTopic
+  ListingTopic,
+  User,
+  Role,
+  V2Listing,
+  V2ListingAccessDays,
+  V2ListingAccessHours,
+  V2ListingData,
+  V2ListingPhotos,
+  V2ListingSteps,
+  V2ListingAmenities,
+  V2ListingRules,
+  V2ListingExceptionDates
 };
 
 export const arrayOfModels = [
@@ -71,5 +96,16 @@ export const arrayOfModels = [
   CategorySpecification,
   CategoryBookingPeriod,
   Topic,
-  ListingTopic
+  ListingTopic,
+  User,
+  Role,
+  V2Listing,
+  V2ListingAccessDays,
+  V2ListingAccessHours,
+  V2ListingData,
+  V2ListingPhotos,
+  V2ListingSteps,
+  V2ListingAmenities,
+  V2ListingRules,
+  V2ListingExceptionDates
 ];
