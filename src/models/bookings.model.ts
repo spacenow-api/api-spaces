@@ -5,13 +5,12 @@ import {
   Model,
   AllowNull,
   Default,
-  DataType,
-  CreatedAt,
-  UpdatedAt
+  DataType
 } from "sequelize-typescript";
 
 @Table({
-  tableName: 'Bookings'
+  tableName: 'Bookings',
+  timestamps: false
 })
 export class Bookings extends Model<Bookings> {
 
@@ -110,19 +109,21 @@ export class Bookings extends Model<Bookings> {
   @Column
   checkOut?: string;
 
+  @AllowNull(true)
+  @Column
+  message?: string;
+
   @AllowNull(false)
   @Column
   reservations!: string;
 
   @AllowNull(false)
-  @CreatedAt
   @Column
-  createdAt!: Date;
+  createdAt!: number;
 
   @AllowNull(false)
-  @UpdatedAt
   @Column
-  updatedAt!: Date;
+  updatedAt!: number;
 
   @AllowNull(true)
   @Column
@@ -131,4 +132,9 @@ export class Bookings extends Model<Bookings> {
   @AllowNull(true)
   @Column
   checkOutHour?: string;
+
+  @AllowNull(true)
+  @Column
+  voucherCode?: string
+
 }

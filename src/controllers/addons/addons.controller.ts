@@ -1,5 +1,6 @@
 import { Router, Request, Response, NextFunction } from "express";
 
+import { sequelize } from "./../../helpers/database/sequelize";
 import sequelizeErrorMiddleware from "./../../helpers/middlewares/sequelize-error-middleware";
 import { authMiddleware, authAdminMiddleware } from "./../../helpers/middlewares/auth-middleware";
 import { slugify } from "./../../helpers/utils/strings";
@@ -7,6 +8,7 @@ import { slugify } from "./../../helpers/utils/strings";
 import {
   Listing,
   ListSettings,
+  Bookings,
   AddonsBooking,
   AddonsListing,
   AddonsSubCategorySuggestions
@@ -51,10 +53,13 @@ class AddonsController {
   private createAddon = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { listingId, description, value } = req.body;
+      if (!value || value <= 0)
+        throw new Error("Value must be greater than zero.");
+      if (!description)
+        throw new Error("Description is missing.");
       const count = await Listing.count({ where: { id: listingId } });
-      if (count <= 0) {
+      if (count <= 0)
         throw new Error(`Listing ${listingId} not found.`);
-      }
       const key = this.keyByDescription(description);
       const existingAddon = await AddonsListing.findOne({
         where: { listingId, key }
@@ -144,9 +149,32 @@ class AddonsController {
   }
 
   private setAddonOnBooking = async (req: Request, res: Response, next: NextFunction) => {
+    const t = await sequelize.transaction();
     try {
+      const { bookingId, addonId } = req.body;
+      const bookingObj = await Bookings.findOne({ where: { bookingId } });
+      if (!bookingObj)
+        throw new Error(`Booking ${bookingId} not found.`);
+      const addonObj = await AddonsListing.findOne({ where: { id: addonId } });
+      if (!addonObj)
+        throw new Error(`Addon ${addonId} not found.`);
+      const addonsCount = await AddonsBooking.count({ where: { bookingId, addonId } });
+      if (addonsCount > 0)
+        throw new Error('Addon already setted for this Booking.');
+      await AddonsBooking.create(
+        { bookingId, addonId },
+        { transaction: t }
+      );
+      const bookingTotalUpdated = bookingObj.totalPrice + addonObj.value;
+      console.info(`Booking ${bookingId} [totalPrice] updated to ${bookingTotalUpdated} by User ${req.userIdDecoded}.`);
+      await Bookings.update(
+        { totalPrice: bookingTotalUpdated, updatedAt: Date.now() },
+        { where: { bookingId }, transaction: t }
+      );
+      await t.commit();
       res.end();
     } catch (err) {
+      await t.rollback();
       sequelizeErrorMiddleware(err, req, res, next);
     }
   }
