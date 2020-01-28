@@ -1,4 +1,7 @@
 import {
+  IsUUID,
+  DataType,
+  Default,
   PrimaryKey,
   Table,
   Column,
@@ -16,19 +19,19 @@ import { Bookings, AddonsListing } from './';
 })
 export class AddonsBooking extends Model<AddonsBooking> {
 
+  @IsUUID(4)
+  @Default(DataType.UUIDV4)
   @PrimaryKey
   @AllowNull(false)
   @Column
   id!: string;
 
   @AllowNull(false)
-  @ForeignKey(() => Bookings)
-  @Column({ field: "bookingId" })
+  @Column
   bookingId!: string;
 
   @AllowNull(false)
-  @ForeignKey(() => AddonsListing)
-  @Column({ field: "id" })
+  @Column
   addonId!: string;
 
   @AllowNull(false)

@@ -1,13 +1,15 @@
 import {
+  IsUUID,
+  DataType,
+  Default,
   PrimaryKey,
   Table,
   Column,
   Model,
   AllowNull,
-  Default,
   ForeignKey,
   CreatedAt,
-  UpdatedAt
+  UpdatedAt,
 } from "sequelize-typescript";
 
 import { Listing } from './';
@@ -17,14 +19,15 @@ import { Listing } from './';
 })
 export class AddonsListing extends Model<AddonsListing> {
 
+  @IsUUID(4)
+  @Default(DataType.UUIDV4)
   @PrimaryKey
   @AllowNull(false)
   @Column
   id!: string;
 
   @AllowNull(false)
-  @ForeignKey(() => Listing)
-  @Column({ field: "id" })
+  @Column
   listingId!: number;
 
   @AllowNull(false)

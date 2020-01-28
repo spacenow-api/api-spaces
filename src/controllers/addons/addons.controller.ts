@@ -125,7 +125,7 @@ class AddonsController {
     if (!description || description.length == 0)
       throw new Error('Add-on needs a description.');
     const key = slugify(description, "_");
-    return key;
+    return key.toUpperCase();
   }
 
 }

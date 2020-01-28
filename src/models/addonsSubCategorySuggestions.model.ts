@@ -1,4 +1,7 @@
 import {
+  IsUUID,
+  DataType,
+  Default,
   PrimaryKey,
   Table,
   Column,
@@ -16,14 +19,15 @@ import { ListSettings } from './'
 })
 export class AddonsSubCategorySuggestions extends Model<AddonsSubCategorySuggestions> {
 
+  @IsUUID(4)
+  @Default(DataType.UUIDV4)
   @PrimaryKey
   @AllowNull(false)
   @Column
   id!: string;
 
   @AllowNull(false)
-  @ForeignKey(() => ListSettings)
-  @Column({ field: "id" })
+  @Column
   listSettingsId!: number;
 
   @AllowNull(false)
