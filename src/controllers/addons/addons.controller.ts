@@ -1,11 +1,12 @@
 import { Router, Request, Response, NextFunction } from "express";
 
 import sequelizeErrorMiddleware from "./../../helpers/middlewares/sequelize-error-middleware";
-import { authMiddleware } from "./../../helpers/middlewares/auth-middleware";
+import { authMiddleware, authAdminMiddleware } from "./../../helpers/middlewares/auth-middleware";
 import { slugify } from "./../../helpers/utils/strings";
 
 import {
   Listing,
+  ListSettings,
   AddonsBooking,
   AddonsListing,
   AddonsSubCategorySuggestions
@@ -26,12 +27,12 @@ class AddonsController {
     8. removeAddonFromBooking(bookingId, addonId) #api-spaces
    */
   constructor() {
-    this.router.get("/addons/listing/:listingId", this.fetchAddonsByListing);
+    this.router.get("/addons/listing/:listingId", authMiddleware, this.fetchAddonsByListing);
     this.router.post("/addons/listing", authMiddleware, this.createAddon);
     this.router.delete("/addons/listing/:id", authMiddleware, this.deleteAddon);
-    this.router.get("/addons/suggestion/:listSettingsId", this.fetchAddonsBySubCategory);
-    this.router.post("/addons/suggestion", authMiddleware, this.createAddonSuggestion);
-    this.router.delete("/addons/suggestion/:id", authMiddleware, this.deleteAddonSuggestion);
+    this.router.get("/addons/suggestion/:listSettingsId", authAdminMiddleware, this.fetchAddonsBySubCategory);
+    this.router.post("/addons/suggestion", authAdminMiddleware, this.createAddonSuggestion);
+    this.router.delete("/addons/suggestion/:id", authAdminMiddleware, this.deleteAddonSuggestion);
     this.router.put("/addons/booking/set", authMiddleware, this.setAddonOnBooking);
     this.router.put("/addons/booking/remove", authMiddleware, this.removeAddonFromBooking);
   }
@@ -101,7 +102,23 @@ class AddonsController {
 
   private createAddonSuggestion = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      res.end();
+      const { listSettingsId, description } = req.body;
+      const count = await ListSettings.count({ where: { id: listSettingsId } });
+      if (count <= 0) {
+        throw new Error(`List Settings ${listSettingsId} not found.`);
+      }
+      const key = this.keyByDescription(description);
+      const existingAddon = await AddonsSubCategorySuggestions.findOne({
+        where: { listSettingsId, key }
+      });
+      if (existingAddon) {
+        res.send(existingAddon);
+      } else {
+        const addonsSuggestion = await AddonsSubCategorySuggestions.create({
+          listSettingsId, description, key
+        });
+        res.send(addonsSuggestion);
+      }
     } catch (err) {
       sequelizeErrorMiddleware(err, req, res, next);
     }
@@ -109,7 +126,18 @@ class AddonsController {
 
   private deleteAddonSuggestion = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      res.end();
+      const { id } = req.params;
+      const suggestionObj = await AddonsSubCategorySuggestions.findOne({ where: { id } });
+      if (!suggestionObj)
+        throw new Error(`Addon Suggestion ${id} not found.`);
+      const listingsUsingCount = await AddonsListing.count({
+        where: { key: suggestionObj.key }
+      });
+      if (listingsUsingCount > 0)
+        throw new Error(`There are few listings using this Addon Suggestion.`);
+      await AddonsSubCategorySuggestions.destroy({ where: { id } });
+      console.info(`Addon Suggestion ${id} removed by User ${req.userIdDecoded}.`);
+      res.send(suggestionObj);
     } catch (err) {
       sequelizeErrorMiddleware(err, req, res, next);
     }
