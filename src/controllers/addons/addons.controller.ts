@@ -18,16 +18,6 @@ class AddonsController {
 
   private router: Router = Router();
 
-  /**
-    1. fetchAddonsByListing(listingId): [AddonsListing] #api-spaces
-    2. createAddon(listingId, description, value) #api-spaces
-    3. deleteAddon(id) #api-spaces
-    4. fetchAddonsBySubCategory(listSettingsId): [AddonsSubCategorySuggestions] #api-spaces
-    5. createAddonSuggestion(listSettingsId, description) #api-spaces
-    6. deleteAddonSuggestion(id) #api-spaces
-    7. setAddonOnBooking(bookingId, addonId) #api-spaces
-    8. removeAddonFromBooking(bookingId, addonId) #api-spaces
-   */
   constructor() {
     this.router.get("/addons/listing/:listingId", authMiddleware, this.fetchAddonsByListing);
     this.router.post("/addons/listing", authMiddleware, this.createAddon);
@@ -35,6 +25,7 @@ class AddonsController {
     this.router.get("/addons/suggestion/:listSettingsId", authAdminMiddleware, this.fetchAddonsBySubCategory);
     this.router.post("/addons/suggestion", authAdminMiddleware, this.createAddonSuggestion);
     this.router.delete("/addons/suggestion/:id", authAdminMiddleware, this.deleteAddonSuggestion);
+    this.router.get("/addons/booking/:bookingId", authMiddleware, this.fetchAddonsByBooking);
     this.router.put("/addons/booking/set", authMiddleware, this.setAddonOnBooking);
     this.router.put("/addons/booking/remove", authMiddleware, this.removeAddonFromBooking);
   }
@@ -148,6 +139,19 @@ class AddonsController {
     }
   }
 
+  private fetchAddonsByBooking = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const addonsByBooking = await AddonsBooking.findAll({
+        where: { bookingId: req.params.bookingId }
+      });
+      const addons = await Promise.all(addonsByBooking.map(async (o) =>
+        await AddonsListing.findOne({ where: { id: o.addonId } })));
+      res.send(addons);
+    } catch (err) {
+      sequelizeErrorMiddleware(err, req, res, next);
+    }
+  }
+
   private setAddonOnBooking = async (req: Request, res: Response, next: NextFunction) => {
     const t = await sequelize.transaction();
     try {
@@ -172,7 +176,10 @@ class AddonsController {
         { where: { bookingId }, transaction: t }
       );
       await t.commit();
-      res.end();
+      const addonsByBooking = await AddonsBooking.findAll({ where: { bookingId } });
+      const addons = await Promise.all(addonsByBooking.map(async (o) =>
+        await AddonsListing.findOne({ where: { id: o.addonId } })));
+      res.send(addons);
     } catch (err) {
       await t.rollback();
       sequelizeErrorMiddleware(err, req, res, next);
@@ -202,7 +209,10 @@ class AddonsController {
         { where: { bookingId }, transaction: t }
       );
       await t.commit();
-      res.end();
+      const addonsByBooking = await AddonsBooking.findAll({ where: { bookingId } });
+      const addons = await Promise.all(addonsByBooking.map(async (o) =>
+        await AddonsListing.findOne({ where: { id: o.addonId } })));
+      res.send(addons);
     } catch (err) {
       await t.rollback();
       sequelizeErrorMiddleware(err, req, res, next);
