@@ -1,6 +1,7 @@
 import { Router, Request, Response, NextFunction } from "express";
 
-import sequelizeErrorMiddleware from "../../helpers/middlewares/sequelize-error-middleware";
+import sequelizeErrorMiddleware from "./../../helpers/middlewares/sequelize-error-middleware";
+import { authMiddleware } from "./../../helpers/middlewares/auth-middleware";
 import { slugify } from "./../../helpers/utils/strings";
 
 import {
@@ -26,13 +27,13 @@ class AddonsController {
    */
   constructor() {
     this.router.get("/addons/listing/:listingId", this.fetchAddonsByListing);
-    this.router.post("/addons", this.createAddon);
-    this.router.delete("/addons", this.deleteAddon);
-    this.router.get("/addons/category/:listSettingsId", this.fetchAddonsBySubCategory);
-    this.router.post("/addons/suggestion", this.createAddonSuggestion);
-    this.router.delete("/addons/suggestion", this.deleteAddonSuggestion);
-    this.router.put("/addons/booking/set", this.setAddonOnBooking);
-    this.router.put("/addons/booking/remove", this.removeAddonFromBooking);
+    this.router.post("/addons/listing", authMiddleware, this.createAddon);
+    this.router.delete("/addons/listing/:id", authMiddleware, this.deleteAddon);
+    this.router.get("/addons/suggestion/:listSettingsId", this.fetchAddonsBySubCategory);
+    this.router.post("/addons/suggestion", authMiddleware, this.createAddonSuggestion);
+    this.router.delete("/addons/suggestion/:id", authMiddleware, this.deleteAddonSuggestion);
+    this.router.put("/addons/booking/set", authMiddleware, this.setAddonOnBooking);
+    this.router.put("/addons/booking/remove", authMiddleware, this.removeAddonFromBooking);
   }
 
   private fetchAddonsByListing = async (req: Request, res: Response, next: NextFunction) => {
@@ -72,7 +73,16 @@ class AddonsController {
 
   private deleteAddon = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      res.end();
+      const { id } = req.params;
+      const addonObj = await AddonsListing.findOne({ where: { id } });
+      if (!addonObj)
+        throw new Error(`Addon ${id} not found.`);
+      const bookingsCount = await AddonsBooking.count({ where: { addonId: id } });
+      if (bookingsCount > 0)
+        throw new Error(`Addon ${id} has already been used in Bookings.`);
+      await AddonsListing.destroy({ where: { id } });
+      console.info(`Addon ${id} removed by User ${req.userIdDecoded}.`);
+      res.send(addonObj);
     } catch (err) {
       sequelizeErrorMiddleware(err, req, res, next);
     }
