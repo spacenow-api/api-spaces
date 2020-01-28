@@ -73,8 +73,7 @@ export {
   V2ListingSteps,
   V2ListingAmenities,
   V2ListingRules,
-  V2ListingExceptionDates
-  ListingTopic,
+  V2ListingExceptionDates,
   AddonsBooking,
   AddonsListing,
   AddonsSubCategorySuggestions
@@ -114,8 +113,7 @@ export const arrayOfModels = [
   V2ListingSteps,
   V2ListingAmenities,
   V2ListingRules,
-  V2ListingExceptionDates
-  ListingTopic,
+  V2ListingExceptionDates,
   AddonsBooking,
   AddonsListing,
   AddonsSubCategorySuggestions
