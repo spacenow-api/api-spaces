@@ -180,9 +180,31 @@ class AddonsController {
   }
 
   private removeAddonFromBooking = async (req: Request, res: Response, next: NextFunction) => {
+    const t = await sequelize.transaction();
     try {
+      const { bookingId, addonId } = req.body;
+      const bookingObj = await Bookings.findOne({ where: { bookingId } });
+      if (!bookingObj)
+        throw new Error(`Booking ${bookingId} not found.`);
+      const addonObj = await AddonsListing.findOne({ where: { id: addonId } });
+      if (!addonObj)
+        throw new Error(`Addon ${addonId} not found.`);
+      const addonBookingObj = await AddonsBooking.findOne({ where: { bookingId, addonId } });
+      if (!addonBookingObj)
+        throw new Error('Addon not attached for this Booking.');
+      await AddonsBooking.destroy(
+        { where: { bookingId, addonId }, transaction: t }
+      );
+      const bookingTotalUpdated = bookingObj.totalPrice - addonObj.value;
+      console.info(`Booking ${bookingId} [totalPrice] updated to ${bookingTotalUpdated} by User ${req.userIdDecoded}.`);
+      await Bookings.update(
+        { totalPrice: bookingTotalUpdated, updatedAt: Date.now() },
+        { where: { bookingId }, transaction: t }
+      );
+      await t.commit();
       res.end();
     } catch (err) {
+      await t.rollback();
       sequelizeErrorMiddleware(err, req, res, next);
     }
   }
