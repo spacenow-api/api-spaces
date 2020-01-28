@@ -23,6 +23,9 @@ import { Topic } from "./topic.model";
 import { ListingTopic } from "./listing_topic.model";
 import { User } from "./user.model";
 import { Role } from "./role.model";
+import { AddonsBooking } from "./addonsBooking.model";
+import { AddonsListing } from "./addonsListing.model";
+import { AddonsSubCategorySuggestions } from "./addonsSubCategorySuggestions.model";
 
 import {
   V2Listing,
@@ -70,7 +73,10 @@ export {
   V2ListingSteps,
   V2ListingAmenities,
   V2ListingRules,
-  V2ListingExceptionDates
+  V2ListingExceptionDates,
+  AddonsBooking,
+  AddonsListing,
+  AddonsSubCategorySuggestions
 };
 
 export const arrayOfModels = [
@@ -107,5 +113,8 @@ export const arrayOfModels = [
   V2ListingSteps,
   V2ListingAmenities,
   V2ListingRules,
-  V2ListingExceptionDates
+  V2ListingExceptionDates,
+  AddonsBooking,
+  AddonsListing,
+  AddonsSubCategorySuggestions
 ];

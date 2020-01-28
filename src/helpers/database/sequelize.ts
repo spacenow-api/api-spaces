@@ -4,7 +4,7 @@ import * as config from '../../config';
 
 import { arrayOfModels } from '../../models';
 
-let sequelize: Sequelize;
+export let sequelize: Sequelize;
 
 const initialize = () => {
   if (!sequelize) {
