@@ -7,12 +7,9 @@ import {
   Column,
   Model,
   AllowNull,
-  ForeignKey,
   CreatedAt,
   UpdatedAt
 } from "sequelize-typescript";
-
-import { ListSettings } from './'
 
 @Table({
   tableName: 'AddonsSubCategorySuggestions'

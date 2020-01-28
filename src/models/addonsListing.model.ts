@@ -7,12 +7,9 @@ import {
   Column,
   Model,
   AllowNull,
-  ForeignKey,
   CreatedAt,
   UpdatedAt,
 } from "sequelize-typescript";
-
-import { Listing } from './';
 
 @Table({
   tableName: 'AddonsListing'
