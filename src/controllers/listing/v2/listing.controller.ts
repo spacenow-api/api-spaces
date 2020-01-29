@@ -38,6 +38,7 @@ class ListingController {
   constructor() {
     this.router.get(`/v2/listings`, this.getListings);
     this.router.get(`/v2/listing/:id`, this.getListing);
+    this.router.get(`/v2/listing/:id/amenities`, this.getListingAmenities);
     this.router.get(`/v2/listing/:id/access-days`, this.getListingAccessDays);
     this.router.get(
       `/v2/listing/:id/access-days/:accessDayId`,
@@ -95,6 +96,30 @@ class ListingController {
         throw new HttpException(400, `Listing ${id} not found.`);
       }
       res.send(listingObj);
+    } catch (err) {
+      sequelizeErrorMiddleware(err, req, res, next);
+    }
+  };
+
+  getListingAmenities = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const listingId = <string>(<unknown>req.params.id);
+    if (!listingId) {
+      throw new HttpException(400, `Listing ID must be provided.`);
+    }
+    const where = { where: { listingId } };
+    try {
+      const amenitiesObj = await V2ListingAmenities.findAll(where);
+      if (!amenitiesObj) {
+        throw new HttpException(
+          400,
+          `Amenities for the Listing ${listingId} not found.`
+        );
+      }
+      res.send(amenitiesObj);
     } catch (err) {
       sequelizeErrorMiddleware(err, req, res, next);
     }
@@ -215,6 +240,8 @@ class ListingController {
     const include = {
       include: [
         { model: V2ListingData, as: "listingData" },
+        { model: V2ListingAmenities, as: "amenities" },
+        { model: V2ListingRules, as: "rules" },
         {
           model: V2ListingAccessDays,
           as: "accessDays",
@@ -222,16 +249,40 @@ class ListingController {
         }
       ]
     };
+    const where = { where: { listingId: id } };
 
     try {
       const listing = await V2Listing.findByPk(id, include);
       if (!listing) throw new Error(`Listing ${id} not found.`);
       this.onlyOwner(req, listing);
-      await listing.update(data);
+      await listing.amenities.map(
+        async () => await V2ListingAmenities.destroy(where)
+      );
+      await data.amenities.map(
+        async (amenity: any) =>
+          await V2ListingAmenities.create({
+            listingId: id,
+            listSettingsId: amenity.id
+          })
+      );
+      await listing.rules.map(async () => await V2ListingRules.destroy(where));
+      await data.rules.map(
+        async (rule: any) =>
+          await V2ListingRules.create({
+            listingId: id,
+            listSettingsId: rule.id
+          })
+      );
+      await listing.accessDays.update(data.accessDays);
+      await data.accessDays.accessHours.map(
+        async (accessHour: any) =>
+          await V2ListingAccessHours.update(accessHour, {
+            where: { id: accessHour.id }
+          })
+      );
+
       await listing.listingData.update(data.listingData);
-      await listing.accessDays.update(data.accessDays, {
-        individualHooks: true
-      });
+      await listing.update(data);
       res.send(await listing.reload());
     } catch (err) {
       console.error(err);

@@ -11,7 +11,8 @@ import {
   AfterCreate,
   HasMany,
   ForeignKey,
-  AfterUpdate
+  AfterUpdate,
+  BeforeUpdate
 } from "sequelize-typescript";
 
 import { format } from "date-fns";
@@ -83,7 +84,7 @@ export class V2ListingAccessDays extends Model<V2ListingAccessDays> {
   @Column
   updatedAt!: Date;
 
-  @HasMany(() => V2ListingAccessHours)
+  @HasMany(() => V2ListingAccessHours, "listingAccessDaysId")
   accessHours!: V2ListingAccessHours[];
 
   @AfterCreate
@@ -99,15 +100,5 @@ export class V2ListingAccessDays extends Model<V2ListingAccessDays> {
         allday: false
       });
     }
-  }
-
-  @AfterUpdate
-  static async updateAccessHours(instance: V2ListingAccessDays) {
-    await instance.accessHours.map(
-      async accessHour =>
-        await V2ListingAccessHours.update(accessHour, {
-          where: { id: accessHour.id }
-        })
-    );
   }
 }
