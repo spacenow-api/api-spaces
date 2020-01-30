@@ -7,8 +7,14 @@ import { V2ListingSteps } from "./listingSteps.model";
 import { V2ListingAmenities } from "./listingAmenities.model";
 import { V2ListingRules } from "./listingRules.model";
 import { V2ListingExceptionDates } from "./listingExceptionDates.model";
+import { V2Category } from "./category.model";
+import { V2ListingCategory } from "./listingCategory.model";
+import { V2CategorySpecification } from "./categorySpecification.model";
 
 export {
+  V2Category,
+  V2ListingCategory,
+  V2CategorySpecification,
   V2Listing,
   V2ListingAccessDays,
   V2ListingAccessHours,
@@ -21,6 +27,9 @@ export {
 };
 
 export const arrayOfModels = [
+  V2Category,
+  V2ListingCategory,
+  V2CategorySpecification,
   V2Listing,
   V2ListingAccessDays,
   V2ListingAccessHours,

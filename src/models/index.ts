@@ -28,6 +28,9 @@ import { AddonsListing } from "./addonsListing.model";
 import { AddonsSubCategorySuggestions } from "./addonsSubCategorySuggestions.model";
 
 import {
+  V2Category,
+  V2ListingCategory,
+  V2CategorySpecification,
   V2Listing,
   V2ListingAccessDays,
   V2ListingAccessHours,
@@ -65,6 +68,9 @@ export {
   ListingTopic,
   User,
   Role,
+  V2Category,
+  V2ListingCategory,
+  V2CategorySpecification,
   V2Listing,
   V2ListingAccessDays,
   V2ListingAccessHours,
@@ -105,6 +111,9 @@ export const arrayOfModels = [
   ListingTopic,
   User,
   Role,
+  V2Category,
+  V2ListingCategory,
+  V2CategorySpecification,
   V2Listing,
   V2ListingAccessDays,
   V2ListingAccessHours,

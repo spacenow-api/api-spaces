@@ -13,6 +13,7 @@ import {
   ForeignKey,
   HasOne,
   HasMany,
+  BelongsToMany,
   AfterCreate,
   AfterUpdate
 } from "sequelize-typescript";
@@ -25,7 +26,9 @@ import {
   V2ListingSteps,
   V2ListingAmenities,
   V2ListingRules,
-  V2ListingExceptionDates
+  V2ListingExceptionDates,
+  V2Category,
+  V2ListingCategory
 } from "./";
 
 import axios from "axios";
@@ -107,6 +110,13 @@ export class V2Listing extends Model<V2Listing> {
 
   @HasMany(() => V2ListingExceptionDates, "listingId")
   exceptionDates!: V2ListingExceptionDates[];
+
+  @BelongsToMany(
+    () => V2Category,
+    () => V2ListingCategory,
+    "categoryId"
+  )
+  categories: V2Category[] | undefined;
 
   @AfterCreate
   static createListingSteps(instance: V2Listing) {

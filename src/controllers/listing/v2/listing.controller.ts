@@ -16,7 +16,8 @@ import {
   V2ListingAmenities,
   V2ListingRules,
   V2ListingPhotos,
-  V2ListingExceptionDates
+  V2ListingExceptionDates,
+  V2ListingCategory
 } from "../../../models/v2";
 
 const Op = Sequelize.Op;
@@ -39,6 +40,8 @@ class ListingController {
     this.router.get(`/v2/listings`, this.getListings);
     this.router.get(`/v2/listing/:id`, this.getListing);
     this.router.get(`/v2/listing/:id/amenities`, this.getListingAmenities);
+    this.router.get(`/v2/listing/:id/rules`, this.getListingRules);
+    this.router.get(`/v2/listing/:id/categories`, this.getListingCategories);
     this.router.get(`/v2/listing/:id/access-days`, this.getListingAccessDays);
     this.router.get(
       `/v2/listing/:id/access-days/:accessDayId`,
@@ -121,6 +124,51 @@ class ListingController {
       }
       res.send(amenitiesObj);
     } catch (err) {
+      sequelizeErrorMiddleware(err, req, res, next);
+    }
+  };
+
+  getListingRules = async (req: Request, res: Response, next: NextFunction) => {
+    const listingId = <string>(<unknown>req.params.id);
+    if (!listingId) {
+      throw new HttpException(400, `Listing ID must be provided.`);
+    }
+    const where = { where: { listingId } };
+    try {
+      const rulesObj = await V2ListingRules.findAll(where);
+      if (!rulesObj) {
+        throw new HttpException(
+          400,
+          `Amenities for the Listing ${listingId} not found.`
+        );
+      }
+      res.send(rulesObj);
+    } catch (err) {
+      sequelizeErrorMiddleware(err, req, res, next);
+    }
+  };
+
+  getListingCategories = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const listingId = <number>(<unknown>req.params.id);
+    if (!listingId) {
+      throw new HttpException(400, `Listing ID must be provided.`);
+    }
+    const where = { where: { listingId } };
+    try {
+      const categoriesObj = await V2ListingCategory.findAll();
+      if (!categoriesObj) {
+        throw new HttpException(
+          400,
+          `Categories for the Listing ${listingId} not found.`
+        );
+      }
+      res.send(categoriesObj);
+    } catch (err) {
+      console.log("error", err);
       sequelizeErrorMiddleware(err, req, res, next);
     }
   };

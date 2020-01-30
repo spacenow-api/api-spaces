@@ -1,5 +1,5 @@
 import { Router, Request, Response, NextFunction } from "express";
-import NodeCache from 'node-cache';
+import NodeCache from "node-cache";
 
 import sequelizeErrorMiddleware from "../../helpers/middlewares/sequelize-error-middleware";
 
@@ -13,7 +13,7 @@ import {
 
 const REFERENCE_CATEGORIES_ID: number = 111;
 
-const CACHE_KEY = '_categories_full_'
+const CACHE_KEY = "_categories_full_";
 
 export const _getCategories = (): Promise<Array<ListSettings>> => {
   const include = {
@@ -23,7 +23,7 @@ export const _getCategories = (): Promise<Array<ListSettings>> => {
         include: [
           {
             model: ListSettings,
-            as: "subCategory",
+            as: "subCategory"
           },
           {
             model: SubcategoryBookingPeriod
@@ -45,7 +45,6 @@ export const _getCategories = (): Promise<Array<ListSettings>> => {
 };
 
 class CategoriesController {
-
   private router: Router = Router();
 
   // Standard expiration time for 3 days...
@@ -57,7 +56,7 @@ class CategoriesController {
 
   private intializeRoutes() {
     this.router.get(`/categories`, this.getCategories);
-    this.router.get(`/v2/categories`, this.getV2Categories);
+    // this.router.get(`/v2/categories`, this.getV2Categories);
   }
 
   getCategories = async (req: Request, res: Response, next: NextFunction) => {
@@ -77,22 +76,22 @@ class CategoriesController {
     }
   };
 
-  getV2Categories = async (req: Request, res: Response, next: NextFunction) => {
-    const include = {
-      include: [
-        {
-          model: CategoryBookingPeriod
-        }
-      ]
-    };
+  // getV2Categories = async (req: Request, res: Response, next: NextFunction) => {
+  //   const include = {
+  //     include: [
+  //       {
+  //         model: CategoryBookingPeriod
+  //       }
+  //     ]
+  //   };
 
-    try {
-      const data = await Category.findAll(include);
-      res.send(data);
-    } catch (error) {
-      sequelizeErrorMiddleware(error, req, res, next);
-    }
-  };
+  //   try {
+  //     const data = await Category.findAll(include);
+  //     res.send(data);
+  //   } catch (error) {
+  //     sequelizeErrorMiddleware(error, req, res, next);
+  //   }
+  // };
 }
 
 export default CategoriesController;
