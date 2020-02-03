@@ -14,6 +14,7 @@ import {
   HasOne,
   HasMany,
   BelongsToMany,
+  BeforeCreate,
   AfterCreate,
   AfterUpdate
 } from "sequelize-typescript";
@@ -28,7 +29,8 @@ import {
   V2ListingRules,
   V2ListingExceptionDates,
   V2Category,
-  V2ListingCategory
+  V2ListingCategory,
+  V2Location
 } from "./";
 
 import axios from "axios";
@@ -49,6 +51,7 @@ export class V2Listing extends Model<V2Listing> {
   @Column
   userId!: string;
 
+  @ForeignKey(() => V2Location)
   @Column
   locationId?: number;
 
@@ -90,14 +93,17 @@ export class V2Listing extends Model<V2Listing> {
   @Column
   updatedAt!: Date;
 
+  @BelongsTo(() => UserProfile)
+  host!: UserProfile;
+
+  @BelongsTo(() => V2Location)
+  location!: V2Location;
+
   @HasOne(() => V2ListingData, "listingId")
   listingData!: V2ListingData;
 
   @HasOne(() => V2ListingAccessDays, "listingId")
   accessDays!: V2ListingAccessDays;
-
-  @BelongsTo(() => UserProfile)
-  host!: UserProfile;
 
   @HasMany(() => V2ListingPhotos, "listingId")
   photos!: V2ListingPhotos[];
@@ -118,27 +124,32 @@ export class V2Listing extends Model<V2Listing> {
   )
   categories: V2Category[] | undefined;
 
+  @BeforeCreate
+  static getOrCreateListingLocation = async (instance: V2Listing) => {
+    console.log("INSTANCE LISTING", instance);
+  };
+
   @AfterCreate
-  static createListingSteps(instance: V2Listing) {
+  static createListingSteps = (instance: V2Listing) => {
     V2ListingSteps.create({ listingId: instance.id });
-  }
+  };
 
   @AfterCreate
-  static createListingData(instance: V2Listing) {
+  static createListingData = (instance: V2Listing) => {
     V2ListingData.create({ listingId: instance.id });
-  }
+  };
 
   @AfterCreate
-  static createListingAvailability(instance: V2Listing) {
+  static createListingAvailability = (instance: V2Listing) => {
     V2ListingAccessDays.create({ listingId: instance.id });
-  }
+  };
 
   @AfterUpdate
-  static sendPublishEmail(instance: V2Listing) {
+  static sendPublishEmail = (instance: V2Listing) => {
     if (
       instance.previous("isPublished") === false &&
       instance.isPublished === true
     )
       axios.post(`${emailsApi}/email/listing/${instance.id}/publish`);
-  }
+  };
 }

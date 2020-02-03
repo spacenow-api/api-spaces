@@ -10,6 +10,8 @@ import { V2ListingExceptionDates } from "./listingExceptionDates.model";
 import { V2Category } from "./category.model";
 import { V2ListingCategory } from "./listingCategory.model";
 import { V2CategorySpecification } from "./categorySpecification.model";
+import { V2Location } from "./location.model";
+import { V2UniqueLocation } from "./uniqueLocation.model";
 
 export {
   V2Category,
@@ -23,7 +25,9 @@ export {
   V2ListingSteps,
   V2ListingAmenities,
   V2ListingRules,
-  V2ListingExceptionDates
+  V2ListingExceptionDates,
+  V2Location,
+  V2UniqueLocation
 };
 
 export const arrayOfModels = [
@@ -38,5 +42,7 @@ export const arrayOfModels = [
   V2ListingSteps,
   V2ListingAmenities,
   V2ListingRules,
-  V2ListingExceptionDates
+  V2ListingExceptionDates,
+  V2Location,
+  V2UniqueLocation
 ];

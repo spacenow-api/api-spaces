@@ -22,6 +22,7 @@ import AddonsController from "./controllers/addons/addons.controller";
 import V2CategoryController from "./controllers/categories/v2/category.controller";
 import V2ListingController from "./controllers/listing/v2/listing.controller";
 import V2ListingStepsController from "./controllers/listing/v2/listingSteps.controller";
+import V2LocationController from "./controllers/locations/v2/location.controller";
 
 const app = new App(
   [
@@ -44,7 +45,8 @@ const app = new App(
      */
     new V2CategoryController(),
     new V2ListingController(),
-    new V2ListingStepsController()
+    new V2ListingStepsController(),
+    new V2LocationController()
   ],
   PORT,
   "0.0.0.0"
