@@ -17,7 +17,8 @@ import {
   V2ListingRules,
   V2ListingPhotos,
   V2ListingExceptionDates,
-  V2ListingCategory
+  V2ListingCategory,
+  V2Location
 } from "../../../models/v2";
 
 const Op = Sequelize.Op;
@@ -53,7 +54,7 @@ class ListingController {
       this.getUserListings
     );
     this.router.post(`/v2/listing`, authMiddleware, this.postListing);
-    this.router.put(`/v2/listing/:id`, authMiddleware, this.updateListing);
+    this.router.patch(`/v2/listing/:id`, authMiddleware, this.updateListing);
     this.router.delete(`/v2/listing/:id`, authMiddleware, this.deleteListing);
   }
 
@@ -288,6 +289,7 @@ class ListingController {
     const data = req.body;
     const include = {
       include: [
+        { model: V2Location, as: "location" },
         { model: V2ListingData, as: "listingData" },
         { model: V2ListingAmenities, as: "amenities" },
         { model: V2ListingRules, as: "rules" },
@@ -322,6 +324,7 @@ class ListingController {
             listSettingsId: rule.id
           })
       );
+      await listing.location.update(data.location);
       await listing.accessDays.update(data.accessDays);
       await data.accessDays.accessHours.map(
         async (accessHour: any) =>
