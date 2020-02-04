@@ -71,7 +71,7 @@ export class V2Category extends Model<V2Category> {
 
   @BeforeCreate
   static async generateId(instance: V2Category) {
-    instance.id = uuidV4();
+    return (instance.id = uuidV4());
   }
 
   @BeforeCreate
@@ -79,7 +79,7 @@ export class V2Category extends Model<V2Category> {
     const a = "àáäâãåăæçèéëêǵḧìíïîḿńǹñòóöôœøṕŕßśșțùúüûǘẃẍÿź·/_,:;";
     const b = "aaaaaaaaceeeeghiiiimnnnooooooprssstuuuuuwxyz------";
     const p = new RegExp(a.split("").join("|"), "g");
-    instance.slug = instance.name
+    return (instance.slug = instance.name
       .toString()
       .toLowerCase()
       .replace(/\s+/g, "-")
@@ -88,6 +88,6 @@ export class V2Category extends Model<V2Category> {
       .replace(/[^\w\-]+/g, "")
       .replace(/\-\-+/g, "-")
       .replace(/^-+/, "")
-      .replace(/-+$/, "");
+      .replace(/-+$/, ""));
   }
 }

@@ -7,8 +7,7 @@ import {
   UpdatedAt,
   PrimaryKey,
   AllowNull,
-  HasMany,
-  BeforeCreate
+  HasMany
 } from "sequelize-typescript";
 import { V2Listing } from "./";
 
@@ -66,9 +65,4 @@ export class V2Location extends Model<V2Location> {
 
   @HasMany(() => V2Listing)
   listings!: V2Listing[];
-
-  @BeforeCreate
-  static validateLocation = async (instance: V2Location) => {
-    console.log("INSTANCE LOCATION ===>>>", instance);
-  };
 }

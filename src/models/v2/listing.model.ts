@@ -14,7 +14,6 @@ import {
   HasOne,
   HasMany,
   BelongsToMany,
-  BeforeCreate,
   AfterCreate,
   AfterUpdate
 } from "sequelize-typescript";
@@ -124,24 +123,19 @@ export class V2Listing extends Model<V2Listing> {
   )
   categories: V2Category[] | undefined;
 
-  @BeforeCreate
-  static getOrCreateListingLocation = async (instance: V2Listing) => {
-    console.log("INSTANCE LISTING", instance);
-  };
-
   @AfterCreate
   static createListingSteps = (instance: V2Listing) => {
-    V2ListingSteps.create({ listingId: instance.id });
+    return V2ListingSteps.create({ listingId: instance.id });
   };
 
   @AfterCreate
   static createListingData = (instance: V2Listing) => {
-    V2ListingData.create({ listingId: instance.id });
+    return V2ListingData.create({ listingId: instance.id });
   };
 
   @AfterCreate
   static createListingAvailability = (instance: V2Listing) => {
-    V2ListingAccessDays.create({ listingId: instance.id });
+    return V2ListingAccessDays.create({ listingId: instance.id });
   };
 
   @AfterUpdate

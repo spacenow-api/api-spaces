@@ -104,7 +104,7 @@ export class V2ListingSteps extends Model<V2ListingSteps> {
       where: { id }
     };
     if (instance.completed === 100)
-      await V2Listing.update({ isReady: true }, where);
-    else await V2Listing.update({ isReady: false }, where);
+      return await V2Listing.update({ isReady: true }, where);
+    else return await V2Listing.update({ isReady: false }, where);
   }
 }
