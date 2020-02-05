@@ -95,7 +95,7 @@ export class V2Listing extends Model<V2Listing> {
   @BelongsTo(() => UserProfile)
   host!: UserProfile;
 
-  @BelongsTo(() => V2Location)
+  @BelongsTo(() => V2Location, "locationId")
   location!: V2Location;
 
   @HasOne(() => V2ListingData, "listingId")

@@ -161,7 +161,7 @@ class ListingController {
     }
     const where = { where: { listingId } };
     try {
-      const categoriesObj = await V2ListingCategory.findAll();
+      const categoriesObj = await V2ListingCategory.findAll(where);
       if (!categoriesObj) {
         throw new HttpException(
           400,
@@ -309,29 +309,35 @@ class ListingController {
       await listing.amenities.map(
         async () => await V2ListingAmenities.destroy(where)
       );
-      await data.amenities.map(
-        async (amenity: any) =>
-          await V2ListingAmenities.create({
-            listingId: id,
-            listSettingsId: amenity.id
-          })
-      );
+      data.amenities &&
+        data.amenities.length > 0 &&
+        (await data.amenities.map(
+          async (amenity: any) =>
+            await V2ListingAmenities.create({
+              listingId: id,
+              listSettingsId: amenity.id
+            })
+        ));
       await listing.rules.map(async () => await V2ListingRules.destroy(where));
-      await data.rules.map(
-        async (rule: any) =>
-          await V2ListingRules.create({
-            listingId: id,
-            listSettingsId: rule.id
-          })
-      );
+      data.rules &&
+        data.rules.length > 0 &&
+        (await data.rules.map(
+          async (rule: any) =>
+            await V2ListingRules.create({
+              listingId: id,
+              listSettingsId: rule.id
+            })
+        ));
       await listing.location.update(data.location);
       await listing.accessDays.update(data.accessDays);
-      await data.accessDays.accessHours.map(
-        async (accessHour: any) =>
-          await V2ListingAccessHours.update(accessHour, {
-            where: { id: accessHour.id }
-          })
-      );
+      data.accessDays &&
+        data.accessDays.accessHours &&
+        (await data.accessDays.accessHours.map(
+          async (accessHour: any) =>
+            await V2ListingAccessHours.update(accessHour, {
+              where: { id: accessHour.id }
+            })
+        ));
 
       await listing.listingData.update(data.listingData);
       await listing.update(data);
