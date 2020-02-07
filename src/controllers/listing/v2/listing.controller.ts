@@ -18,7 +18,9 @@ import {
   V2ListingPhotos,
   V2ListingExceptionDates,
   V2ListingCategory,
-  V2Location
+  V2Location,
+  V2Rule,
+  V2Amenity
 } from "../../../models/v2";
 
 const Op = Sequelize.Op;
@@ -79,8 +81,8 @@ class ListingController {
     const include = {
       include: [
         { model: V2ListingData, as: "listingData" },
-        { model: V2ListingAmenities, as: "amenities" },
-        { model: V2ListingRules, as: "rules" },
+        { model: V2Amenity, as: "amenities" },
+        { model: V2Rule, as: "rules" },
         { model: V2ListingPhotos, as: "photos" },
         { model: V2ListingExceptionDates, as: "exceptionDates" },
         {
@@ -290,9 +292,10 @@ class ListingController {
     const include = {
       include: [
         { model: V2Location, as: "location" },
+        { model: V2ListingPhotos, as: "photos" },
         { model: V2ListingData, as: "listingData" },
-        { model: V2ListingAmenities, as: "amenities" },
-        { model: V2ListingRules, as: "rules" },
+        { model: V2Amenity, as: "amenities" },
+        { model: V2Rule, as: "rules" },
         {
           model: V2ListingAccessDays,
           as: "accessDays",
@@ -315,7 +318,7 @@ class ListingController {
           async (amenity: any) =>
             await V2ListingAmenities.create({
               listingId: id,
-              listSettingsId: amenity.id
+              amenityId: amenity.id
             })
         ));
       await listing.rules.map(async () => await V2ListingRules.destroy(where));
@@ -325,7 +328,7 @@ class ListingController {
           async (rule: any) =>
             await V2ListingRules.create({
               listingId: id,
-              listSettingsId: rule.id
+              ruleId: rule.id
             })
         ));
       await listing.location.update(data.location);

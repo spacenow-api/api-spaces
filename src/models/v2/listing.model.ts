@@ -29,7 +29,11 @@ import {
   V2ListingExceptionDates,
   V2Category,
   V2ListingCategory,
-  V2Location
+  V2Location,
+  V2Rule,
+  V2Amenity,
+  V2ListingFeatures,
+  V2Feature
 } from "./";
 
 import axios from "axios";
@@ -107,11 +111,26 @@ export class V2Listing extends Model<V2Listing> {
   @HasMany(() => V2ListingPhotos, "listingId")
   photos!: V2ListingPhotos[];
 
-  @HasMany(() => V2ListingAmenities, "listingId")
-  amenities!: V2ListingAmenities[];
+  @BelongsToMany(
+    () => V2Rule,
+    () => V2ListingRules,
+    "listingId"
+  )
+  rules!: V2Rule[];
 
-  @HasMany(() => V2ListingRules, "listingId")
-  rules!: V2ListingRules[];
+  @BelongsToMany(
+    () => V2Amenity,
+    () => V2ListingAmenities,
+    "listingId"
+  )
+  amenities!: V2Amenity[];
+
+  @BelongsToMany(
+    () => V2Feature,
+    () => V2ListingFeatures,
+    "listingId"
+  )
+  features!: V2Feature[];
 
   @HasMany(() => V2ListingExceptionDates, "listingId")
   exceptionDates!: V2ListingExceptionDates[];

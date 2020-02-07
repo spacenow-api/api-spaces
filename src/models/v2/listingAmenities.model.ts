@@ -1,59 +1,38 @@
 import {
   Table,
   Column,
-  AutoIncrement,
   Model,
   CreatedAt,
   UpdatedAt,
-  PrimaryKey,
   AllowNull,
-  DataType,
-  ForeignKey
+  ForeignKey,
+  IsUUID
 } from "sequelize-typescript";
 
-import { V2Listing } from "./";
+import { V2Listing, V2Amenity } from "./";
 
 @Table({
-  tableName: "ListingAmenities"
+  tableName: "listing_amenity"
 })
 export class V2ListingAmenities extends Model<V2ListingAmenities> {
-  @PrimaryKey
-  @AutoIncrement
-  @AllowNull(false)
-  @Column
-  id!: number;
-
   @ForeignKey(() => V2Listing)
   @AllowNull(false)
-  @Column
+  @Column({ field: "listing_id" })
   listingId!: number;
 
+  @ForeignKey(() => V2Amenity)
+  @IsUUID(4)
   @AllowNull(false)
-  @Column
-  listSettingsId!: number;
-
-  @Column
-  amount?: number;
-
-  @Column
-  quantity?: number;
-
-  @Column
-  currency?: string;
-
-  @Column
-  settings?: string;
-
-  @Column(DataType.ENUM("fixed", "percentage"))
-  type?: string;
+  @Column({ field: "amenity_id" })
+  amenityId!: string;
 
   @CreatedAt
   @AllowNull(false)
-  @Column
+  @Column({ field: "created_at" })
   createdAt!: Date;
 
   @UpdatedAt
   @AllowNull(false)
-  @Column
+  @Column({ field: "updated_at" })
   updatedAt!: Date;
 }

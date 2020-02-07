@@ -151,6 +151,18 @@ export class V2ListingData extends Model<V2ListingData> {
   @Column
   accessType?: string;
 
+  @Column(
+    DataType.ENUM(
+      "Established space or business",
+      "Private property",
+      "Shared or sublet"
+    )
+  )
+  listingType?: string;
+
+  @Column
+  direction?: string;
+
   @BelongsTo(() => V2Listing)
   listingData!: V2Listing;
 }

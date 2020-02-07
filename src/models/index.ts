@@ -39,9 +39,13 @@ import {
   V2ListingSteps,
   V2ListingAmenities,
   V2ListingRules,
+  V2ListingFeatures,
   V2ListingExceptionDates,
   V2Location,
-  V2UniqueLocation
+  V2UniqueLocation,
+  V2Rule,
+  V2Amenity,
+  V2Feature
 } from "./v2";
 
 export {
@@ -82,8 +86,12 @@ export {
   V2ListingAmenities,
   V2ListingRules,
   V2ListingExceptionDates,
+  V2ListingFeatures,
   V2Location,
   V2UniqueLocation,
+  V2Rule,
+  V2Amenity,
+  V2Feature,
   AddonsBooking,
   AddonsListing,
   AddonsSubCategorySuggestions
@@ -127,8 +135,12 @@ export const arrayOfModels = [
   V2ListingAmenities,
   V2ListingRules,
   V2ListingExceptionDates,
+  V2ListingFeatures,
   V2Location,
   V2UniqueLocation,
+  V2Rule,
+  V2Amenity,
+  V2Feature,
   AddonsBooking,
   AddonsListing,
   AddonsSubCategorySuggestions

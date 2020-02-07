@@ -9,22 +9,22 @@ import {
   IsUUID
 } from "sequelize-typescript";
 
-import { V2Listing, V2Rule } from "./";
+import { V2Listing, V2Feature } from "./";
 
 @Table({
-  tableName: "listing_rule"
+  tableName: "listing_feature"
 })
-export class V2ListingRules extends Model<V2ListingRules> {
+export class V2ListingFeatures extends Model<V2ListingFeatures> {
   @ForeignKey(() => V2Listing)
   @AllowNull(false)
   @Column({ field: "listing_id" })
   listingId!: number;
 
-  @ForeignKey(() => V2Rule)
+  @ForeignKey(() => V2Feature)
   @IsUUID(4)
   @AllowNull(false)
-  @Column({ field: "rule_id" })
-  ruleId!: string;
+  @Column({ field: "feature_id" })
+  featureId!: string;
 
   @CreatedAt
   @AllowNull(false)
