@@ -45,7 +45,8 @@ import {
   V2UniqueLocation,
   V2Rule,
   V2Amenity,
-  V2Feature
+  V2Feature,
+  V2Cancellation
 } from "./v2";
 
 export {
@@ -92,6 +93,7 @@ export {
   V2Rule,
   V2Amenity,
   V2Feature,
+  V2Cancellation,
   AddonsBooking,
   AddonsListing,
   AddonsSubCategorySuggestions
@@ -141,6 +143,7 @@ export const arrayOfModels = [
   V2Rule,
   V2Amenity,
   V2Feature,
+  V2Cancellation,
   AddonsBooking,
   AddonsListing,
   AddonsSubCategorySuggestions

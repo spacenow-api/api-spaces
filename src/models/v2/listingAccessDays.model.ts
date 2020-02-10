@@ -89,8 +89,8 @@ export class V2ListingAccessDays extends Model<V2ListingAccessDays> {
 
   @AfterCreate
   static createAccessHours(instance: V2ListingAccessDays) {
-    const openHour = new Date(`${format(new Date(), "YYYY-MM-DD")}T22:00`);
-    const closeHour = new Date(`${format(new Date(), "YYYY-MM-DD")}T07:00`);
+    const openHour = new Date(`${format(new Date(), "YYYY-MM-DD")}T09:00`);
+    const closeHour = new Date(`${format(new Date(), "YYYY-MM-DD")}T17:00`);
     for (let index = 0; index <= 6; index++) {
       V2ListingAccessHours.create({
         listingAccessDaysId: instance.id,

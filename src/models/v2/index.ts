@@ -16,6 +16,7 @@ import { V2UniqueLocation } from "./uniqueLocation.model";
 import { V2Rule } from "./rule.model";
 import { V2Amenity } from "./amenity.model";
 import { V2Feature } from "./feature.model";
+import { V2Cancellation } from "./cancellation.model";
 
 export {
   V2Category,
@@ -35,7 +36,8 @@ export {
   V2UniqueLocation,
   V2Rule,
   V2Amenity,
-  V2Feature
+  V2Feature,
+  V2Cancellation
 };
 
 export const arrayOfModels = [
@@ -56,5 +58,6 @@ export const arrayOfModels = [
   V2UniqueLocation,
   V2Rule,
   V2Amenity,
-  V2Feature
+  V2Feature,
+  V2Cancellation
 ];

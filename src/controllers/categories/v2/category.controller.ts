@@ -15,7 +15,7 @@ class V2CategoryController {
   constructor() {
     this.router.get(`/v2/root-categories`, this.getRootCategories);
     this.router.get(`/v2/categories`, this.getCategories);
-    this.router.get(`/v2/categories/:id`, this.getSubCategories);
+    this.router.get(`/v2/category/:id`, this.getCategory);
     this.router.get(
       `/v2/category/:id/specifications`,
       this.getCategorySpecification
@@ -61,7 +61,7 @@ class V2CategoryController {
     }
   };
 
-  getSubCategories = async (
+  getCategory = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -70,7 +70,7 @@ class V2CategoryController {
     if (!id) {
       throw new HttpException(400, `Category ID must be provided.`);
     }
-    const cacheData = this.cache.get(`_sub${CACHE_KEY}`);
+    const cacheData = this.cache.get(`_sub${CACHE_KEY}_${id}`);
     const where = { where: { parentId: id } };
     if (cacheData) {
       res.send(cacheData);

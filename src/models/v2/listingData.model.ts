@@ -10,8 +10,12 @@ import {
   Default,
   DataType,
   BelongsTo,
-  ForeignKey
+  ForeignKey,
+  BeforeUpdate
 } from "sequelize-typescript";
+
+import CryptoJS from "crypto-js";
+import { jwtSecret } from "../../config"
 
 import { V2Listing } from "./";
 
@@ -159,10 +163,35 @@ export class V2ListingData extends Model<V2ListingData> {
     )
   )
   listingType?: string;
-
+  
   @Column
   direction?: string;
+  
+  @Column
+  alcoholLicence?: string;
+
+  @Column
+  wifiNetwork?: string;
+
+  @Column
+  wifiUsername?: string;
+
+  @Column
+  wifiPassword?: string;
+
+  @Column(DataType.VIRTUAL(DataType.STRING, ["wifiPasswordDecrypt"]))
+  get wifiPasswordDecrypt(this: V2ListingData) {
+    if (this.wifiPassword)
+      return CryptoJS.AES.decrypt(this.wifiPassword, jwtSecret).toString()
+  }
 
   @BelongsTo(() => V2Listing)
   listingData!: V2Listing;
+  
+  @BeforeUpdate
+  static async hashWiFiPassword(instance: V2ListingData) {
+    if (instance.wifiPassword)
+      return instance.wifiPassword = CryptoJS.AES.encrypt(instance.wifiPassword, jwtSecret).toString()
+  }
+
 }
