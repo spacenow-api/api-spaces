@@ -148,13 +148,13 @@ export class V2Listing extends Model<V2Listing> {
   };
 
   @AfterCreate
-  static createListingData = (instance: V2Listing) => {
-    return V2ListingData.create({ listingId: instance.id });
+  static createListingAvailability = (instance: V2Listing) => {
+    return V2ListingAccessDays.create({ listingId: instance.id });
   };
 
   @AfterCreate
-  static createListingAvailability = (instance: V2Listing) => {
-    return V2ListingAccessDays.create({ listingId: instance.id });
+  static createListingData = (instance: V2Listing) => {
+    return V2ListingData.create({ listingId: instance.id });
   };
 
   @AfterUpdate

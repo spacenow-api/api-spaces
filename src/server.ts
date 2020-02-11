@@ -26,6 +26,7 @@ import V2LocationController from "./controllers/locations/v2/location.controller
 import V2RuleController from "./controllers/listing/v2/rule.controller";
 import V2AmenityController from "./controllers/listing/v2/amenity.controller";
 import V2FeatureController from "./controllers/listing/v2/feature.controller";
+import V2ConcellationController from "./controllers/listing/v2/cancellation.controller"
 
 const app = new App(
   [
@@ -52,7 +53,8 @@ const app = new App(
     new V2LocationController(),
     new V2RuleController(),
     new V2AmenityController(),
-    new V2FeatureController()
+    new V2FeatureController(),
+    new V2ConcellationController()
   ],
   PORT,
   "0.0.0.0"

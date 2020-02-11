@@ -7,7 +7,7 @@ import HttpException from "../../../helpers/exceptions/HttpException";
 import sequelizeErrorMiddleware from "../../../helpers/middlewares/sequelize-error-middleware";
 
 import { V2Location, UniqueLocation } from "../../../models";
-import GoogleGEOCode from "../../../helpers/utils/googleGeoCode";
+import { getGoogleGEOCode } from "../../../helpers/utils/googleGeoCode";
 
 const cacheKeys = {
   BY_ID: "_location_by_id_"
@@ -50,11 +50,11 @@ class V2LocationController {
 
   postLocation = async (req: Request, res: Response, next: NextFunction) => {
     const data = req.body;
-    if (!data || !data.suggestAddress) {
+    if (!data || !data.address) {
       throw new HttpException(400, "A reference address must be provided.");
     }
     try {
-      const id = getHash(data.suggestAddress, req.userIdDecoded);
+      const id = getHash(data.address, req.userIdDecoded);
       const uniLocationObj = await UniqueLocation.findByPk(id);
 
       if (uniLocationObj)
@@ -65,9 +65,10 @@ class V2LocationController {
         );
 
       try {
-        let geoAddress = await GoogleGEOCode.getGoogleGEOCode(
-          data.suggestAddress
+        let geoAddress = await getGoogleGEOCode(
+          data.address
         );
+        console.log("GEO ADDRESS ===>>> ", geoAddress)
         const { dataValues }: any = await V2Location.create({
           ...geoAddress,
           userId: req.userIdDecoded,
@@ -82,7 +83,7 @@ class V2LocationController {
       } catch (err) {
         throw new HttpException(
           400,
-          `Address ${data.suggestAddress} not found by Google API.`
+          `Address ${data.address} not found by Google API.`
         );
       }
     } catch (err) {

@@ -1,8 +1,7 @@
 import axios from "axios";
 import * as config from "../../config";
 
-class GoogleGEOCode {
-  public static getGoogleGEOCode = async (suggestAddress: string) => {
+export const getGoogleGEOCode = async (suggestAddress: string) => {
     const locationData: any = {};
     const URL =
       "https://maps.googleapis.com/maps/api/geocode/json?address=" +
@@ -54,6 +53,3 @@ class GoogleGEOCode {
       return error;
     }
   };
-}
-
-export default GoogleGEOCode;

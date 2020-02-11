@@ -41,6 +41,10 @@ export class V2ListingAccessHours extends Model<V2ListingAccessHours> {
   @Column
   allday!: number;
 
+  @AllowNull(false)
+  @Column
+  peaktime!: number;
+
   @CreatedAt
   @AllowNull(false)
   @Column

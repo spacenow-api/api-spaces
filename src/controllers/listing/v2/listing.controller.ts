@@ -1,12 +1,14 @@
 import { Router, Request, Response, NextFunction, request } from "express";
 import Sequelize from "sequelize";
 import NodeCache from "node-cache";
+import axios from "axios";
 
 import { authMiddleware } from "../../../helpers/middlewares/auth-middleware";
 import sequelizeErrorMiddleware from "../../../helpers/middlewares/sequelize-error-middleware";
 import HttpException from "../../../helpers/exceptions/HttpException";
 
 import { _getCategories } from "./../../categories/category.controller";
+import { LOCATION_API } from "../../../config"
 
 import {
   V2Listing,
@@ -331,17 +333,14 @@ class ListingController {
               ruleId: rule.id
             })
         ));
-      await listing.location.update(data.location);
+      data.accessDays && data.accessDays.accessHours &&
+      (await data.accessDays.accessHours.map(
+        async (accessHour: any) =>
+          await V2ListingAccessHours.update(accessHour, {
+            where: { id: accessHour.id }
+          })
+      ));
       await listing.accessDays.update(data.accessDays);
-      data.accessDays &&
-        data.accessDays.accessHours &&
-        (await data.accessDays.accessHours.map(
-          async (accessHour: any) =>
-            await V2ListingAccessHours.update(accessHour, {
-              where: { id: accessHour.id }
-            })
-        ));
-
       await listing.listingData.update(data.listingData);
       await listing.update(data);
       res.send(await listing.reload());

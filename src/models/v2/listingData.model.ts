@@ -49,6 +49,11 @@ export class V2ListingData extends Model<V2ListingData> {
   @Column
   checkInEnd?: string;
 
+  @Default("Flexible")
+  @AllowNull(false)
+  @Column
+  checkOut?: string;
+
   @Column
   minNight?: number;
 
@@ -63,6 +68,9 @@ export class V2ListingData extends Model<V2ListingData> {
 
   @Column
   maxPrice?: number;
+
+  @Column
+  peakPrice?: number;
 
   @Column
   currency?: string;
@@ -182,16 +190,17 @@ export class V2ListingData extends Model<V2ListingData> {
   @Column(DataType.VIRTUAL(DataType.STRING, ["wifiPasswordDecrypt"]))
   get wifiPasswordDecrypt(this: V2ListingData) {
     if (this.wifiPassword)
-      return CryptoJS.AES.decrypt(this.wifiPassword, jwtSecret).toString()
+      return CryptoJS.DES.decrypt(this.wifiPassword, jwtSecret).toString()
   }
 
   @BelongsTo(() => V2Listing)
   listingData!: V2Listing;
   
-  @BeforeUpdate
-  static async hashWiFiPassword(instance: V2ListingData) {
-    if (instance.wifiPassword)
-      return instance.wifiPassword = CryptoJS.AES.encrypt(instance.wifiPassword, jwtSecret).toString()
-  }
+  // @BeforeUpdate
+  // static async hashWiFiPassword(instance: V2ListingData) {
+  //   if (instance.wifiPassword) {
+  //     return instance.wifiPassword = CryptoJS.DES.encrypt(instance.wifiPassword, jwtSecret).toString()
+  //   }
+  // }
 
 }

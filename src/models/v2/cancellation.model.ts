@@ -38,8 +38,8 @@ export class V2Cancellation extends Model<V2Cancellation> {
   policyContent!: string;
 
   @Default(true)
-  @Column
-  isEnable!: boolean;
+  @Column({ field: "isEnable" })
+  isActive!: boolean;
 
   @CreatedAt
   @Column

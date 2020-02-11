@@ -88,16 +88,17 @@ export class V2ListingAccessDays extends Model<V2ListingAccessDays> {
   accessHours!: V2ListingAccessHours[];
 
   @AfterCreate
-  static createAccessHours(instance: V2ListingAccessDays) {
+  static createAccessHours = async(instance: V2ListingAccessDays) => {
     const openHour = new Date(`${format(new Date(), "YYYY-MM-DD")}T09:00`);
     const closeHour = new Date(`${format(new Date(), "YYYY-MM-DD")}T17:00`);
     for (let index = 0; index <= 6; index++) {
-      V2ListingAccessHours.create({
+      await V2ListingAccessHours.create({
         listingAccessDaysId: instance.id,
         weekday: index,
         openHour: openHour,
         closeHour: closeHour,
-        allday: false
+        allday: false,
+        peaktime: false
       });
     }
   }
