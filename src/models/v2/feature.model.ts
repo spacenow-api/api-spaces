@@ -1,16 +1,4 @@
-import {
-  Table,
-  Column,
-  Model,
-  CreatedAt,
-  UpdatedAt,
-  IsUUID,
-  PrimaryKey,
-  Unique,
-  Default,
-  BelongsToMany,
-  BeforeCreate
-} from "sequelize-typescript";
+import { Table, Column, Model, CreatedAt, UpdatedAt, IsUUID, PrimaryKey, Unique, Default, BelongsToMany, BeforeCreate } from "sequelize-typescript";
 
 import { V2ListingFeatures, V2Listing } from "./";
 

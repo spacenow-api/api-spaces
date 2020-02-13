@@ -27,8 +27,8 @@ import {
   V2ListingAmenities,
   V2ListingRules,
   V2ListingExceptionDates,
-  V2Category,
-  V2ListingCategory,
+  V2Tag,
+  V2ListingTag,
   V2Location,
   V2Rule,
   V2Amenity,
@@ -59,7 +59,7 @@ export class V2Listing extends Model<V2Listing> {
   locationId?: number;
 
   @Column
-  listSettingsParentId?: number;
+  listSettingsParentId?: string;
 
   @Column
   bookingPeriod?: string;
@@ -136,11 +136,11 @@ export class V2Listing extends Model<V2Listing> {
   exceptionDates!: V2ListingExceptionDates[];
 
   @BelongsToMany(
-    () => V2Category,
-    () => V2ListingCategory,
-    "categoryId"
+    () => V2Tag,
+    () => V2ListingTag,
+    "listingId"
   )
-  categories: V2Category[] | undefined;
+  tags!: V2Tag[];
 
   @AfterCreate
   static createListingSteps = (instance: V2Listing) => {
@@ -159,10 +159,6 @@ export class V2Listing extends Model<V2Listing> {
 
   @AfterUpdate
   static sendPublishEmail = (instance: V2Listing) => {
-    if (
-      instance.previous("isPublished") === false &&
-      instance.isPublished === true
-    )
-      axios.post(`${emailsApi}/email/listing/${instance.id}/publish`);
+    if (instance.previous("isPublished") === false && instance.isPublished === true) return axios.post(`${emailsApi}/email/listing/${instance.id}/publish`);
   };
 }

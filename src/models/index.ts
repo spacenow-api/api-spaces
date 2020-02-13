@@ -29,7 +29,7 @@ import { AddonsSubCategorySuggestions } from "./addonsSubCategorySuggestions.mod
 
 import {
   V2Category,
-  V2ListingCategory,
+  V2ListingTag,
   V2CategorySpecification,
   V2Listing,
   V2ListingAccessDays,
@@ -46,7 +46,8 @@ import {
   V2Rule,
   V2Amenity,
   V2Feature,
-  V2Cancellation
+  V2Cancellation,
+  V2Tag
 } from "./v2";
 
 export {
@@ -76,7 +77,7 @@ export {
   User,
   Role,
   V2Category,
-  V2ListingCategory,
+  V2ListingTag,
   V2CategorySpecification,
   V2Listing,
   V2ListingAccessDays,
@@ -91,6 +92,7 @@ export {
   V2Location,
   V2UniqueLocation,
   V2Rule,
+  V2Tag,
   V2Amenity,
   V2Feature,
   V2Cancellation,
@@ -126,7 +128,7 @@ export const arrayOfModels = [
   User,
   Role,
   V2Category,
-  V2ListingCategory,
+  V2ListingTag,
   V2CategorySpecification,
   V2Listing,
   V2ListingAccessDays,
@@ -141,6 +143,7 @@ export const arrayOfModels = [
   V2Location,
   V2UniqueLocation,
   V2Rule,
+  V2Tag,
   V2Amenity,
   V2Feature,
   V2Cancellation,

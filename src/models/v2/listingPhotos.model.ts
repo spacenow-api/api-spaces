@@ -1,16 +1,4 @@
-import {
-  Table,
-  Column,
-  AutoIncrement,
-  Model,
-  CreatedAt,
-  UpdatedAt,
-  PrimaryKey,
-  AllowNull,
-  Default,
-  BelongsTo,
-  ForeignKey
-} from "sequelize-typescript";
+import { Table, Column, AutoIncrement, Model, CreatedAt, UpdatedAt, PrimaryKey, AllowNull, Default, BelongsTo, ForeignKey } from "sequelize-typescript";
 
 import { V2Listing } from "./";
 
@@ -36,18 +24,6 @@ export class V2ListingPhotos extends Model<V2ListingPhotos> {
   @Default(0)
   @Column
   isCover?: number;
-
-  @AllowNull(false)
-  @Column
-  bucket!: string;
-
-  @AllowNull(false)
-  @Column
-  region!: string;
-
-  @AllowNull(false)
-  @Column
-  key!: string;
 
   @AllowNull(false)
   @Column

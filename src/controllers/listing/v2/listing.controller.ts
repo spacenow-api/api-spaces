@@ -1,14 +1,12 @@
 import { Router, Request, Response, NextFunction, request } from "express";
 import Sequelize from "sequelize";
 import NodeCache from "node-cache";
-import axios from "axios";
 
 import { authMiddleware } from "../../../helpers/middlewares/auth-middleware";
 import sequelizeErrorMiddleware from "../../../helpers/middlewares/sequelize-error-middleware";
 import HttpException from "../../../helpers/exceptions/HttpException";
 
 import { _getCategories } from "./../../categories/category.controller";
-import { LOCATION_API } from "../../../config"
 
 import {
   V2Listing,
@@ -17,12 +15,15 @@ import {
   V2ListingAccessHours,
   V2ListingAmenities,
   V2ListingRules,
+  V2ListingFeatures,
   V2ListingPhotos,
   V2ListingExceptionDates,
-  V2ListingCategory,
+  V2ListingTag,
   V2Location,
   V2Rule,
-  V2Amenity
+  V2Amenity,
+  V2Feature,
+  V2Tag
 } from "../../../models/v2";
 
 const Op = Sequelize.Op;
@@ -46,17 +47,10 @@ class ListingController {
     this.router.get(`/v2/listing/:id`, this.getListing);
     this.router.get(`/v2/listing/:id/amenities`, this.getListingAmenities);
     this.router.get(`/v2/listing/:id/rules`, this.getListingRules);
-    this.router.get(`/v2/listing/:id/categories`, this.getListingCategories);
+    this.router.get(`/v2/listing/:id/tags`, this.getListingTags);
     this.router.get(`/v2/listing/:id/access-days`, this.getListingAccessDays);
-    this.router.get(
-      `/v2/listing/:id/access-days/:accessDayId`,
-      this.getListingAccessHours
-    );
-    this.router.get(
-      `/v2/user/:userId/listings`,
-      authMiddleware,
-      this.getUserListings
-    );
+    this.router.get(`/v2/listing/:id/access-days/:accessDayId`, this.getListingAccessHours);
+    this.router.get(`/v2/user/:userId/listings`, authMiddleware, this.getUserListings);
     this.router.post(`/v2/listing`, authMiddleware, this.postListing);
     this.router.patch(`/v2/listing/:id`, authMiddleware, this.updateListing);
     this.router.delete(`/v2/listing/:id`, authMiddleware, this.deleteListing);
@@ -85,6 +79,8 @@ class ListingController {
         { model: V2ListingData, as: "listingData" },
         { model: V2Amenity, as: "amenities" },
         { model: V2Rule, as: "rules" },
+        { model: V2Feature, as: "features" },
+        { model: V2Tag, as: "tags" },
         { model: V2ListingPhotos, as: "photos" },
         { model: V2ListingExceptionDates, as: "exceptionDates" },
         {
@@ -110,11 +106,7 @@ class ListingController {
     }
   };
 
-  getListingAmenities = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
+  getListingAmenities = async (req: Request, res: Response, next: NextFunction) => {
     const listingId = <string>(<unknown>req.params.id);
     if (!listingId) {
       throw new HttpException(400, `Listing ID must be provided.`);
@@ -123,10 +115,7 @@ class ListingController {
     try {
       const amenitiesObj = await V2ListingAmenities.findAll(where);
       if (!amenitiesObj) {
-        throw new HttpException(
-          400,
-          `Amenities for the Listing ${listingId} not found.`
-        );
+        throw new HttpException(400, `Amenities for the Listing ${listingId} not found.`);
       }
       res.send(amenitiesObj);
     } catch (err) {
@@ -143,10 +132,7 @@ class ListingController {
     try {
       const rulesObj = await V2ListingRules.findAll(where);
       if (!rulesObj) {
-        throw new HttpException(
-          400,
-          `Amenities for the Listing ${listingId} not found.`
-        );
+        throw new HttpException(400, `Amenities for the Listing ${listingId} not found.`);
       }
       res.send(rulesObj);
     } catch (err) {
@@ -154,36 +140,25 @@ class ListingController {
     }
   };
 
-  getListingCategories = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
+  getListingTags = async (req: Request, res: Response, next: NextFunction) => {
     const listingId = <number>(<unknown>req.params.id);
     if (!listingId) {
       throw new HttpException(400, `Listing ID must be provided.`);
     }
     const where = { where: { listingId } };
     try {
-      const categoriesObj = await V2ListingCategory.findAll(where);
-      if (!categoriesObj) {
-        throw new HttpException(
-          400,
-          `Categories for the Listing ${listingId} not found.`
-        );
+      const obj = await V2ListingTag.findAll(where);
+      if (!obj) {
+        throw new HttpException(400, `Tags for the Listing ${listingId} not found.`);
       }
-      res.send(categoriesObj);
+      res.send(obj);
     } catch (err) {
       console.log("error", err);
       sequelizeErrorMiddleware(err, req, res, next);
     }
   };
 
-  getListingAccessDays = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
+  getListingAccessDays = async (req: Request, res: Response, next: NextFunction) => {
     const listingId = <string>(<unknown>req.params.id);
     if (!listingId) {
       throw new HttpException(400, `Listing ID must be provided.`);
@@ -192,10 +167,7 @@ class ListingController {
     try {
       const accessDaysObj = await V2ListingAccessDays.findOne(where);
       if (!accessDaysObj) {
-        throw new HttpException(
-          400,
-          `Access Days fot the Listing ${listingId} not found.`
-        );
+        throw new HttpException(400, `Access Days fot the Listing ${listingId} not found.`);
       }
       res.send(accessDaysObj);
     } catch (err) {
@@ -203,11 +175,7 @@ class ListingController {
     }
   };
 
-  getListingAccessHours = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
+  getListingAccessHours = async (req: Request, res: Response, next: NextFunction) => {
     const listingId = <string>(<unknown>req.params.id);
     if (!listingId) {
       throw new HttpException(400, `Listing ID must be provided.`);
@@ -220,10 +188,7 @@ class ListingController {
     try {
       const accessHoursObj = await V2ListingAccessHours.findAll(where);
       if (!accessHoursObj) {
-        throw new HttpException(
-          400,
-          `Access Hours fot the Listing ${listingId} not found.`
-        );
+        throw new HttpException(400, `Access Hours fot the Listing ${listingId} not found.`);
       }
       res.send(accessHoursObj);
     } catch (err) {
@@ -276,10 +241,7 @@ class ListingController {
         ...where,
         order: [["updatedAt", "DESC"]]
       });
-      this.cache.set(
-        `${cacheKeys.BY_USER}${userId}`,
-        JSON.parse(JSON.stringify(listingsObj))
-      );
+      this.cache.set(`${cacheKeys.BY_USER}${userId}`, JSON.parse(JSON.stringify(listingsObj)));
       res.send(listingsObj);
     } catch (err) {
       console.error(err);
@@ -298,6 +260,8 @@ class ListingController {
         { model: V2ListingData, as: "listingData" },
         { model: V2Amenity, as: "amenities" },
         { model: V2Rule, as: "rules" },
+        { model: V2Feature, as: "features" },
+        { model: V2Tag, as: "tags" },
         {
           model: V2ListingAccessDays,
           as: "accessDays",
@@ -311,9 +275,7 @@ class ListingController {
       const listing = await V2Listing.findByPk(id, include);
       if (!listing) throw new Error(`Listing ${id} not found.`);
       this.onlyOwner(req, listing);
-      await listing.amenities.map(
-        async () => await V2ListingAmenities.destroy(where)
-      );
+      await V2ListingAmenities.destroy(where);
       data.amenities &&
         data.amenities.length > 0 &&
         (await data.amenities.map(
@@ -323,7 +285,7 @@ class ListingController {
               amenityId: amenity.id
             })
         ));
-      await listing.rules.map(async () => await V2ListingRules.destroy(where));
+      await V2ListingRules.destroy(where);
       data.rules &&
         data.rules.length > 0 &&
         (await data.rules.map(
@@ -333,13 +295,36 @@ class ListingController {
               ruleId: rule.id
             })
         ));
-      data.accessDays && data.accessDays.accessHours &&
-      (await data.accessDays.accessHours.map(
-        async (accessHour: any) =>
-          await V2ListingAccessHours.update(accessHour, {
-            where: { id: accessHour.id }
-          })
-      ));
+      await V2ListingFeatures.destroy(where);
+      data.features &&
+        data.features.length > 0 &&
+        (await data.features.map(
+          async (feature: any) =>
+            await V2ListingFeatures.create({
+              listingId: id,
+              featureId: feature.id
+            })
+        ));
+      await V2ListingTag.destroy(where);
+      data.tags &&
+        data.tags.length > 0 &&
+        (await data.tags.map(
+          async (tag: any) =>
+            await V2ListingTag.create({
+              listingId: id,
+              tagId: tag.id
+            })
+        ));
+      await V2ListingPhotos.destroy(where);
+      data.photos && data.photos.length > 0 && (await data.photos.map(async (photo: any) => await V2ListingPhotos.create({ ...photo, listingId: id })));
+      data.accessDays &&
+        data.accessDays.accessHours &&
+        (await data.accessDays.accessHours.map(
+          async (accessHour: any) =>
+            await V2ListingAccessHours.update(accessHour, {
+              where: { id: accessHour.id }
+            })
+        ));
       await listing.accessDays.update(data.accessDays);
       await listing.listingData.update(data.listingData);
       await listing.update(data);
@@ -372,14 +357,7 @@ class ListingController {
   onlyOwner(req: Request, listingObj: V2Listing) {
     const loggedUser: string | undefined = req.userIdDecoded;
     const loggedUserRole: string | undefined = req.userRoleDecoded;
-    if (
-      !loggedUser ||
-      (loggedUser !== listingObj.userId && loggedUserRole !== "admin")
-    )
-      throw new HttpException(
-        403,
-        `Space ${listingObj.id} does not belong to user ${loggedUser}.`
-      );
+    if (!loggedUser || (loggedUser !== listingObj.userId && loggedUserRole !== "admin")) throw new HttpException(403, `Space ${listingObj.id} does not belong to user ${loggedUser}.`);
   }
 }
 

@@ -1,21 +1,7 @@
-import {
-  Table,
-  Column,
-  AutoIncrement,
-  Model,
-  CreatedAt,
-  UpdatedAt,
-  PrimaryKey,
-  AllowNull,
-  Default,
-  DataType,
-  BelongsTo,
-  ForeignKey,
-  BeforeUpdate
-} from "sequelize-typescript";
+import { Table, Column, AutoIncrement, Model, CreatedAt, UpdatedAt, PrimaryKey, AllowNull, Default, DataType, BelongsTo, ForeignKey, BeforeUpdate } from "sequelize-typescript";
 
 import CryptoJS from "crypto-js";
-import { jwtSecret } from "../../config"
+import { jwtSecret } from "../../config";
 
 import { V2Listing } from "./";
 
@@ -95,16 +81,7 @@ export class V2ListingData extends Model<V2ListingData> {
 
   @AllowNull(false)
   @Default("unavailable")
-  @Column(
-    DataType.ENUM(
-      "unavailable",
-      "3months",
-      "6months",
-      "9months",
-      "12months",
-      "available"
-    )
-  )
+  @Column(DataType.ENUM("unavailable", "3months", "6months", "9months", "12months", "available"))
   maxDaysNotice?: string;
 
   @Default(1)
@@ -163,18 +140,15 @@ export class V2ListingData extends Model<V2ListingData> {
   @Column
   accessType?: string;
 
-  @Column(
-    DataType.ENUM(
-      "Established space or business",
-      "Private property",
-      "Shared or sublet"
-    )
-  )
+  @Column(DataType.ENUM("Established space or business", "Private property", "Shared or sublet"))
   listingType?: string;
-  
+
   @Column
   direction?: string;
-  
+
+  @Column
+  listingStyle?: string;
+
   @Column
   alcoholLicence?: string;
 
@@ -185,22 +159,43 @@ export class V2ListingData extends Model<V2ListingData> {
   wifiUsername?: string;
 
   @Column
-  wifiPassword?: string;
-
-  @Column(DataType.VIRTUAL(DataType.STRING, ["wifiPasswordDecrypt"]))
-  get wifiPasswordDecrypt(this: V2ListingData) {
-    if (this.wifiPassword)
-      return CryptoJS.DES.decrypt(this.wifiPassword, jwtSecret).toString()
+  get wifiPassword(): string {
+    if (this.getDataValue("wifiPassword") !== null) {
+      const keyHex = CryptoJS.enc.Utf8.parse(jwtSecret);
+      const ciphertext = CryptoJS.enc.Base64.parse(this.getDataValue("wifiPassword"));
+      // @ts-ignore
+      const decrypted = CryptoJS.DES.decrypt({ ciphertext }, keyHex, {
+        mode: CryptoJS.mode.ECB,
+        padding: CryptoJS.pad.Pkcs7
+      });
+      return decrypted.toString(CryptoJS.enc.Utf8);
+    }
+    return "";
   }
+  set wifiPassword(value: string) {
+    const keyHex = CryptoJS.enc.Utf8.parse(jwtSecret);
+    const encrypted = CryptoJS.DES.encrypt(value, keyHex, {
+      mode: CryptoJS.mode.ECB,
+      padding: CryptoJS.pad.Pkcs7
+    });
+    this.setDataValue("wifiPassword", encrypted.toString());
+  }
+
+  @Column
+  capacityCocktail?: number;
+
+  @Column
+  capacityBanquet?: number;
+
+  @Column
+  capacityTheatre?: number;
+
+  @Column
+  capacityClassroom?: number;
+
+  @Column
+  capacityBoardroom?: number;
 
   @BelongsTo(() => V2Listing)
   listingData!: V2Listing;
-  
-  // @BeforeUpdate
-  // static async hashWiFiPassword(instance: V2ListingData) {
-  //   if (instance.wifiPassword) {
-  //     return instance.wifiPassword = CryptoJS.DES.encrypt(instance.wifiPassword, jwtSecret).toString()
-  //   }
-  // }
-
 }

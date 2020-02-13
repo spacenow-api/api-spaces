@@ -26,7 +26,9 @@ import V2LocationController from "./controllers/locations/v2/location.controller
 import V2RuleController from "./controllers/listing/v2/rule.controller";
 import V2AmenityController from "./controllers/listing/v2/amenity.controller";
 import V2FeatureController from "./controllers/listing/v2/feature.controller";
-import V2ConcellationController from "./controllers/listing/v2/cancellation.controller"
+import V2ConcellationController from "./controllers/listing/v2/cancellation.controller";
+import V2MediaController from "./controllers/media/v2/media.controller";
+import V2TagController from "./controllers/tag/v2/tag.controller";
 
 const app = new App(
   [
@@ -54,7 +56,9 @@ const app = new App(
     new V2RuleController(),
     new V2AmenityController(),
     new V2FeatureController(),
-    new V2ConcellationController()
+    new V2ConcellationController(),
+    new V2MediaController(),
+    new V2TagController()
   ],
   PORT,
   "0.0.0.0"

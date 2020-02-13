@@ -1,13 +1,13 @@
 import { Table, Column, Model, CreatedAt, UpdatedAt, IsUUID, IsAlpha, PrimaryKey, AllowNull, Unique, Default, BeforeCreate, HasMany, BelongsToMany, ForeignKey } from "sequelize-typescript";
 
-import { V2Tag } from "./";
+import { V2Category, V2Listing, V2ListingTag } from "./";
 
 import uuidV4 from "uuid/v4";
 
 @Table({
-  tableName: "category"
+  tableName: "tag"
 })
-export class V2Category extends Model<V2Category> {
+export class V2Tag extends Model<V2Tag> {
   @IsUUID(4)
   @PrimaryKey
   @Column
@@ -24,8 +24,8 @@ export class V2Category extends Model<V2Category> {
   @AllowNull(true)
   @Default(null)
   @ForeignKey(() => V2Category)
-  @Column({ field: "parent_id" })
-  parentId?: string;
+  @Column({ field: "category_id" })
+  categoryId!: string;
 
   @Default(0)
   @Column
@@ -43,19 +43,20 @@ export class V2Category extends Model<V2Category> {
   @Column({ field: "updated_at" })
   updatedAt!: Date;
 
-  @HasMany(() => V2Category, "parentId")
-  children: V2Category[] | undefined;
-
-  @HasMany(() => V2Tag, "categoryId")
-  tags!: V2Tag[];
+  @BelongsToMany(
+    () => V2Listing,
+    () => V2ListingTag,
+    "listingId"
+  )
+  listings!: V2Listing[];
 
   @BeforeCreate
-  static async generateId(instance: V2Category) {
+  static async generateId(instance: V2Tag) {
     return (instance.id = uuidV4());
   }
 
   @BeforeCreate
-  static async generateSlug(instance: V2Category) {
+  static async generateSlug(instance: V2Tag) {
     const a = "àáäâãåăæçèéëêǵḧìíïîḿńǹñòóöôœøṕŕßśșțùúüûǘẃẍÿź·/_,:;";
     const b = "aaaaaaaaceeeeghiiiimnnnooooooprssstuuuuuwxyz------";
     const p = new RegExp(a.split("").join("|"), "g");

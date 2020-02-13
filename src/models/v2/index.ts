@@ -9,7 +9,7 @@ import { V2ListingAmenities } from "./listingAmenities.model";
 import { V2ListingFeatures } from "./listingFeatures.model";
 import { V2ListingExceptionDates } from "./listingExceptionDates.model";
 import { V2Category } from "./category.model";
-import { V2ListingCategory } from "./listingCategory.model";
+import { V2ListingTag } from "./listingTag.model";
 import { V2CategorySpecification } from "./categorySpecification.model";
 import { V2Location } from "./location.model";
 import { V2UniqueLocation } from "./uniqueLocation.model";
@@ -17,10 +17,11 @@ import { V2Rule } from "./rule.model";
 import { V2Amenity } from "./amenity.model";
 import { V2Feature } from "./feature.model";
 import { V2Cancellation } from "./cancellation.model";
+import { V2Tag } from "./tag.model";
 
 export {
   V2Category,
-  V2ListingCategory,
+  V2ListingTag,
   V2CategorySpecification,
   V2Listing,
   V2ListingAccessDays,
@@ -37,12 +38,13 @@ export {
   V2Rule,
   V2Amenity,
   V2Feature,
-  V2Cancellation
+  V2Cancellation,
+  V2Tag
 };
 
 export const arrayOfModels = [
   V2Category,
-  V2ListingCategory,
+  V2ListingTag,
   V2CategorySpecification,
   V2Listing,
   V2ListingAccessDays,
@@ -59,5 +61,6 @@ export const arrayOfModels = [
   V2Rule,
   V2Amenity,
   V2Feature,
-  V2Cancellation
+  V2Cancellation,
+  V2Tag
 ];
