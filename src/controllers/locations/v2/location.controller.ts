@@ -68,7 +68,7 @@ class V2LocationController {
     try {
       geoAddress = await V2LocationController.getGoogleGeoCodeAddress(data.address);
     } catch (err) {
-      throw new HttpException(400, `Address ${data.address} not found by Google API.`);
+      next(new HttpException(400, `Address ${data.address} not found by Google API.`));
     }
 
     try {
