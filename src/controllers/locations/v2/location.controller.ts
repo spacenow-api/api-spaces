@@ -9,7 +9,6 @@ import HttpException from "../../../helpers/exceptions/HttpException";
 import sequelizeErrorMiddleware from "../../../helpers/middlewares/sequelize-error-middleware";
 
 import { V2Location, UniqueLocation } from "../../../models";
-import { getGoogleGEOCode } from "../../../helpers/utils/googleGeoCode";
 
 const cacheKeys = {
   BY_ID: "_location_by_id_"
