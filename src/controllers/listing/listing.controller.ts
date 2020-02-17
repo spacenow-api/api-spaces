@@ -214,11 +214,11 @@ class ListingController {
     const userId = <string>(<unknown>req.params.userId);
     const status = "deleted";
     try {
-      const cacheData = this.cache.get(`${cacheKeys.BY_USER}${userId}`);
-      if (cacheData) {
-        res.send(cacheData);
-        return;
-      }
+      // const cacheData = this.cache.get(`${cacheKeys.BY_USER}${userId}`);
+      // if (cacheData) {
+      //   res.send(cacheData);
+      //   return;
+      // }
       const where: { userId: string; status: any; [key: string]: any } = {
         userId,
         status: { [Op.not]: status }
@@ -230,10 +230,10 @@ class ListingController {
         where,
         order: [["updatedAt", "DESC"]]
       });
-      this.cache.set(
-        `${cacheKeys.BY_USER}${userId}`,
-        JSON.parse(JSON.stringify(results))
-      );
+      // this.cache.set(
+      //   `${cacheKeys.BY_USER}${userId}`,
+      //   JSON.parse(JSON.stringify(results))
+      // );
       res.send(results);
     } catch (err) {
       console.error(err);

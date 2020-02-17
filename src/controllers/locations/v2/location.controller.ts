@@ -51,7 +51,6 @@ class V2LocationController {
 
   postLocation = async (req: Request, res: Response, next: NextFunction) => {
     const data = req.body;
-    let geoAddress = null;
     if (!data || !data.address) {
       throw new HttpException(400, "A reference address must be provided.");
     }
@@ -65,34 +64,40 @@ class V2LocationController {
         })
       );
 
-    try {
-      geoAddress = await V2LocationController.getGoogleGeoCodeAddress(data.address);
-    } catch (err) {
-      next(new HttpException(400, `Address ${data.address} not found by Google API.`));
-    }
-
-    try {
-      const { dataValues }: any = await V2Location.create({
-        ...geoAddress,
-        userId: req.userIdDecoded,
-        buildingName: data.unit,
-        placeId: data.placeId
-      });
-      await UniqueLocation.create({
-        id,
-        locationId: dataValues.id
-      });
-      res.send({ ...dataValues });
-    } catch (err) {
-      sequelizeErrorMiddleware(err, req, res, next);
-    }
+    let geoAddress;
+      try {
+        geoAddress = await this.getGoogleGeoCodeAddress(
+          data.address
+        );
+      } catch (err) {
+        throw new HttpException(
+          400,
+          `Address ${data.address} not found by Google API.`
+        );
+      }
+      try {
+        console.log("LOCATION FROM GOOGLE", geoAddress)
+        const { dataValues }: any = await V2Location.create({
+          ...geoAddress,
+          userId: req.userIdDecoded,
+          buildingName: data.unit,
+          placeId: data.placeId
+        });
+        await UniqueLocation.create({
+          id,
+          locationId: dataValues.id
+        });
+        res.send({ ...dataValues });
+      } catch (err) {
+        console.log(err)
+        sequelizeErrorMiddleware(err, req, res, next);
+      }
   };
 
-  static async getGoogleGeoCodeAddress(suggestAddress: string): Promise<any> {
+  getGoogleGeoCodeAddress = async (suggestAddress: string): Promise<any> => {
     const URL = "https://maps.googleapis.com/maps/api/geocode/json?address=" + encodeURI(suggestAddress) + "&key=" + googleMapAPI;
-    const {
-      data: { geoData }
-    } = await axios.get(URL);
+    const resp = await axios.get(URL);
+    const geoData = await resp.data;
     const locationData: any = {};
     if (geoData && geoData.results && geoData.results.length > 0) {
       geoData.results.map((item: any) => {
@@ -108,10 +113,10 @@ class V2LocationController {
       const buildingName = (locationData.subpremise != undefined ? locationData.subpremise : "") + " " + (locationData.premise != undefined ? locationData.premise : "");
       const address1 = locationData.street_number ? locationData.street_number + " " + locationData.route : locationData.route;
       return Promise.resolve({
-        address1: address1,
-        buildingName: buildingName,
+        address1,
+        buildingName,
         country: locationData.country,
-        city: city,
+        city,
         state: locationData.administrative_area_level_1,
         zipcode: locationData.postal_code,
         lat: geoData.results[0].geometry.location.lat,
