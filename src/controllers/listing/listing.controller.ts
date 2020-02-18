@@ -49,7 +49,7 @@ class ListingController {
   private router = Router();
 
   // Standard expiration time for 3 days...
-  private cache: NodeCache = new NodeCache({ stdTTL: 259200 });
+  private cache: NodeCache = new NodeCache({ stdTTL: 28800 });
 
   constructor() {
     this.router.get(`/listings`, this.getAllPlainListings);
