@@ -1,7 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express'
 import NodeCache from 'node-cache'
 
-import { authMiddleware } from '../../helpers/middlewares/auth-middleware'
+// import { authMiddleware } from '../../helpers/middlewares/auth-middleware'
 import sequelizeErrorMiddleware from '../../helpers/middlewares/sequelize-error-middleware'
 import HttpException from '../../helpers/exceptions/HttpException'
 
