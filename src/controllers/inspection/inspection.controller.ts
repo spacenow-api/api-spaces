@@ -35,11 +35,17 @@ class InspectionController {
   }
 
   private createInspection = async (request: Request, response: Response, next: NextFunction) => {
-    console.log('post function0')
     const data = request.body
+    console.log('post function', data)
     try {
-      const photo: any = await Inspection.create(data)
-      response.send(photo)
+      const inspection: any = await Inspection.create({
+        listingId: data.listingId,
+        messageId: data.messageId,
+        guestId: data.guestId,
+        date: data.date,
+        time: data.time
+      })
+      response.send(inspection)
     } catch (error) {
       sequelizeErrorMiddleware(error, request, response, next)
     }
