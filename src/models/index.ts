@@ -17,6 +17,39 @@ import { Reviews } from './reviews.model'
 import { Bookings } from './bookings.model'
 import { ExternalClicks } from './externalClicks.model'
 import { Inspection } from './inspection.model'
+import { Category } from './category.model'
+import { CategorySpecification } from './category_specification.model'
+import { CategoryBookingPeriod } from './category_booking_period.model'
+import { Topic } from './topic.model'
+import { ListingTopic } from './listing_topic.model'
+import { User } from './user.model'
+import { Role } from './role.model'
+import { AddonsBooking } from './addonsBooking.model'
+import { AddonsListing } from './addonsListing.model'
+import { AddonsSubCategorySuggestions } from './addonsSubCategorySuggestions.model'
+
+import {
+  V2Category,
+  V2ListingTag,
+  V2CategorySpecification,
+  V2Listing,
+  V2ListingAccessDays,
+  V2ListingAccessHours,
+  V2ListingData,
+  V2ListingPhotos,
+  V2ListingSteps,
+  V2ListingAmenities,
+  V2ListingRules,
+  V2ListingFeatures,
+  V2ListingExceptionDates,
+  V2Location,
+  V2UniqueLocation,
+  V2Rule,
+  V2Amenity,
+  V2Feature,
+  V2Cancellation,
+  V2Tag
+} from './v2'
 
 export {
   Listing,
@@ -37,7 +70,37 @@ export {
   Reviews,
   Bookings,
   ExternalClicks,
-  Inspection
+  Inspection,
+  Category,
+  CategorySpecification,
+  CategoryBookingPeriod,
+  Topic,
+  ListingTopic,
+  User,
+  Role,
+  V2Category,
+  V2ListingTag,
+  V2CategorySpecification,
+  V2Listing,
+  V2ListingAccessDays,
+  V2ListingAccessHours,
+  V2ListingData,
+  V2ListingPhotos,
+  V2ListingSteps,
+  V2ListingAmenities,
+  V2ListingRules,
+  V2ListingExceptionDates,
+  V2ListingFeatures,
+  V2Location,
+  V2UniqueLocation,
+  V2Rule,
+  V2Tag,
+  V2Amenity,
+  V2Feature,
+  V2Cancellation,
+  AddonsBooking,
+  AddonsListing,
+  AddonsSubCategorySuggestions
 }
 
 export const arrayOfModels = [
@@ -59,5 +122,35 @@ export const arrayOfModels = [
   Reviews,
   Bookings,
   ExternalClicks,
-  Inspection
+  Inspection,
+  Category,
+  CategorySpecification,
+  CategoryBookingPeriod,
+  Topic,
+  ListingTopic,
+  User,
+  Role,
+  V2Category,
+  V2ListingTag,
+  V2CategorySpecification,
+  V2Listing,
+  V2ListingAccessDays,
+  V2ListingAccessHours,
+  V2ListingData,
+  V2ListingPhotos,
+  V2ListingSteps,
+  V2ListingAmenities,
+  V2ListingRules,
+  V2ListingExceptionDates,
+  V2ListingFeatures,
+  V2Location,
+  V2UniqueLocation,
+  V2Rule,
+  V2Tag,
+  V2Amenity,
+  V2Feature,
+  V2Cancellation,
+  AddonsBooking,
+  AddonsListing,
+  AddonsSubCategorySuggestions
 ]

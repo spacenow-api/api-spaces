@@ -18,3 +18,7 @@ export const USERS_API_HOST = process.env.USERS_API_HOST || "http://localhost:60
 export const googleMapAPI = process.env.GOOGLE_MAP_API;
 
 export const bucket = process.env.S3_BUCKET;
+
+export const emailsApi = process.env.EMAILS_API;
+
+export const jwtSecret = process.env.JWT_SECRET || "Spacenow";
