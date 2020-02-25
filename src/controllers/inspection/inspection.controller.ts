@@ -55,7 +55,7 @@ class InspectionController {
       if (!inspectionObj) throw new HttpException(400, `Inspection ${data.id} not found.`)
       await Inspection.update(
         {
-          data
+          status: data.status
         },
         { where: { id: data.id } }
       )
