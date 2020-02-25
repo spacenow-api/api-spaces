@@ -15,7 +15,7 @@ class ListingStepsController {
       authMiddleware,
       this.getListingSteps
     );
-    this.router.put(
+    this.router.patch(
       `/v2/listing/:id/steps`,
       authMiddleware,
       this.updateListingSteps
