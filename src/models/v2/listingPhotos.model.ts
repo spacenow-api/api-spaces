@@ -1,4 +1,4 @@
-import { Table, Column, AutoIncrement, Model, CreatedAt, UpdatedAt, PrimaryKey, AllowNull, Default, BelongsTo, ForeignKey } from "sequelize-typescript";
+import { Table, Column, AutoIncrement, Model, CreatedAt, UpdatedAt, PrimaryKey, AllowNull, Default, BelongsTo, ForeignKey, DataType } from "sequelize-typescript";
 
 import { V2Listing } from "./";
 
@@ -20,6 +20,9 @@ export class V2ListingPhotos extends Model<V2ListingPhotos> {
   @AllowNull(false)
   @Column
   name!: string;
+
+  @Column(DataType.ENUM("photo", "video", "floorplan"))
+  category?: string;
 
   @Default(0)
   @Column

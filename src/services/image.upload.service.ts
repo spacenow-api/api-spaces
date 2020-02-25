@@ -21,7 +21,7 @@ const fileKey = (request: Request, file: any, callback: (error: any, metadata?: 
   let ext = 'jpeg';
   if (file.mimetype.includes('video'))
     ext = 'mp4';
-  return callback(null, `/space-images/${request.params.listingId}/spacenow-${Date.now()}.${ext}`);
+  return callback(null, `/space-images/${request.params.id}/spacenow-${Date.now()}.${ext}`);
 }
 
 const uploadByMulter = multer({

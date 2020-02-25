@@ -7,7 +7,7 @@ class V2MediaController {
   private router = Router();
 
   constructor() {
-    this.router.post(`/v2/media`, authMiddleware, this.postMedia);
+    this.router.post(`/v2/media/:id`, authMiddleware, this.postMedia);
   }
 
   postMedia = async (req: Request, res: Response, next: NextFunction) => {
@@ -22,7 +22,8 @@ class V2MediaController {
             bucket: file.Bucket,
             region: "ap-southeast-2",
             type: file.mimetype,
-            key: file.Key
+            key: file.Key,
+            category: req.body.category
           };
           res.send(photo);
         }

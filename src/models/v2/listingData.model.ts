@@ -153,10 +153,10 @@ export class V2ListingData extends Model<V2ListingData> {
   alcoholLicence?: string;
 
   @Column
-  wifiNetwork?: string;
+  wifiSpeed?: string;
 
   @Column
-  wifiUsername?: string;
+  wifiNetwork?: string;
 
   @Column
   get wifiPassword(): string {
