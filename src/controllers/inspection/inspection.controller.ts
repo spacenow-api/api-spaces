@@ -20,12 +20,11 @@ class InspectionController {
 
   private intializeRoutes() {
     this.router.get(`${this.path}`, this.getInspections)
-    this.router.post(`${this.path}/create`, authMiddleware, this.createInspection)
-    this.router.put(`${this.path}/update`, authMiddleware, this.updateInspection)
+    this.router.post(`${this.path}/create`, this.createInspection)
+    this.router.put(`${this.path}/update`, this.updateInspection)
   }
 
   private getInspections = async (request: Request, response: Response, next: NextFunction) => {
-    console.log('get function')
     try {
       const inspectionsArray: Array<Inspection> = await Inspection.findAll()
       response.send(inspectionsArray)
@@ -36,6 +35,7 @@ class InspectionController {
   }
 
   private createInspection = async (request: Request, response: Response, next: NextFunction) => {
+    console.log('post function0')
     const data = request.body
     try {
       const photo: any = await Inspection.create(data)
