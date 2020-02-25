@@ -8,61 +8,61 @@ import {
   PrimaryKey,
   AllowNull,
   HasMany
-} from "sequelize-typescript";
-import { Listing } from "./";
+} from 'sequelize-typescript'
+import { Listing } from './'
 
 @Table({
-  tableName: "Location"
+  tableName: 'Location'
 })
 export class Location extends Model<Location> {
   @PrimaryKey
   @AutoIncrement
   @AllowNull(false)
   @Column
-  id!: number;
+  id!: number
 
   @AllowNull(false)
   @Column
-  userId!: string;
+  userId!: string
 
   @Column
-  country?: string;
+  country?: string
 
   @Column
-  address1?: string;
+  address1?: string
 
   @Column
-  address2?: string;
+  address2?: string
 
   @Column
-  buildingName?: string;
+  buildingName?: string
 
   @Column
-  city?: string;
+  city?: string
 
   @Column
-  state?: string;
+  state?: string
 
   @Column
-  zipcode?: string;
+  zipcode?: string
 
   @Column
-  lat?: string;
+  lat?: string
 
   @Column
-  lng?: string;
+  lng?: string
 
   @Column
-  placeId?: string;
+  placeId?: string
 
   @CreatedAt
   @Column
-  createdAt?: Date;
+  createdAt?: Date
 
   @UpdatedAt
   @Column
-  updatedAt?: Date;
+  updatedAt?: Date
 
   @HasMany(() => Listing)
-  listing!: Listing[];
+  listing!: Listing[]
 }
