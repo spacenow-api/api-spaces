@@ -27,6 +27,7 @@ import { Role } from './role.model'
 import { AddonsBooking } from './addonsBooking.model'
 import { AddonsListing } from './addonsListing.model'
 import { AddonsSubCategorySuggestions } from './addonsSubCategorySuggestions.model'
+import { MessageItem } from './messageItem.model'
 
 import {
   V2Category,
@@ -100,7 +101,8 @@ export {
   V2Cancellation,
   AddonsBooking,
   AddonsListing,
-  AddonsSubCategorySuggestions
+  AddonsSubCategorySuggestions,
+  MessageItem
 }
 
 export const arrayOfModels = [
@@ -152,5 +154,6 @@ export const arrayOfModels = [
   V2Cancellation,
   AddonsBooking,
   AddonsListing,
-  AddonsSubCategorySuggestions
+  AddonsSubCategorySuggestions,
+  MessageItem
 ]

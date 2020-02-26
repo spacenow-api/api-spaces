@@ -5,7 +5,7 @@ import NodeCache from 'node-cache'
 import sequelizeErrorMiddleware from '../../helpers/middlewares/sequelize-error-middleware'
 import HttpException from '../../helpers/exceptions/HttpException'
 
-import { Inspection } from '../../models'
+import { Inspection, MessageItem } from '../../models'
 
 class InspectionController {
   public path = '/inspection'
@@ -27,7 +27,21 @@ class InspectionController {
   private getInspections = async (request: Request, response: Response, next: NextFunction) => {
     try {
       const inspectionsArray: Array<Inspection> = await Inspection.findAll()
-      response.send(inspectionsArray)
+      console.log('inspectionsArray', inspectionsArray)
+      var inspectionsNew = new Array();
+      for (let item in inspectionsArray) {
+        let messages = await MessageItem.findAll({
+          where: {
+            messageId: item.messageId
+          },
+          raw: true
+        })
+        inspectionsNew.push({
+          item,
+          message: messages[0]
+        });
+      }
+      response.send(inspectionsNew)
     } catch (error) {
       console.error(error)
       sequelizeErrorMiddleware(error, request, response, next)
@@ -36,7 +50,6 @@ class InspectionController {
 
   private createInspection = async (request: Request, response: Response, next: NextFunction) => {
     const data = request.body
-    console.log('post function', data)
     try {
       const inspection: any = await Inspection.create({
         listingId: data.listingId,
