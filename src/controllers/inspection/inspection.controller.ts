@@ -32,7 +32,7 @@ class InspectionController {
       for (let item in inspectionsArray) {
         let messages = await MessageItem.findAll({
           where: {
-            messageId: item
+            messageId: "9912b63b-5bec-48ba-a352-2fa9f2386a39"
           },
           raw: true
         })
@@ -41,7 +41,7 @@ class InspectionController {
           message: messages[0]
         });
       }
-      response.send(inspectionsArray)
+      response.send(inspectionsNew)
     } catch (error) {
       console.error(error)
       sequelizeErrorMiddleware(error, request, response, next)
