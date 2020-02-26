@@ -41,7 +41,7 @@ class InspectionController {
           message: messages[0]
         });
       }
-      response.send(inspectionsNew)
+      response.send(inspectionsArray)
     } catch (error) {
       console.error(error)
       sequelizeErrorMiddleware(error, request, response, next)
