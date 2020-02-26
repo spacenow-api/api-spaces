@@ -58,11 +58,6 @@ class InspectionController {
       const inspectionObj: Inspection | null = await Inspection.findOne({
         where: { messsageId: data.id }
       })
-      if (inspectionObj && inspectionObj.status === "active" && data.status === 'canceled') {
-        fetch(`https://api-emails${process.env.environment}/email/message/${data.id}/inspection/cancel`)
-          .then(res => console.log(res))
-          .catch(err => console.log(err))
-      }
       if (!inspectionObj) throw new HttpException(400, `Inspection with messageId ${data.id} not found.`)
       const newInspectionObj = await Inspection.update(
         {
