@@ -26,13 +26,13 @@ class InspectionController {
 
   private getInspections = async (request: Request, response: Response, next: NextFunction) => {
     try {
-      const inspectionsArray: Array<Inspection> = await Inspection.findAll()
+      const inspectionsArray: Array<Inspection> = await Inspection.findAll({ raw: true })
       console.log('inspectionsArray', inspectionsArray)
       var inspectionsNew = new Array();
       for (let item in inspectionsArray) {
         let messages = await MessageItem.findAll({
           where: {
-            messageId: item.messageId
+            messageId: item
           },
           raw: true
         })
