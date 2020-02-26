@@ -29,17 +29,20 @@ class InspectionController {
       const inspectionsArray: Array<Inspection> = await Inspection.findAll({ raw: true })
       console.log('inspectionsArray', inspectionsArray)
       var inspectionsNew = new Array();
-      for (let item in inspectionsArray) {
-        let messages = await MessageItem.findAll({
-          where: {
-            messageId: "9912b63b-5bec-48ba-a352-2fa9f2386a39"
-          },
-          raw: true
-        })
-        inspectionsNew.push({
-          item,
-          message: messages[0]
-        });
+      if (inspectionsArray) {
+        let item: any
+        for (item in inspectionsArray) {
+          let messages = await MessageItem.findAll({
+            where: {
+              messageId: item.messageId
+            },
+            raw: true
+          })
+          inspectionsNew.push({
+            item,
+            message: messages[0].content
+          });
+        }
       }
       response.send(inspectionsNew)
     } catch (error) {
