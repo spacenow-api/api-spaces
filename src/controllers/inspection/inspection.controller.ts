@@ -55,15 +55,20 @@ class InspectionController {
     const data = request.body
     try {
       this.cache.flushAll()
-      const inspectionObj: Inspection | null = await Inspection.findOne({
-        where: { id: data.id }
+      let inspectionObj: Inspection | null = await Inspection.findOne({
+        where: { messsageId: data.id }
       })
-      if (!inspectionObj) throw new HttpException(400, `Inspection ${data.id} not found.`)
-      await Inspection.update(
+      if (inspectionObj && inspectionObj.status === "active" && data.status === 'canceled') {
+        fetch(`https://api-emails${process.env.environment}/email/message/${data.id}/inspection/cancel`)
+          .then(res => console.log(res))
+          .catch(err => console.log(err))
+      }
+      if (!inspectionObj) throw new HttpException(400, `Inspection with messageId ${data.id} not found.`)
+      inspectionObj = await Inspection.update(
         {
           status: data.status
         },
-        { where: { id: data.id } }
+        { where: { messageId: data.id } }
       )
       response.send(inspectionObj)
     } catch (error) {
