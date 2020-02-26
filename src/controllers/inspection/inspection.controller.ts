@@ -26,12 +26,14 @@ class InspectionController {
 
   private getInspections = async (request: Request, response: Response, next: NextFunction) => {
     try {
-      const inspectionsArray: Array<Inspection> = await Inspection.findAll({ raw: true })
+      const inspectionsArray = await Inspection.findAll({ raw: true })
       console.log('inspectionsArray', inspectionsArray)
+      console.log('type of inspection', typeof inspectionsArray)
       var inspectionsNew = new Array();
       if (inspectionsArray) {
         let item: any
         for (item in inspectionsArray) {
+          console.log('item', item)
           let messages = await MessageItem.findAll({
             where: {
               messageId: item.messageId
@@ -44,7 +46,7 @@ class InspectionController {
           });
         }
       }
-      response.send(inspectionsNew)
+      response.send(inspectionsArray)
     } catch (error) {
       console.error(error)
       sequelizeErrorMiddleware(error, request, response, next)
