@@ -11,57 +11,59 @@ import {
   Unique,
   Default,
   BeforeCreate,
-  HasMany
-} from "sequelize-typescript";
-import bcryptjs from "bcryptjs";
-import uuidV4 from "uuid/v4";
-import { Role } from "./role.model";
+  HasMany,
+  BelongsTo
+} from 'sequelize-typescript'
+import bcryptjs from 'bcryptjs'
+import uuidV4 from 'uuid/v4'
+import { Role } from './role.model'
+import { SavedListing } from '.'
 
 @Table
 export class User extends Model<User> {
   @IsUUID(4)
   @PrimaryKey
   @Column
-  id!: string;
+  id!: string
 
   @Unique
   @IsEmail
   @Column
-  email!: string;
+  email!: string
 
   @Length({ min: 8, max: 12 })
   @Column
-  password!: string;
+  password!: string
 
   @Default(false)
   @Column
-  isEmailConfirmed!: boolean;
+  isEmailConfirmed!: boolean
 
   @Default(true)
   @Column
-  isActive!: boolean;
+  isActive!: boolean
 
   @CreatedAt
   @Column
-  createdAt!: Date;
+  createdAt!: Date
 
   @UpdatedAt
   @Column
-  updatedAt!: Date;
+  updatedAt!: Date
 
   @HasMany(() => Role)
-  role!: Role[];
+  role!: Role[]
+
+  @BelongsTo(() => SavedListing, 'userId')
+  user!: SavedListing
 
   @BeforeCreate
   static async generateId(instance: User) {
-    instance.id = uuidV4();
+    instance.id = uuidV4()
   }
 
   @BeforeCreate
   static async hashPassword(instance: User) {
-    instance.password = bcryptjs.hashSync(
-      instance.password,
-      bcryptjs.genSaltSync(8)
-    );
+    instance.password = bcryptjs.hashSync(instance.password, bcryptjs.genSaltSync(8))
   }
 }

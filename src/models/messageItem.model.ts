@@ -43,6 +43,6 @@ export class MessageItem extends Model<MessageItem> {
   @Column
   updatedAt?: Date
 
-  @BelongsTo(() => Inspection)
-  message!: Inspection;
+  @BelongsTo(() => Inspection, 'messageId')
+  messages!: Inspection
 }

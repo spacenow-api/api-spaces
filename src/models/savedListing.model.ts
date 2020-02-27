@@ -32,10 +32,9 @@ export class SavedListing extends Model<SavedListing> {
   @Column
   listingId!: number
 
-  @HasMany(() => Listing, 'id')
-  listing!: Listing[];
+  @HasMany(() => Listing, 'listingId')
+  listing!: Listing
 
-  @HasMany(() => User, 'id')
-  user!: User[];
-
+  @HasMany(() => User, 'userId')
+  user!: User
 }
