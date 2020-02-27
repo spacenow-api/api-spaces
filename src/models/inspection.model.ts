@@ -7,10 +7,12 @@ import {
   UpdatedAt,
   PrimaryKey,
   AllowNull,
-  HasMany,
   Default,
-  DataType
+  DataType,
+  HasMany
 } from 'sequelize-typescript'
+
+import { MessageItem } from '.'
 
 @Table({
   tableName: 'Inspection'
@@ -52,4 +54,8 @@ export class Inspection extends Model<Inspection> {
   @UpdatedAt
   @Column
   updatedAt?: Date
+
+  @HasMany(() => MessageItem, "messageId")
+  messages!: MessageItem[];
+
 }

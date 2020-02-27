@@ -7,6 +7,8 @@ import HttpException from '../../helpers/exceptions/HttpException'
 
 import { Inspection, MessageItem } from '../../models'
 
+const CACHE_KEY = "_inspections_";
+
 class InspectionController {
   public path = '/inspection'
   private router = Router()
@@ -15,43 +17,31 @@ class InspectionController {
   private cache: NodeCache = new NodeCache({ stdTTL: 259200 })
 
   constructor() {
-    this.intializeRoutes()
+    this.router.get(`/inspections`, this.getInspections)
+    this.router.post(`${this.path}`, this.createInspection)
+    this.router.put(`${this.path}`, this.updateInspection)
   }
 
-  private intializeRoutes() {
-    this.router.get(`${this.path}`, this.getInspections)
-    this.router.post(`${this.path}/create`, this.createInspection)
-    this.router.put(`${this.path}/update`, this.updateInspection)
-  }
-
-  private getInspections = async (request: Request, response: Response, next: NextFunction) => {
-    try {
-      const inspectionsArray = await Inspection.findAll({ raw: true })
-      console.log('inspectionsArray', inspectionsArray)
-      console.log('type of inspection', typeof inspectionsArray)
-      var inspectionsNew = new Array();
-      if (inspectionsArray) {
-        let item: any
-        for (item in inspectionsArray) {
-          console.log('item', item)
-          let messages = await MessageItem.findAll({
-            where: {
-              messageId: item.messageId
-            },
-            raw: true
-          })
-          inspectionsNew.push({
-            item,
-            message: messages[0].content
-          });
-        }
-      }
-      response.send(inspectionsArray)
-    } catch (error) {
-      console.error(error)
-      sequelizeErrorMiddleware(error, request, response, next)
+  getInspections = async (req: Request, res: Response, next: NextFunction) => {
+    const include = {
+      include: [
+        { model: MessageItem, as: "messages" },
+      ]
+    };
+    const cacheData = this.cache.get(CACHE_KEY);
+    if (cacheData) {
+      res.send(cacheData);
+      return;
     }
-  }
+    try {
+      const result = await Inspection.findAll(include);
+      this.cache.set(CACHE_KEY, JSON.parse(JSON.stringify(result)));
+      res.send(result);
+    } catch (err) {
+      console.error(err);
+      sequelizeErrorMiddleware(err, req, res, next);
+    }
+  };
 
   private createInspection = async (request: Request, response: Response, next: NextFunction) => {
     const data = request.body
