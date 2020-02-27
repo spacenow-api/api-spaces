@@ -7,7 +7,7 @@ import {
   UpdatedAt,
   PrimaryKey,
   AllowNull,
-  HasMany
+  BelongsTo
 } from 'sequelize-typescript'
 import { Inspection } from '.'
 
@@ -43,6 +43,6 @@ export class MessageItem extends Model<MessageItem> {
   @Column
   updatedAt?: Date
 
-  @HasMany(() => Inspection, 'messageId')
+  @BelongsTo(() => Inspection, 'messageId')
   messages!: Inspection
 }
