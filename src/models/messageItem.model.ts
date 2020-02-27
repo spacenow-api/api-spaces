@@ -6,8 +6,10 @@ import {
   CreatedAt,
   UpdatedAt,
   PrimaryKey,
-  AllowNull
+  AllowNull,
+  BelongsTo
 } from 'sequelize-typescript'
+import { Inspection } from '.'
 
 @Table({
   tableName: 'MessageItem'
@@ -40,4 +42,7 @@ export class MessageItem extends Model<MessageItem> {
   @UpdatedAt
   @Column
   updatedAt?: Date
+
+  @BelongsTo(() => Inspection)
+  message!: Inspection;
 }
