@@ -9,7 +9,8 @@ import {
   AllowNull,
   Default,
   DataType,
-  HasMany
+  HasMany,
+  BelongsTo
 } from 'sequelize-typescript'
 
 import { User, Listing } from '.'
@@ -32,9 +33,9 @@ export class SavedListing extends Model<SavedListing> {
   @Column
   listingId!: number
 
-  @HasMany(() => Listing, 'listingId')
+  @BelongsTo(() => Listing, 'listingId')
   listing!: Listing
 
-  @HasMany(() => User, 'userId')
+  @BelongsTo(() => User, 'userId')
   user!: User
 }

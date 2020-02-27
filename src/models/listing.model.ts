@@ -179,7 +179,7 @@ export class Listing extends Model<Listing> {
   @BelongsTo(() => ListSettingsParent)
   listingSettings!: ListSettingsParent
 
-  @BelongsTo(() => SavedListing, 'listingId')
+  @HasMany(() => SavedListing, 'listingId')
   listing!: SavedListing
 
   @AfterUpdate

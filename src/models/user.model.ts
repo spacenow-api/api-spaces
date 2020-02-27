@@ -54,7 +54,7 @@ export class User extends Model<User> {
   @HasMany(() => Role)
   role!: Role[]
 
-  @BelongsTo(() => SavedListing, 'userId')
+  @HasMany(() => SavedListing, 'userId')
   user!: SavedListing
 
   @BeforeCreate
