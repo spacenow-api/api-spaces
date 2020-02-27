@@ -15,7 +15,7 @@ import {
 import { User, Listing } from '.'
 
 @Table({
-  tableName: 'SavedListing'
+  tableName: 'SavedListings'
 })
 export class SavedListing extends Model<SavedListing> {
   @PrimaryKey
