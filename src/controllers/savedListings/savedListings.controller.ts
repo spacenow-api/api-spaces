@@ -47,12 +47,11 @@ class SavedListingsController {
   };
 
   private createSavedListing = async (request: Request, response: Response, next: NextFunction) => {
-    const listingId = <number>(<unknown>request.params.listingId);
-    const userId = <string>(<unknown>request.params.userId);
+    const data = request.body
     try {
       const savedListing: any = await SavedListing.create({
-        listingId,
-        userId
+        listingId: data.listingId,
+        userId: data.userId
       })
       response.send(savedListing)
     } catch (error) {
