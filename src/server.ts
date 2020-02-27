@@ -16,6 +16,7 @@ import LocationController from './controllers/locations/location.controller'
 import PhotosController from './controllers/photos/legacyPhotos.controller'
 import InspectionController from './controllers/inspection/inspection.controller'
 import AddonsController from './controllers/addons/addons.controller'
+import SavedListingsController from './controllers/savedListings/savedListings.controller'
 
 /**
  * V2 APIs
@@ -47,6 +48,7 @@ const app = new App(
     new PhotosController(),
     new InspectionController(),
     new AddonsController(),
+    new SavedListingsController(),
 
     /**
      * V2 APIs

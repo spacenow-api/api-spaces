@@ -28,6 +28,7 @@ import { AddonsBooking } from './addonsBooking.model'
 import { AddonsListing } from './addonsListing.model'
 import { AddonsSubCategorySuggestions } from './addonsSubCategorySuggestions.model'
 import { MessageItem } from './messageItem.model'
+import { SavedListing } from './savedListing.model'
 
 import {
   V2Category,
@@ -102,7 +103,8 @@ export {
   AddonsBooking,
   AddonsListing,
   AddonsSubCategorySuggestions,
-  MessageItem
+  MessageItem,
+  SavedListing
 }
 
 export const arrayOfModels = [
@@ -155,5 +157,6 @@ export const arrayOfModels = [
   AddonsBooking,
   AddonsListing,
   AddonsSubCategorySuggestions,
-  MessageItem
+  MessageItem,
+  SavedListing
 ]
