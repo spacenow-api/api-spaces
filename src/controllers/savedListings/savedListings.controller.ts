@@ -28,14 +28,14 @@ class SavedListingsController {
       where: { userId },
       include: [{ model: Listing, as: 'listing' }, { model: UserProfile, as: 'user' }]
     }
-    const cacheData = this.cache.get(CACHE_KEY)
-    if (cacheData) {
-      res.send(cacheData)
-      return
-    }
+    // const cacheData = this.cache.get(CACHE_KEY)
+    // if (cacheData) {
+    //   res.send(cacheData)
+    //   return
+    // }
     try {
       const result = await SavedListing.findAll(include)
-      this.cache.set(CACHE_KEY, JSON.parse(JSON.stringify(result)))
+      // this.cache.set(CACHE_KEY, JSON.parse(JSON.stringify(result)))
       res.send(result)
     } catch (err) {
       console.error(err)
