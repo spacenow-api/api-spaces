@@ -11,13 +11,11 @@ import {
   Unique,
   Default,
   BeforeCreate,
-  HasMany,
-  BelongsTo
+  HasMany
 } from 'sequelize-typescript'
 import bcryptjs from 'bcryptjs'
 import uuidV4 from 'uuid/v4'
 import { Role } from './role.model'
-import { SavedListing } from '.'
 
 @Table
 export class User extends Model<User> {

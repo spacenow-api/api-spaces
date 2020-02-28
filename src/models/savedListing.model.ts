@@ -7,9 +7,6 @@ import {
   UpdatedAt,
   PrimaryKey,
   AllowNull,
-  Default,
-  DataType,
-  HasMany,
   BelongsTo
 } from 'sequelize-typescript'
 
@@ -32,6 +29,14 @@ export class SavedListing extends Model<SavedListing> {
   @AllowNull(false)
   @Column
   listingId!: number
+
+  @CreatedAt
+  @Column
+  createdAt?: Date
+
+  @UpdatedAt
+  @Column
+  updatedAt?: Date
 
   @BelongsTo(() => Listing, 'listingId')
   listing!: Listing

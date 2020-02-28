@@ -81,7 +81,7 @@ export class UserLegacy extends Model<UserLegacy> {
   userVerifiedInfo: UserVerifiedInfoLegacy | undefined
 
   @HasMany(() => SavedListing, 'userId')
-  user!: SavedListing
+  user!: SavedListing | undefined
 
   static getPasswordHash(value: string): string {
     return bcryptjs.hashSync(value, bcryptjs.genSaltSync(8))
