@@ -4,7 +4,7 @@ import NodeCache from 'node-cache'
 // import { authMiddleware } from '../../helpers/middlewares/auth-middleware'
 import sequelizeErrorMiddleware from '../../helpers/middlewares/sequelize-error-middleware'
 
-import { SavedListing, Listing, User } from '../../models'
+import { SavedListing, Listing, UserProfile } from '../../models'
 
 const CACHE_KEY = '_saved-listings_'
 
@@ -26,7 +26,7 @@ class SavedListingsController {
     const userId = <string>(<unknown>req.params.userId)
     const include = {
       where: { userId },
-      include: [{ model: Listing, as: 'listing' }, { model: User, as: 'user' }]
+      include: [{ model: Listing, as: 'listing' }, { model: UserProfile, as: 'user' }]
     }
     const cacheData = this.cache.get(CACHE_KEY)
     if (cacheData) {
