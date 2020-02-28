@@ -54,9 +54,6 @@ export class User extends Model<User> {
   @HasMany(() => Role)
   role!: Role[]
 
-  @HasMany(() => SavedListing, 'userId')
-  user!: SavedListing
-
   @BeforeCreate
   static async generateId(instance: User) {
     instance.id = uuidV4()

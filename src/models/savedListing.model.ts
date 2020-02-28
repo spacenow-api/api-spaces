@@ -13,7 +13,7 @@ import {
   BelongsTo
 } from 'sequelize-typescript'
 
-import { User, Listing } from '.'
+import { UserLegacy, Listing } from '.'
 
 @Table({
   tableName: 'SavedListings'
@@ -36,6 +36,6 @@ export class SavedListing extends Model<SavedListing> {
   @BelongsTo(() => Listing, 'listingId')
   listing!: Listing
 
-  @BelongsTo(() => User, 'userId')
-  user!: User
+  @BelongsTo(() => UserLegacy, 'userId')
+  user!: UserLegacy
 }
