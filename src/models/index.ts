@@ -29,9 +29,6 @@ import { AddonsListing } from './addonsListing.model'
 import { AddonsSubCategorySuggestions } from './addonsSubCategorySuggestions.model'
 import { MessageItem } from './messageItem.model'
 import { SavedListing } from './savedListing.model'
-import { UserLegacy } from './userLegacy.model'
-import { UserProfileLegacy } from './userProfileLegacy.model'
-import { UserVerifiedInfoLegacy } from './userVerifiedInfoLegacy.model'
 
 import {
   V2Category,
@@ -107,10 +104,7 @@ export {
   AddonsListing,
   AddonsSubCategorySuggestions,
   MessageItem,
-  SavedListing,
-  UserLegacy,
-  UserProfileLegacy,
-  UserVerifiedInfoLegacy
+  SavedListing
 }
 
 export const arrayOfModels = [
@@ -164,8 +158,5 @@ export const arrayOfModels = [
   AddonsListing,
   AddonsSubCategorySuggestions,
   MessageItem,
-  SavedListing,
-  UserLegacy,
-  UserProfileLegacy,
-  UserVerifiedInfoLegacy
+  SavedListing
 ]
