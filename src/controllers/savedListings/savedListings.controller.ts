@@ -46,7 +46,7 @@ class SavedListingsController {
   private createSavedListing = async (request: Request, response: Response, next: NextFunction) => {
     const data = request.body
     try {
-      const savedListing: any = await SavedListing.findOrCreate({
+      const [savedListing, _]: any = await SavedListing.findOrCreate({
         where: {
           listingId: data.listingId,
           userId: data.userId
