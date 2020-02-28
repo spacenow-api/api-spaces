@@ -12,7 +12,8 @@ import {
   AllowNull,
   HasOne,
   DataType,
-  HasMany
+  HasMany,
+  BelongsTo
 } from 'sequelize-typescript'
 
 import bcryptjs from 'bcryptjs'
@@ -20,7 +21,6 @@ import bcryptjs from 'bcryptjs'
 import uuidV4 from 'uuid/v4'
 import { UserProfileLegacy } from './'
 import { UserVerifiedInfoLegacy } from './'
-import { SavedListing } from '.'
 
 @Table({
   tableName: 'User'
@@ -79,9 +79,6 @@ export class UserLegacy extends Model<UserLegacy> {
 
   @HasOne(() => UserVerifiedInfoLegacy)
   userVerifiedInfo: UserVerifiedInfoLegacy | undefined
-
-  @HasMany(() => SavedListing, 'userId')
-  user!: SavedListing | undefined
 
   static getPasswordHash(value: string): string {
     return bcryptjs.hashSync(value, bcryptjs.genSaltSync(8))

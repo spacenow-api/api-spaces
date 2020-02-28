@@ -10,105 +10,109 @@ import {
   AllowNull,
   AutoIncrement,
   Unique,
-  HasOne
-} from "sequelize-typescript";
+  HasOne,
+  HasMany
+} from 'sequelize-typescript'
 
-import { Listing } from ".";
+import { Listing, SavedListing } from '.'
 
 @Table({
-  tableName: "UserProfile"
+  tableName: 'UserProfile'
 })
 export class UserProfile extends Model<UserProfile> {
   @IsUUID(4)
   @PrimaryKey
   @AllowNull(false)
   @Column
-  userId!: string;
+  userId!: string
 
   @Unique
   @AutoIncrement
   @AllowNull(false)
   @Column
-  profileId!: number;
+  profileId!: number
 
   @Column
-  firstName?: string;
+  firstName?: string
 
   @Column
-  lastName?: string;
+  lastName?: string
 
   @Column
-  displayName?: string;
+  displayName?: string
 
   @Column
-  dateOfBirth?: string;
+  dateOfBirth?: string
 
   @Default('')
   @Column
-  picture?: string;
+  picture?: string
 
   @Column
-  gender?: string;
+  gender?: string
 
   @Column
-  phoneNumber?: string;
+  phoneNumber?: string
 
   @Column
-  preferredLanguage?: string;
+  preferredLanguage?: string
 
   @Column
-  preferredCurrency?: string;
+  preferredCurrency?: string
 
   @Column
-  info?: string;
+  info?: string
 
   @Column
-  location?: string;
+  location?: string
 
   @AllowNull(false)
   @CreatedAt
   @Column
-  createdAt!: Date;
+  createdAt!: Date
 
   @AllowNull(false)
   @UpdatedAt
   @Column
-  updatedAt!: Date;
+  updatedAt!: Date
 
   @Column
-  stripeCusId?: string;
+  stripeCusId?: string
 
   @Default(1)
   @Column
-  country?: number;
+  country?: number
 
   @Column
-  verificationCode?: number;
+  verificationCode?: number
 
   @Column
-  countryCode?: string;
+  countryCode?: string
 
   @Column
-  customerId?: string;
+  customerId?: string
 
   @Column
-  accountId?: string;
+  accountId?: string
 
   @Column
-  userLocationId?: number;
+  userLocationId?: number
 
   @Column
-  profileType?: string;
+  profileType?: string
 
   @Column
-  companyName?: string;
+  companyName?: string
 
   @Column
-  companyId?: string;
+  companyId?: string
 
   @Column
-  contactJobRole?: string;
+  contactJobRole?: string
 
   @HasOne(() => Listing)
-  host!: Listing;
+  host!: Listing
+
+  @HasMany(() => SavedListing, 'userId')
+  user!: SavedListing
 }
