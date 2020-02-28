@@ -9,10 +9,10 @@ import {
   AllowNull,
   Default,
   DataType,
-  HasMany
+  BelongsTo
 } from 'sequelize-typescript'
 
-import { MessageItem } from '.'
+import { Message } from '.'
 
 @Table({
   tableName: 'Inspection'
@@ -55,6 +55,6 @@ export class Inspection extends Model<Inspection> {
   @Column
   updatedAt?: Date
 
-  @HasMany(() => MessageItem, 'messageId')
-  messages!: MessageItem[]
+  @BelongsTo(() => Message, 'messageId')
+  message!: Message;
 }

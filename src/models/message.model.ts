@@ -1,38 +1,40 @@
 import {
   Table,
   Column,
-  IsUUID,
   Model,
   CreatedAt,
   UpdatedAt,
   PrimaryKey,
   AllowNull,
-  HasOne,
+  IsUUID,
+  HasMany,
   BelongsTo
 } from 'sequelize-typescript'
-import { Message } from '.'
+
+import { MessageItem } from '.'
 
 @Table({
-  tableName: 'MessageItem'
+  tableName: 'Message'
 })
-export class MessageItem extends Model<MessageItem> {
+export class Message extends Model<Message> {
   @IsUUID(4)
   @PrimaryKey
   @Column
   id!: string
 
-  @IsUUID(4)
   @AllowNull(false)
   @Column
-  messageId!: string
+  listingId!: number
 
   @IsUUID(4)
   @AllowNull(false)
   @Column
-  sentBy!: string
+  hostId!: string
 
+  @IsUUID(4)
+  @AllowNull(false)
   @Column
-  content!: string
+  guestId!: string
 
   @Column
   isRead?: boolean
@@ -45,6 +47,7 @@ export class MessageItem extends Model<MessageItem> {
   @Column
   updatedAt?: Date
 
-  @BelongsTo(() => Message, 'id')
-  message!: Message
+  @HasMany(() => MessageItem, 'messageId')
+  messages!: MessageItem[]
+
 }

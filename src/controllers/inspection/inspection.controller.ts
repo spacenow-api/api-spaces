@@ -5,7 +5,7 @@ import NodeCache from 'node-cache'
 import sequelizeErrorMiddleware from '../../helpers/middlewares/sequelize-error-middleware'
 import HttpException from '../../helpers/exceptions/HttpException'
 
-import { Inspection, MessageItem } from '../../models'
+import { Inspection, Message, MessageItem } from '../../models'
 
 const CACHE_KEY = "_inspections_";
 
@@ -25,17 +25,26 @@ class InspectionController {
   getInspections = async (req: Request, res: Response, next: NextFunction) => {
     const include = {
       include: [
-        { model: MessageItem, as: "messages" },
+        { 
+          model: Message, 
+          as: "message",
+          include: [
+            { 
+              model: MessageItem, 
+              as: "messages",
+            },
+          ]
+        },
       ]
     };
-    const cacheData = this.cache.get(CACHE_KEY);
-    if (cacheData) {
-      res.send(cacheData);
-      return;
-    }
+    // const cacheData = this.cache.get(CACHE_KEY);
+    // if (cacheData) {
+    //   res.send(cacheData);
+    //   return;
+    // }
     try {
       const result = await Inspection.findAll(include);
-      this.cache.set(CACHE_KEY, JSON.parse(JSON.stringify(result)));
+      // this.cache.set(CACHE_KEY, JSON.parse(JSON.stringify(result)));
       res.send(result);
     } catch (err) {
       console.error(err);
