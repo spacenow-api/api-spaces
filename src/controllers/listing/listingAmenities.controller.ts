@@ -61,7 +61,7 @@ class ListingAmenitiesController {
         const result = new Array<any>();
         for (const item of parentsArray) {
           const settingsObj: ListSettings | null = await ListSettings.findOne({
-            where: { id: item.listSettingsChildId, isEnable: "1" },
+            where: { id: item.listSettingsChildId, isEnable: "1", typeId: "115" },
             raw: true
           });
           if (settingsObj) {

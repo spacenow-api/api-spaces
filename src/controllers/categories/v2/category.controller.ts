@@ -5,6 +5,7 @@ import sequelizeErrorMiddleware from "../../../helpers/middlewares/sequelize-err
 import HttpException from "../../../helpers/exceptions/HttpException";
 
 import { V2Category, V2CategorySpecification, V2Tag } from "../../../models/v2";
+import { ListSettingsParent, ListSettings } from "../../../models"
 
 const CACHE_KEY = "_categories_";
 
@@ -18,6 +19,11 @@ class V2CategoryController {
     this.router.get(`/v2/category/:id`, this.getCategory);
     this.router.get(`/v2/category/:id/tags`, this.getCategoryTag);
     this.router.get(`/v2/category/:id/specifications`, this.getCategorySpecification);
+    this.router.get(`/v2/category/:id/activities`, this.getCategoryActivities);
+    this.router.get(`/v2/category/:id/styles`, this.getCategoryStyles);
+    this.router.get(`/v2/category/:id/rules`, this.getCategoryRules);
+    this.router.get(`/v2/category/:id/amenities`, this.getCategoryAmenities);
+    this.router.get(`/v2/category/:id/features`, this.getCategoryFeatures);
     this.router.post(`/v2/category`, this.postCategory);
   }
 
@@ -104,6 +110,131 @@ class V2CategoryController {
       res.send(result);
     } catch (err) {
       console.error(err);
+      sequelizeErrorMiddleware(err, req, res, next);
+    }
+  };
+
+  getCategoryActivities = async (req: Request, res: Response, next: NextFunction) => {
+    const categoryId = <string>(<unknown>req.params.id);
+    const TYPE_ID = "120"
+
+    if (!categoryId) {
+      throw new HttpException(400, `Category ID must be provided.`);
+    }
+    const where = { where: { listSettingsParentId: categoryId } };
+    try {
+      const listSettings = await ListSettingsParent.findAll(where)
+      const result = new Array<any>();
+      for (const item of listSettings) {
+        const settingsObj = await ListSettings.findOne({
+          where: { id: item.listSettingsChildId, isEnable: "1", typeId: TYPE_ID }
+        });
+        if (settingsObj) {
+          result.push(settingsObj);
+        }
+      }
+      res.send(result);
+    } catch (err) {
+      sequelizeErrorMiddleware(err, req, res, next);
+    }
+  };
+
+  getCategoryStyles = async (req: Request, res: Response, next: NextFunction) => {
+    const categoryId = <string>(<unknown>req.params.id);
+    const TYPE_ID = "119"
+
+    if (!categoryId) {
+      throw new HttpException(400, `Category ID must be provided.`);
+    }
+    const where = { where: { listSettingsParentId: categoryId } };
+    try {
+      const listSettings = await ListSettingsParent.findAll(where)
+      const result = new Array<any>();
+      for (const item of listSettings) {
+        const settingsObj = await ListSettings.findOne({
+          where: { id: item.listSettingsChildId, isEnable: "1", typeId: TYPE_ID }
+        });
+        if (settingsObj) {
+          result.push(settingsObj);
+        }
+      }
+      res.send(result);
+    } catch (err) {
+      sequelizeErrorMiddleware(err, req, res, next);
+    }
+  };
+
+  getCategoryFeatures = async (req: Request, res: Response, next: NextFunction) => {
+    const categoryId = <string>(<unknown>req.params.id);
+    const TYPE_ID = "118"
+
+    if (!categoryId) {
+      throw new HttpException(400, `Category ID must be provided.`);
+    }
+    const where = { where: { listSettingsParentId: categoryId } };
+    try {
+      const listSettings = await ListSettingsParent.findAll(where)
+      const result = new Array<any>();
+      for (const item of listSettings) {
+        const settingsObj = await ListSettings.findOne({
+          where: { id: item.listSettingsChildId, isEnable: "1", typeId: TYPE_ID }
+        });
+        if (settingsObj) {
+          result.push(settingsObj);
+        }
+      }
+      res.send(result);
+    } catch (err) {
+      sequelizeErrorMiddleware(err, req, res, next);
+    }
+  };
+
+  getCategoryRules = async (req: Request, res: Response, next: NextFunction) => {
+    const categoryId = <string>(<unknown>req.params.id);
+    const TYPE_ID = "14"
+
+    if (!categoryId) {
+      throw new HttpException(400, `Category ID must be provided.`);
+    }
+    const where = { where: { listSettingsParentId: categoryId } };
+    try {
+      const listSettings = await ListSettingsParent.findAll(where)
+      const result = new Array<any>();
+      for (const item of listSettings) {
+        const settingsObj = await ListSettings.findOne({
+          where: { id: item.listSettingsChildId, isEnable: "1", typeId: TYPE_ID }
+        });
+        if (settingsObj) {
+          result.push(settingsObj);
+        }
+      }
+      res.send(result);
+    } catch (err) {
+      sequelizeErrorMiddleware(err, req, res, next);
+    }
+  };
+
+  getCategoryAmenities = async (req: Request, res: Response, next: NextFunction) => {
+    const categoryId = <string>(<unknown>req.params.id);
+    const TYPE_ID = "115"
+
+    if (!categoryId) {
+      throw new HttpException(400, `Category ID must be provided.`);
+    }
+    const where = { where: { listSettingsParentId: categoryId } };
+    try {
+      const listSettings = await ListSettingsParent.findAll(where)
+      const result = new Array<any>();
+      for (const item of listSettings) {
+        const settingsObj = await ListSettings.findOne({
+          where: { id: item.listSettingsChildId, isEnable: "1", typeId: TYPE_ID }
+        });
+        if (settingsObj) {
+          result.push(settingsObj);
+        }
+      }
+      res.send(result);
+    } catch (err) {
       sequelizeErrorMiddleware(err, req, res, next);
     }
   };
