@@ -3,17 +3,11 @@ import NodeCache from "node-cache";
 
 import sequelizeErrorMiddleware from "../../helpers/middlewares/sequelize-error-middleware";
 
-import {
-  Category,
-  CategoryBookingPeriod,
-  ListSettings,
-  ListSettingsParent,
-  SubcategoryBookingPeriod
-} from "../../models";
+import { Category, CategoryBookingPeriod, ListSettings, ListSettingsParent, SubcategoryBookingPeriod } from "../../models";
 
 const REFERENCE_CATEGORIES_ID: number = 111;
 
-const CACHE_KEY = "_categories_full_";
+const CACHE_KEY = "_categories_all_";
 
 export const _getCategories = (): Promise<Array<ListSettings>> => {
   const include = {
