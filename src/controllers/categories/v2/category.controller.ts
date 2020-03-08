@@ -25,6 +25,8 @@ class V2CategoryController {
     this.router.get(`/v2/category/:id/amenities`, this.getCategoryAmenities);
     this.router.get(`/v2/category/:id/features`, this.getCategoryFeatures);
     this.router.get(`/v2/category/:id/booking-period`, this.getCategoryBookingPeriod);
+    this.router.get(`/v2/category/:id/access`, this.getCategoryAccess);
+    this.router.get(`/v2/category/:id/checkin-types`, this.getCategoryCheckinTypes);
     this.router.post(`/v2/category`, this.postCategory);
   }
 
@@ -228,6 +230,56 @@ class V2CategoryController {
   getCategoryAmenities = async (req: Request, res: Response, next: NextFunction) => {
     const categoryId = <string>(<unknown>req.params.id);
     const TYPE_ID = "115";
+
+    if (!categoryId) {
+      throw new HttpException(400, `Category ID must be provided.`);
+    }
+    const where = { where: { listSettingsParentId: categoryId } };
+    try {
+      const listSettings = await V2CategorySpecification.findAll(where);
+      const result = new Array<any>();
+      for (const item of listSettings) {
+        const settingsObj = await ListSettings.findOne({
+          where: { id: item.specificationId, isEnable: "1", typeId: TYPE_ID }
+        });
+        if (settingsObj) {
+          result.push(settingsObj);
+        }
+      }
+      res.send(result);
+    } catch (err) {
+      sequelizeErrorMiddleware(err, req, res, next);
+    }
+  };
+
+  getCategoryAccess = async (req: Request, res: Response, next: NextFunction) => {
+    const categoryId = <string>(<unknown>req.params.id);
+    const TYPE_ID = "121";
+
+    if (!categoryId) {
+      throw new HttpException(400, `Category ID must be provided.`);
+    }
+    const where = { where: { listSettingsParentId: categoryId } };
+    try {
+      const listSettings = await V2CategorySpecification.findAll(where);
+      const result = new Array<any>();
+      for (const item of listSettings) {
+        const settingsObj = await ListSettings.findOne({
+          where: { id: item.specificationId, isEnable: "1", typeId: TYPE_ID }
+        });
+        if (settingsObj) {
+          result.push(settingsObj);
+        }
+      }
+      res.send(result);
+    } catch (err) {
+      sequelizeErrorMiddleware(err, req, res, next);
+    }
+  };
+
+  getCategoryCheckinTypes = async (req: Request, res: Response, next: NextFunction) => {
+    const categoryId = <string>(<unknown>req.params.id);
+    const TYPE_ID = "113";
 
     if (!categoryId) {
       throw new HttpException(400, `Category ID must be provided.`);
