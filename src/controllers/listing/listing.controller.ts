@@ -24,7 +24,9 @@ import {
   ListSettings,
   ListSettingsParent,
   UserProfile,
-  V2ListingActivity
+  V2ListingActivity,
+  V2ListingFeatures,
+  V2ListingAccess
 } from "../../models";
 
 import { IDraftRequest, IUpdateRequest, IAccessDaysRequest } from "../../interfaces/listing.interface";
@@ -262,6 +264,7 @@ class ListingController {
 
   updateListing = async (req: Request, res: Response, next: NextFunction) => {
     const data: IUpdateRequest = req.body;
+    console.log("DATA ===>>>", data)
     try {
       this.cache.flushAll();
       // Getting listing record...
@@ -301,6 +304,7 @@ class ListingController {
         {
           listingId: data.listingId,
           accessType: data.accessType,
+          listingStyle: data.listingStyle,
           bookingNoticeTime: data.bookingNoticeTime,
           minTerm: data.minTerm,
           maxTerm: data.maxTerm,
@@ -348,6 +352,30 @@ class ListingController {
         });
         data.listingRules.map(async item => {
           await ListingRules.create({
+            listingId: data.listingId,
+            listSettingsId: item
+          });
+        });
+      }
+      // Checking out Listing Features...
+      if (data.listingFeatures) {
+        await V2ListingFeatures.destroy({
+          where: { listingId: data.listingId }
+        });
+        data.listingFeatures.map(async item => {
+          await V2ListingFeatures.create({
+            listingId: data.listingId,
+            listSettingsId: item
+          });
+        });
+      }
+      // Checking out Listing Access...
+      if (data.listingAccess) {
+        await V2ListingAccess.destroy({
+          where: { listingId: data.listingId }
+        });
+        data.listingAccess.map(async item => {
+          await V2ListingAccess.create({
             listingId: data.listingId,
             listSettingsId: item
           });

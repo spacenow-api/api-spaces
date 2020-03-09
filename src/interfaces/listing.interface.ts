@@ -33,6 +33,7 @@ interface IUpdateRequest {
   title?: string;
   bookingPeriod?: string;
   accessType?: string;
+  listingStyle?: string;
   bookingNoticeTime?: string;
   minTerm?: number;
   maxTerm?: number;
@@ -54,6 +55,8 @@ interface IUpdateRequest {
   listingExceptionDates?: Array<string>;
   listingRules?: Array<number>;
   listingActivities?: Array<number>;
+  listingFeatures?: Array<number>;
+  listingAccess?: Array<number>;
   link?: string;
 }
 

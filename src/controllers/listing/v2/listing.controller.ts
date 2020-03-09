@@ -46,6 +46,7 @@ class ListingController {
     this.router.get(`/v2/listings`, this.getListings);
     this.router.get(`/v2/listing/:id`, this.getListing);
     this.router.get(`/v2/listing/:id/amenities`, this.getListingAmenities);
+    this.router.get(`/v2/listing/:id/features`, this.getListingFeatures);
     this.router.get(`/v2/listing/:id/rules`, this.getListingRules);
     this.router.get(`/v2/listing/:id/tags`, this.getListingTags);
     this.router.get(`/v2/listing/:id/access-days`, this.getListingAccessDays);
@@ -118,6 +119,23 @@ class ListingController {
         throw new HttpException(400, `Amenities for the Listing ${listingId} not found.`);
       }
       res.send(amenitiesObj);
+    } catch (err) {
+      sequelizeErrorMiddleware(err, req, res, next);
+    }
+  };
+
+  getListingFeatures = async (req: Request, res: Response, next: NextFunction) => {
+    const listingId = <string>(<unknown>req.params.id);
+    if (!listingId) {
+      throw new HttpException(400, `Listing ID must be provided.`);
+    }
+    const where = { where: { listingId } };
+    try {
+      const featuresObj = await V2ListingFeatures.findAll(where);
+      if (!featuresObj) {
+        throw new HttpException(400, `Features for the Listing ${listingId} not found.`);
+      }
+      res.send(featuresObj);
     } catch (err) {
       sequelizeErrorMiddleware(err, req, res, next);
     }
