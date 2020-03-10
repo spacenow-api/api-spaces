@@ -12,7 +12,7 @@ import {
 // import { V2Listing, V2Access } from "./";
 
 @Table({
-  tableName: "listingStyles"
+  tableName: "ListingStyles"
 })
 export class V2ListingStyles extends Model<V2ListingStyles> {
   // @ForeignKey(() => V2Listing)
