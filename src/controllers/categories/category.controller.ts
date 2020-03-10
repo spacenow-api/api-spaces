@@ -7,7 +7,7 @@ import { Category, CategoryBookingPeriod, ListSettings, ListSettingsParent, Subc
 
 const REFERENCE_CATEGORIES_ID: number = 111;
 
-const CACHE_KEY = "_categories_all_";
+const CACHE_KEY = "_categories_";
 
 export const _getCategories = (): Promise<Array<ListSettings>> => {
   const include = {
