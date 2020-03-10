@@ -3,7 +3,7 @@ import { Router, Request, Response, NextFunction } from "express";
 import { authMiddleware } from "../../../helpers/middlewares/auth-middleware";
 import sequelizeErrorMiddleware from "../../../helpers/middlewares/sequelize-error-middleware";
 
-import { V2ListingActivity } from "../../../models/v2";
+import { V2ListingActivities } from "../../../models/v2";
 
 class V2AmenityController {
   private router = Router();
@@ -16,7 +16,7 @@ class V2AmenityController {
     const listingId = <number>(<unknown>req.params.id);
     const data = req.body;
     try {
-      res.send(await V2ListingActivity.create({ listingId, activityId: data.activityId }));
+      res.send(await V2ListingActivities.create({ listingId, activityId: data.activityId }));
     } catch (err) {
       console.error(err);
       sequelizeErrorMiddleware(err, req, res, next);
