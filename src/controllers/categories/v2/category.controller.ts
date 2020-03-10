@@ -67,17 +67,14 @@ class V2CategoryController {
 
   getCategory = async (req: Request, res: Response, next: NextFunction) => {
     const id = <string>(<unknown>req.params.id);
+    const TYPE_ID = "111";
     if (!id) {
       throw new HttpException(400, `Category ID must be provided.`);
     }
-    const cacheData = this.cache.get(`_sub${CACHE_KEY}_${id}`);
-    if (cacheData) {
-      res.send(cacheData);
-      return;
-    }
     try {
-      const category = await V2Category.findByPk(id);
-      this.cache.set(`_sub${CACHE_KEY}`, JSON.parse(JSON.stringify(category)));
+      const category = await ListSettings.findOne({
+        where: { id, isEnable: "1", typeId: TYPE_ID }
+      });
       res.send(category);
     } catch (err) {
       console.error(err);
