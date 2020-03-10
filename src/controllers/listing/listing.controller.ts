@@ -100,7 +100,7 @@ class ListingController {
         data.listingActivities.map(async item => {
           await V2ListingActivities.create({
             listingId: listingObj.id,
-            activityId: item
+            listSettingsId: item
           });
         });
       }
