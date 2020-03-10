@@ -39,7 +39,7 @@ export class V2Feature extends Model<V2Feature> {
   @BelongsToMany(
     () => V2Listing,
     () => V2ListingFeatures,
-    "featureId"
+    "listSettingsId"
   )
   listings!: V2Listing[];
 

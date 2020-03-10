@@ -8,7 +8,9 @@ import { V2ListingRules } from "./listingRules.model";
 import { V2ListingAmenities } from "./listingAmenities.model";
 import { V2ListingFeatures } from "./listingFeatures.model";
 import { V2ListingExceptionDates } from "./listingExceptionDates.model";
-import { V2ListingActivity } from "./listingActivities.model";
+import { V2ListingActivities } from "./listingActivities.model";
+import { V2ListingAccess } from "./listingAccess.model";
+import { V2ListingStyles } from "./listingStyles.model";
 import { V2Category } from "./category.model";
 import { V2ListingTag } from "./listingTag.model";
 import { V2CategorySpecification } from "./categorySpecification.model";
@@ -34,7 +36,9 @@ export {
   V2ListingRules,
   V2ListingFeatures,
   V2ListingExceptionDates,
-  V2ListingActivity,
+  V2ListingActivities,
+  V2ListingAccess,
+  V2ListingStyles,
   V2Location,
   V2UniqueLocation,
   V2Rule,
@@ -58,7 +62,9 @@ export const arrayOfModels = [
   V2ListingRules,
   V2ListingFeatures,
   V2ListingExceptionDates,
-  V2ListingActivity,
+  V2ListingActivities,
+  V2ListingAccess,
+  V2ListingStyles,
   V2Location,
   V2UniqueLocation,
   V2Rule,

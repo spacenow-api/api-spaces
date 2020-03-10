@@ -9,30 +9,30 @@ import {
   IsUUID
 } from "sequelize-typescript";
 
-import { V2Listing, V2Access } from "./";
+// import { V2Listing, V2Access } from "./";
 
 @Table({
-  tableName: "listing_access"
+  tableName: "ListingAccess"
 })
 export class V2ListingAccess extends Model<V2ListingAccess> {
-  @ForeignKey(() => V2Listing)
+  // @ForeignKey(() => V2Listing)
   @AllowNull(false)
-  @Column({ field: "listing_id" })
+  @Column({ field: "listingId" })
   listingId!: number;
 
-  @ForeignKey(() => V2Access)
-  @IsUUID(4)
+  // @ForeignKey(() => V2Access)
+  // @IsUUID(4)
   @AllowNull(false)
-  @Column({ field: "access_id" })
-  accessId!: string;
+  @Column({ field: "listSettingsId" })
+  listSettingsId!: string;
 
   @CreatedAt
   @AllowNull(false)
-  @Column({ field: "created_at" })
+  @Column({ field: "createdAt" })
   createdAt!: Date;
 
   @UpdatedAt
   @AllowNull(false)
-  @Column({ field: "updated_at" })
+  @Column({ field: "updatedAt" })
   updatedAt!: Date;
 }

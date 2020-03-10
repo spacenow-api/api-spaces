@@ -12,27 +12,27 @@ import {
 import { V2Listing, V2Feature } from "./";
 
 @Table({
-  tableName: "listing_feature"
+  tableName: "listingFeatures"
 })
 export class V2ListingFeatures extends Model<V2ListingFeatures> {
   @ForeignKey(() => V2Listing)
   @AllowNull(false)
-  @Column({ field: "listing_id" })
+  @Column({ field: "listingId" })
   listingId!: number;
 
   @ForeignKey(() => V2Feature)
-  @IsUUID(4)
+  // @IsUUID(4)
   @AllowNull(false)
-  @Column({ field: "feature_id" })
-  featureId!: string;
+  @Column({ field: "listSettingsId" })
+  listSettingsId!: string;
 
   @CreatedAt
   @AllowNull(false)
-  @Column({ field: "created_at" })
+  @Column({ field: "createdAt" })
   createdAt!: Date;
 
   @UpdatedAt
   @AllowNull(false)
-  @Column({ field: "updated_at" })
+  @Column({ field: "updatedAt" })
   updatedAt!: Date;
 }

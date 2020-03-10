@@ -142,6 +142,9 @@ export class ListingData extends Model<ListingData> {
   @Column
   accessType?: string
 
+  @Column
+  listingStyle?: string
+
   @BelongsTo(() => Listing)
   listing!: Listing
 }

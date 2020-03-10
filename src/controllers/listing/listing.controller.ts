@@ -24,7 +24,8 @@ import {
   ListSettings,
   ListSettingsParent,
   UserProfile,
-  V2ListingActivity,
+  V2ListingActivities,
+  V2ListingStyles,
   V2ListingFeatures,
   V2ListingAccess
 } from "../../models";
@@ -97,7 +98,7 @@ class ListingController {
       // Creating Activities...
       if (data.listingActivities) {
         data.listingActivities.map(async item => {
-          await V2ListingActivity.create({
+          await V2ListingActivities.create({
             listingId: listingObj.id,
             activityId: item
           });
@@ -264,7 +265,6 @@ class ListingController {
 
   updateListing = async (req: Request, res: Response, next: NextFunction) => {
     const data: IUpdateRequest = req.body;
-    console.log("DATA ===>>>", data)
     try {
       this.cache.flushAll();
       // Getting listing record...
@@ -376,6 +376,18 @@ class ListingController {
         });
         data.listingAccess.map(async item => {
           await V2ListingAccess.create({
+            listingId: data.listingId,
+            listSettingsId: item
+          });
+        });
+      }
+      // Checking out Listing Styles...
+      if (data.listingStyles) {
+        await V2ListingStyles.destroy({
+          where: { listingId: data.listingId }
+        });
+        data.listingStyles.map(async item => {
+          await V2ListingStyles.create({
             listingId: data.listingId,
             listSettingsId: item
           });

@@ -159,7 +159,7 @@ class V2CategoryController {
     if (!categoryId) {
       throw new HttpException(400, `Category ID must be provided.`);
     }
-    const where = { where: { listSettingsParentId: categoryId } };
+    const where = { where: { categoryId } };
     try {
       const listSettings = await V2CategorySpecification.findAll(where);
       const result = new Array<any>();
@@ -184,7 +184,7 @@ class V2CategoryController {
     if (!categoryId) {
       throw new HttpException(400, `Category ID must be provided.`);
     }
-    const where = { where: { listSettingsParentId: categoryId } };
+    const where = { where: { categoryId } };
     try {
       const listSettings = await V2CategorySpecification.findAll(where);
       const result = new Array<any>();
@@ -209,7 +209,7 @@ class V2CategoryController {
     if (!categoryId) {
       throw new HttpException(400, `Category ID must be provided.`);
     }
-    const where = { where: { listSettingsParentId: categoryId } };
+    const where = { where: { categoryId } };
     try {
       const listSettings = await V2CategorySpecification.findAll(where);
       const result = new Array<any>();
@@ -234,7 +234,7 @@ class V2CategoryController {
     if (!categoryId) {
       throw new HttpException(400, `Category ID must be provided.`);
     }
-    const where = { where: { listSettingsParentId: categoryId } };
+    const where = { where: { categoryId } };
     try {
       const listSettings = await V2CategorySpecification.findAll(where);
       const result = new Array<any>();
@@ -259,7 +259,7 @@ class V2CategoryController {
     if (!categoryId) {
       throw new HttpException(400, `Category ID must be provided.`);
     }
-    const where = { where: { listSettingsParentId: categoryId } };
+    const where = { where: { categoryId } };
     try {
       const listSettings = await V2CategorySpecification.findAll(where);
       const result = new Array<any>();
@@ -284,7 +284,7 @@ class V2CategoryController {
     if (!categoryId) {
       throw new HttpException(400, `Category ID must be provided.`);
     }
-    const where = { where: { listSettingsParentId: categoryId } };
+    const where = { where: { categoryId } };
     try {
       const listSettings = await V2CategorySpecification.findAll(where);
       const result = new Array<any>();

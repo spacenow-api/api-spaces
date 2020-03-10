@@ -14,6 +14,9 @@ import {
   V2ListingAccessDays,
   V2ListingAccessHours,
   V2ListingAmenities,
+  V2ListingActivities,
+  V2ListingAccess,
+  V2ListingStyles,
   V2ListingRules,
   V2ListingFeatures,
   V2ListingPhotos,
@@ -45,6 +48,9 @@ class ListingController {
   constructor() {
     this.router.get(`/v2/listings`, this.getListings);
     this.router.get(`/v2/listing/:id`, this.getListing);
+    this.router.get(`/v2/listing/:id/activities`, this.getListingActivities);
+    this.router.get(`/v2/listing/:id/access`, this.getListingAccess);
+    this.router.get(`/v2/listing/:id/styles`, this.getListingStyles);
     this.router.get(`/v2/listing/:id/amenities`, this.getListingAmenities);
     this.router.get(`/v2/listing/:id/features`, this.getListingFeatures);
     this.router.get(`/v2/listing/:id/rules`, this.getListingRules);
@@ -114,11 +120,45 @@ class ListingController {
     }
     const where = { where: { listingId } };
     try {
-      const amenitiesObj = await V2ListingAmenities.findAll(where);
-      if (!amenitiesObj) {
+      const obj = await V2ListingAmenities.findAll(where);
+      if (!obj) {
         throw new HttpException(400, `Amenities for the Listing ${listingId} not found.`);
       }
-      res.send(amenitiesObj);
+      res.send(obj);
+    } catch (err) {
+      sequelizeErrorMiddleware(err, req, res, next);
+    }
+  };
+
+  getListingActivities = async (req: Request, res: Response, next: NextFunction) => {
+    const listingId = <string>(<unknown>req.params.id);
+    if (!listingId) {
+      throw new HttpException(400, `Listing ID must be provided.`);
+    }
+    const where = { where: { listingId } };
+    try {
+      const obj = await V2ListingActivities.findAll(where);
+      if (!obj) {
+        throw new HttpException(400, `Activities for the Listing ${listingId} not found.`);
+      }
+      res.send(obj);
+    } catch (err) {
+      sequelizeErrorMiddleware(err, req, res, next);
+    }
+  };
+
+  getListingAccess = async (req: Request, res: Response, next: NextFunction) => {
+    const listingId = <string>(<unknown>req.params.id);
+    if (!listingId) {
+      throw new HttpException(400, `Listing ID must be provided.`);
+    }
+    const where = { where: { listingId } };
+    try {
+      const obj = await V2ListingAccess.findAll(where);
+      if (!obj) {
+        throw new HttpException(400, `Access for the Listing ${listingId} not found.`);
+      }
+      res.send(obj);
     } catch (err) {
       sequelizeErrorMiddleware(err, req, res, next);
     }
@@ -131,11 +171,11 @@ class ListingController {
     }
     const where = { where: { listingId } };
     try {
-      const featuresObj = await V2ListingFeatures.findAll(where);
-      if (!featuresObj) {
+      const obj = await V2ListingFeatures.findAll(where);
+      if (!obj) {
         throw new HttpException(400, `Features for the Listing ${listingId} not found.`);
       }
-      res.send(featuresObj);
+      res.send(obj);
     } catch (err) {
       sequelizeErrorMiddleware(err, req, res, next);
     }
@@ -148,11 +188,11 @@ class ListingController {
     }
     const where = { where: { listingId } };
     try {
-      const rulesObj = await V2ListingRules.findAll(where);
-      if (!rulesObj) {
-        throw new HttpException(400, `Amenities for the Listing ${listingId} not found.`);
+      const obj = await V2ListingRules.findAll(where);
+      if (!obj) {
+        throw new HttpException(400, `Rules for the Listing ${listingId} not found.`);
       }
-      res.send(rulesObj);
+      res.send(obj);
     } catch (err) {
       sequelizeErrorMiddleware(err, req, res, next);
     }
@@ -168,6 +208,24 @@ class ListingController {
       const obj = await V2ListingTag.findAll(where);
       if (!obj) {
         throw new HttpException(400, `Tags for the Listing ${listingId} not found.`);
+      }
+      res.send(obj);
+    } catch (err) {
+      console.log("error", err);
+      sequelizeErrorMiddleware(err, req, res, next);
+    }
+  };
+
+  getListingStyles = async (req: Request, res: Response, next: NextFunction) => {
+    const listingId = <number>(<unknown>req.params.id);
+    if (!listingId) {
+      throw new HttpException(400, `Listing ID must be provided.`);
+    }
+    const where = { where: { listingId } };
+    try {
+      const obj = await V2ListingStyles.findAll(where);
+      if (!obj) {
+        throw new HttpException(400, `Styles for the Listing ${listingId} not found.`);
       }
       res.send(obj);
     } catch (err) {
@@ -320,7 +378,7 @@ class ListingController {
           async (feature: any) =>
             await V2ListingFeatures.create({
               listingId: id,
-              featureId: feature.id
+              listSettingsId: feature.id
             })
         ));
       await V2ListingTag.destroy(where);

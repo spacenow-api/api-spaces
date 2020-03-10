@@ -1,31 +1,26 @@
 import { Table, Column, Model, CreatedAt, UpdatedAt, AllowNull, PrimaryKey } from "sequelize-typescript";
 
-import { V2Listing } from "./";
-import { ListSettings } from "../";
-
 @Table({
-  tableName: "listing_activity"
+  tableName: "ListingActivities"
 })
-export class V2ListingActivity extends Model<V2ListingActivity> {
-  // @ForeignKey(() => V2Listing)
+export class V2ListingActivities extends Model<V2ListingActivities> {
   @PrimaryKey
   @AllowNull(false)
-  @Column({ field: "listing_id" })
+  @Column({ field: "listingId" })
   listingId!: number;
 
-  // @ForeignKey(() => ListSettings)
   @PrimaryKey
   @AllowNull(false)
-  @Column({ field: "activity_id" })
-  activityId!: number;
+  @Column({ field: "listSettingsId" })
+  listSettingsId!: number;
 
   @CreatedAt
   @AllowNull(false)
-  @Column({ field: "created_at" })
+  @Column({ field: "createdAt" })
   createdAt!: Date;
 
   @UpdatedAt
   @AllowNull(false)
-  @Column({ field: "updated_at" })
+  @Column({ field: "updatedAt" })
   updatedAt!: Date;
 }

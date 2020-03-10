@@ -57,6 +57,7 @@ interface IUpdateRequest {
   listingActivities?: Array<number>;
   listingFeatures?: Array<number>;
   listingAccess?: Array<number>;
+  listingStyles?: Array<number>;
   link?: string;
 }
 
