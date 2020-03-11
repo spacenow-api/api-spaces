@@ -1,16 +1,4 @@
-import {
-  Table,
-  Column,
-  AutoIncrement,
-  Model,
-  CreatedAt,
-  UpdatedAt,
-  PrimaryKey,
-  AllowNull,
-  Default,
-  BelongsTo,
-  ForeignKey
-} from "sequelize-typescript";
+import { Table, Column, AutoIncrement, Model, CreatedAt, UpdatedAt, PrimaryKey, AllowNull, Default, BelongsTo, ForeignKey, DataType } from "sequelize-typescript";
 
 import { Listing } from "./";
 
@@ -52,6 +40,11 @@ export class ListingPhotos extends Model<ListingPhotos> {
   @AllowNull(false)
   @Column
   type!: string;
+
+  @AllowNull(false)
+  @Default("photo")
+  @Column(DataType.ENUM("photo", "video", "floorplan", "menu"))
+  category?: string;
 
   @CreatedAt
   @AllowNull(false)
