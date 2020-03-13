@@ -105,14 +105,14 @@ class V2CategoryController {
     if (!categoryId) {
       throw new HttpException(400, `Category ID must be provided.`);
     }
-    const where = { where: { categoryId } };
+    const where = { where: { listSettingsParentId: categoryId } };
 
     try {
       const listSettings = await V2CategorySpecification.findAll(where);
       const result = new Array<any>();
       for (const item of listSettings) {
         const settingsObj = await ListSettings.findOne({
-          where: { id: item.specificationId, isEnable: "1", typeId: TYPE_ID }
+          where: { id: item.listSettingsSpecificationId, isEnable: "1", typeId: TYPE_ID }
         });
         if (settingsObj) {
           result.push(settingsObj);
@@ -131,13 +131,13 @@ class V2CategoryController {
     if (!categoryId) {
       throw new HttpException(400, `Category ID must be provided.`);
     }
-    const where = { where: { categoryId } };
+    const where = { where: { listSettingsParentId: categoryId } };
     try {
       const listSettings = await V2CategorySpecification.findAll(where);
       const result = new Array<any>();
       for (const item of listSettings) {
         const settingsObj = await ListSettings.findOne({
-          where: { id: item.specificationId, isEnable: "1", typeId: TYPE_ID }
+          where: { id: item.listSettingsSpecificationId, isEnable: "1", typeId: TYPE_ID }
         });
         if (settingsObj) {
           result.push(settingsObj);
@@ -156,13 +156,13 @@ class V2CategoryController {
     if (!categoryId) {
       throw new HttpException(400, `Category ID must be provided.`);
     }
-    const where = { where: { categoryId } };
+    const where = { where: { listSettingsParentId: categoryId } };
     try {
       const listSettings = await V2CategorySpecification.findAll(where);
       const result = new Array<any>();
       for (const item of listSettings) {
         const settingsObj = await ListSettings.findOne({
-          where: { id: item.specificationId, isEnable: "1", typeId: TYPE_ID }
+          where: { id: item.listSettingsSpecificationId, isEnable: "1", typeId: TYPE_ID }
         });
         if (settingsObj) {
           result.push(settingsObj);
@@ -181,13 +181,13 @@ class V2CategoryController {
     if (!categoryId) {
       throw new HttpException(400, `Category ID must be provided.`);
     }
-    const where = { where: { categoryId } };
+    const where = { where: { listSettingsParentId: categoryId } };
     try {
       const listSettings = await V2CategorySpecification.findAll(where);
       const result = new Array<any>();
       for (const item of listSettings) {
         const settingsObj = await ListSettings.findOne({
-          where: { id: item.specificationId, isEnable: "1", typeId: TYPE_ID }
+          where: { id: item.listSettingsSpecificationId, isEnable: "1", typeId: TYPE_ID }
         });
         if (settingsObj) {
           result.push(settingsObj);
@@ -206,13 +206,13 @@ class V2CategoryController {
     if (!categoryId) {
       throw new HttpException(400, `Category ID must be provided.`);
     }
-    const where = { where: { categoryId } };
+    const where = { where: { listSettingsParentId: categoryId } };
     try {
       const listSettings = await V2CategorySpecification.findAll(where);
       const result = new Array<any>();
       for (const item of listSettings) {
         const settingsObj = await ListSettings.findOne({
-          where: { id: item.specificationId, isEnable: "1", typeId: TYPE_ID }
+          where: { id: item.listSettingsSpecificationId, isEnable: "1", typeId: TYPE_ID }
         });
         if (settingsObj) {
           result.push(settingsObj);
@@ -231,13 +231,13 @@ class V2CategoryController {
     if (!categoryId) {
       throw new HttpException(400, `Category ID must be provided.`);
     }
-    const where = { where: { categoryId } };
+    const where = { where: { listSettingsParentId: categoryId } };
     try {
       const listSettings = await V2CategorySpecification.findAll(where);
       const result = new Array<any>();
       for (const item of listSettings) {
         const settingsObj = await ListSettings.findOne({
-          where: { id: item.specificationId, isEnable: "1", typeId: TYPE_ID }
+          where: { id: item.listSettingsSpecificationId, isEnable: "1", typeId: TYPE_ID }
         });
         if (settingsObj) {
           result.push(settingsObj);
@@ -256,13 +256,13 @@ class V2CategoryController {
     if (!categoryId) {
       throw new HttpException(400, `Category ID must be provided.`);
     }
-    const where = { where: { categoryId } };
+    const where = { where: { listSettingsParentId: categoryId } };
     try {
       const listSettings = await V2CategorySpecification.findAll(where);
       const result = new Array<any>();
       for (const item of listSettings) {
         const settingsObj = await ListSettings.findOne({
-          where: { id: item.specificationId, isEnable: "1", typeId: TYPE_ID }
+          where: { id: item.listSettingsSpecificationId, isEnable: "1", typeId: TYPE_ID }
         });
         if (settingsObj) {
           result.push(settingsObj);
@@ -281,13 +281,13 @@ class V2CategoryController {
     if (!categoryId) {
       throw new HttpException(400, `Category ID must be provided.`);
     }
-    const where = { where: { categoryId } };
+    const where = { where: { listSettingsParentId: categoryId } };
     try {
       const listSettings = await V2CategorySpecification.findAll(where);
       const result = new Array<any>();
       for (const item of listSettings) {
         const settingsObj = await ListSettings.findOne({
-          where: { id: item.specificationId, isEnable: "1", typeId: TYPE_ID }
+          where: { id: item.listSettingsSpecificationId, isEnable: "1", typeId: TYPE_ID }
         });
         if (settingsObj) {
           result.push(settingsObj);

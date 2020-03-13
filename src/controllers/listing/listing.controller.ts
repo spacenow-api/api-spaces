@@ -745,7 +745,7 @@ class ListingController {
           where: { ...where, isPublished: true }
         });
         listingsCategory.push({
-          category: item.subCategory.itemName,
+          category: item.subCategory && item.subCategory.itemName || category.itemName,
           count: { all, active, deleted, published }
         });
       }
