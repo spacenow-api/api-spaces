@@ -55,15 +55,15 @@ class CategoriesController {
 
   getCategories = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      let data: any = this.cache.get(CACHE_KEY);
-      if (!data) {
-        data = await _getCategories();
-        if (data.err) {
-          sequelizeErrorMiddleware(data.err, req, res, next);
-          return;
-        }
-        this.cache.set(CACHE_KEY, JSON.parse(JSON.stringify(data)));
-      }
+      // let data: any = this.cache.get(CACHE_KEY);
+      // if (!data) {
+      const data = await _getCategories();
+      // if (data.err) {
+      //   sequelizeErrorMiddleware(data.err, req, res, next);
+      //   return;
+      // }
+      // this.cache.set(CACHE_KEY, JSON.parse(JSON.stringify(data)));
+      // }
       res.send(data);
     } catch (err) {
       sequelizeErrorMiddleware(err, req, res, next);
