@@ -9,14 +9,23 @@ class V2AmenityController {
   private router = Router();
 
   constructor() {
-    this.router.post(`/v2/listing/:id/activity`, authMiddleware, this.postActivity);
+    this.router.post(
+      `/v2/listing/:id/activity`,
+      authMiddleware,
+      this.postActivity
+    );
   }
 
   postActivity = async (req: Request, res: Response, next: NextFunction) => {
     const listingId = <number>(<unknown>req.params.id);
     const data = req.body;
     try {
-      res.send(await V2ListingActivities.create({ listingId, activityId: data.activityId }));
+      res.send(
+        await V2ListingActivities.create({
+          listingId,
+          activityId: data.activityId
+        })
+      );
     } catch (err) {
       console.error(err);
       sequelizeErrorMiddleware(err, req, res, next);
