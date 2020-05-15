@@ -1,17 +1,16 @@
 import { Router, Request, Response, NextFunction } from "express";
-import NodeCache from 'node-cache';
+import NodeCache from "node-cache";
 
-import { authMiddleware } from '../../helpers/middlewares/auth-middleware';
+import { authMiddleware } from "../../helpers/middlewares/auth-middleware";
 import sequelizeErrorMiddleware from "../../helpers/middlewares/sequelize-error-middleware";
 
 import { ListSettings, ListSettingsParent, ListingAmenities } from "../../models";
 
 class ListingAmenitiesController {
-
   private router = Router();
 
   // Standard expiration time for 3 days...
-  private cache: NodeCache = new NodeCache({ stdTTL: 259200 });
+  private cache: NodeCache = new NodeCache({ stdTTL: 900 });
 
   constructor() {
     this.intializeRoutes();
@@ -25,16 +24,15 @@ class ListingAmenitiesController {
       try {
         const amenitiesArray: Array<ListingAmenities> = await ListingAmenities.findAll({
           where: { listingId: req.params.listingId },
-          raw: true
+          raw: true,
         });
         const result = new Array<any>();
         for (const item of amenitiesArray) {
           const settingsObj: ListSettings | null = await ListSettings.findOne({
             where: { id: item.listSettingsId, isEnable: "1" },
-            raw: true
+            raw: true,
           });
-          if (settingsObj)
-            result.push({ ...item, settingsData: { ...settingsObj } });
+          if (settingsObj) result.push({ ...item, settingsData: { ...settingsObj } });
         }
         res.send(result);
       } catch (err) {
@@ -56,13 +54,13 @@ class ListingAmenitiesController {
         }
         const parentsArray: Array<ListSettingsParent> = await ListSettingsParent.findAll({
           where: { listSettingsParentId: req.params.listSettingsParentId },
-          raw: true
-        })
+          raw: true,
+        });
         const result = new Array<any>();
         for (const item of parentsArray) {
           const settingsObj: ListSettings | null = await ListSettings.findOne({
             where: { id: item.listSettingsChildId, isEnable: "1", typeId: "115" },
-            raw: true
+            raw: true,
           });
           if (settingsObj) {
             result.push(settingsObj);
