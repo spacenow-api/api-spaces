@@ -45,13 +45,13 @@ class ListingAmenitiesController {
      * Get all amenities from sub-category ID
      */
     this.router.get(`/listings/fetch/amenities/:listSettingsParentId`, authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
-      const cacheKey = `_listing_amenities_${req.params.listSettingsParentId}_`;
+      // const cacheKey = `_listing_amenities_${req.params.listSettingsParentId}_`;
       try {
-        const cacheData = this.cache.get(cacheKey);
-        if (cacheData) {
-          res.send(cacheData);
-          return;
-        }
+        // const cacheData = this.cache.get(cacheKey);
+        // if (cacheData) {
+        //   res.send(cacheData);
+        //   return;
+        // }
         const parentsArray: Array<ListSettingsParent> = await ListSettingsParent.findAll({
           where: { listSettingsParentId: req.params.listSettingsParentId },
           raw: true,
@@ -66,7 +66,7 @@ class ListingAmenitiesController {
             result.push(settingsObj);
           }
         }
-        this.cache.set(cacheKey, result);
+        // this.cache.set(cacheKey, result);
         res.send(result);
       } catch (err) {
         console.error(err);
