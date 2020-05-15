@@ -6,7 +6,10 @@ import NodeCache from "node-cache";
 
 import * as config from "../../config";
 
-import { authMiddleware, authAdminMiddleware } from "../../helpers/middlewares/auth-middleware";
+import {
+  authMiddleware,
+  authAdminMiddleware,
+} from "../../helpers/middlewares/auth-middleware";
 import sequelizeErrorMiddleware from "../../helpers/middlewares/sequelize-error-middleware";
 import HttpException from "../../helpers/exceptions/HttpException";
 
@@ -27,10 +30,14 @@ import {
   V2ListingActivities,
   V2ListingStyles,
   V2ListingFeatures,
-  V2ListingAccess
+  V2ListingAccess,
 } from "../../models";
 
-import { IDraftRequest, IUpdateRequest, IAccessDaysRequest } from "../../interfaces/listing.interface";
+import {
+  IDraftRequest,
+  IUpdateRequest,
+  IAccessDaysRequest,
+} from "../../interfaces/listing.interface";
 
 const Op = Sequelize.Op;
 const Fn = Sequelize.fn;
@@ -39,7 +46,7 @@ const Col = Sequelize.col;
 const cacheKeys = {
   PLAIN_LIST: "_listings_plain_",
   BY_USER: "_listings_by_user_",
-  COUNT_ALL: "_listings_count_"
+  COUNT_ALL: "_listings_count_",
 };
 
 class ListingController {
@@ -51,32 +58,73 @@ class ListingController {
   constructor() {
     this.router.get(`/listings`, this.getAllPlainListings);
     this.router.get(`/listings/:id`, authMiddleware, this.getListingById);
-    this.router.get(`/listings/user/:userId`, authMiddleware, this.getAllListingsByUser);
+    this.router.get(
+      `/listings/user/:userId`,
+      authMiddleware,
+      this.getAllListingsByUser
+    );
     this.router.get(`/listings/public/:id`, this.getListingById);
     this.router.get(`/listings/count/all`, authMiddleware, this.getAllListings);
     this.router.get(`/listings/count/hosts`, authMiddleware, this.getAllHosts);
-    this.router.get(`/listings/count/hosts/date`, authMiddleware, this.getAllHostsByDate);
-    this.router.get(`/listings/count/date`, authMiddleware, this.getAllListingsByDate);
-    this.router.get(`/listings/count/categories`, authMiddleware, this.getListingsCountCategories);
+    this.router.get(
+      `/listings/count/hosts/date`,
+      authMiddleware,
+      this.getAllHostsByDate
+    );
+    this.router.get(
+      `/listings/count/date`,
+      authMiddleware,
+      this.getAllListingsByDate
+    );
+    this.router.get(
+      `/listings/count/categories`,
+      authMiddleware,
+      this.getListingsCountCategories
+    );
     this.router.get(`/listings/data/:listingId`, this.getListingDataById);
     this.router.get(`/listings/fetch/accesstypes`, this.fetchAccessTypes);
-    this.router.get("/listings/public/mulitple/ids", this.getPublicListingsByIds);
+    this.router.get(
+      "/listings/public/mulitple/ids",
+      this.getPublicListingsByIds
+    );
     this.router.put("/listings/update", authMiddleware, this.updateListing);
-    this.router.put("/listings/:listingId/status/:status", authAdminMiddleware, this.putChangeListingStatus);
-    this.router.put("/listings/:listingId/publish/:status", authMiddleware, this.publishListing);
+    this.router.put(
+      "/listings/:listingId/status/:status",
+      authAdminMiddleware,
+      this.putChangeListingStatus
+    );
+    this.router.put(
+      "/listings/:listingId/publish/:status",
+      authMiddleware,
+      this.publishListing
+    );
     this.router.put("/listings/claim/:listingId", this.claimListing);
-    this.router.post("/listings/draft", authMiddleware, this.createDraftListing);
-    this.router.delete("/listings/:listingId", authMiddleware, this.deleteListing);
+    this.router.post(
+      "/listings/draft",
+      authMiddleware,
+      this.createDraftListing
+    );
+    this.router.delete(
+      "/listings/:listingId",
+      authMiddleware,
+      this.deleteListing
+    );
   }
 
-  createDraftListing = async (req: Request, res: Response, next: NextFunction) => {
+  createDraftListing = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     const data: IDraftRequest = req.body;
     try {
-      if (!data.locationId) throw new HttpException(400, "A location must be provided.");
+      if (!data.locationId)
+        throw new HttpException(400, "A location must be provided.");
       const locationObj: Location | null = await Location.findOne({
-        where: { id: data.locationId }
+        where: { id: data.locationId },
       });
-      if (!locationObj) throw new HttpException(400, "A location must be provided.");
+      if (!locationObj)
+        throw new HttpException(400, "A location must be provided.");
       // Creating listing record...
       const listingObj: Listing = await Listing.create({
         userId: req.userIdDecoded,
@@ -85,22 +133,22 @@ class ListingController {
         bookingPeriod: data.bookingPeriod,
         title: data.title,
         coverPhotoId: data.coverPhotoId,
-        quantity: data.quantity
+        quantity: data.quantity,
       });
       // Creating listing-data record...
       await ListingData.findOrCreate({
-        where: { listingId: listingObj.id }
+        where: { listingId: listingObj.id },
       });
       // Creating access-days record...
       const [accessDaysCreated, _] = await ListingAccessDays.findOrCreate({
-        where: { listingId: listingObj.id }
+        where: { listingId: listingObj.id },
       });
       // Creating Activities...
       if (data.listingActivities) {
-        data.listingActivities.map(async item => {
+        data.listingActivities.map(async (item) => {
           await V2ListingActivities.create({
             listingId: listingObj.id,
-            listSettingsId: item
+            listSettingsId: item,
           });
         });
       }
@@ -137,7 +185,11 @@ class ListingController {
   /**
    * Get listings.
    */
-  getAllPlainListings = async (req: Request, res: Response, next: NextFunction) => {
+  getAllPlainListings = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     let page = 0;
     let pageSize = 10;
     try {
@@ -154,7 +206,7 @@ class ListingController {
       }
       const result = await Listing.findAndCountAll({
         limit: pageSize,
-        offset: page * pageSize
+        offset: page * pageSize,
       });
       this.cache.set(cacheKey, JSON.parse(JSON.stringify(result)));
       res.send(result);
@@ -167,7 +219,11 @@ class ListingController {
   /**
    * Get listing by ID.
    */
-  getAllListingsByUser = async (req: Request, res: Response, next: NextFunction) => {
+  getAllListingsByUser = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     const userId = <string>(<unknown>req.params.userId);
     const status = "deleted";
     try {
@@ -178,14 +234,14 @@ class ListingController {
       // }
       const where: { userId: string; status: any; [key: string]: any } = {
         userId,
-        status: { [Op.not]: status }
+        status: { [Op.not]: status },
       };
       const results: {
         rows: Listing[];
         count: number;
       } | null = await Listing.findAndCountAll({
         where,
-        order: [["updatedAt", "DESC"]]
+        order: [["updatedAt", "DESC"]],
       });
       // this.cache.set(
       //   `${cacheKeys.BY_USER}${userId}`,
@@ -202,11 +258,13 @@ class ListingController {
     const listingId = req.params.listingId;
     try {
       this.cache.flushAll();
-      if (!listingId) throw new HttpException(400, "A Listing must be provided.");
+      if (!listingId)
+        throw new HttpException(400, "A Listing must be provided.");
       const listingObj: Listing | null = await Listing.findOne({
-        where: { id: listingId }
+        where: { id: listingId },
       });
-      if (!listingObj) throw new HttpException(400, "A Listgin must be provided.");
+      if (!listingObj)
+        throw new HttpException(400, "A Listgin must be provided.");
       // Updating listing record...
       await Listing.update({ status: "claimed" }, { where: { id: listingId } });
       res.send(listingObj);
@@ -221,7 +279,7 @@ class ListingController {
     try {
       this.cache.flushAll();
       const listingObj: Listing | null = await Listing.findOne({
-        where: { id: listingId }
+        where: { id: listingId },
       });
       if (!listingObj) {
         throw new HttpException(400, `Listing ${listingId} not found.`);
@@ -229,15 +287,24 @@ class ListingController {
       const isToPublished: Boolean = /true/i.test(req.params.status);
       if (isToPublished) {
         const isReadyConditional = await this.isReady(listingObj);
-        await Listing.update({ isPublished: isReadyConditional }, { where: { id: listingId }, individualHooks: true });
+        await Listing.update(
+          { isPublished: isReadyConditional },
+          { where: { id: listingId }, individualHooks: true }
+        );
         if (!isReadyConditional) {
-          throw new HttpException(400, `Listing ${listingId} is not ready to publish.`);
+          throw new HttpException(
+            400,
+            `Listing ${listingId} is not ready to publish.`
+          );
         }
       } else {
-        await Listing.update({ isPublished: false }, { where: { id: listingId }, individualHooks: true });
+        await Listing.update(
+          { isPublished: false },
+          { where: { id: listingId }, individualHooks: true }
+        );
       }
       const listingUpdated = await Listing.findOne({
-        where: { id: listingId }
+        where: { id: listingId },
       });
       res.send(listingUpdated);
     } catch (err) {
@@ -255,7 +322,10 @@ class ListingController {
         throw new HttpException(400, `Listing ${listingId} not found.`);
       }
       this.onlyOwner(req, listingObj);
-      await Listing.update({ status: "deleted", isPublished: false }, { where: { id: listingId } });
+      await Listing.update(
+        { status: "deleted", isPublished: false },
+        { where: { id: listingId } }
+      );
       res.send({ status: "OK" });
     } catch (err) {
       console.error(err);
@@ -269,34 +339,45 @@ class ListingController {
       this.cache.flushAll();
       // Getting listing record...
       const listingObj: Listing | null = await Listing.findOne({
-        where: { id: data.listingId }
+        where: { id: data.listingId },
       });
-      if (!listingObj) throw new HttpException(400, `Listing ${data.listingId} not found.`);
+      if (!listingObj)
+        throw new HttpException(400, `Listing ${data.listingId} not found.`);
       // User Validation...
       this.onlyOwner(req, listingObj);
       // Updating isReady rule...
       let accessDaysToValidate: any = data.listingAccessDays;
       if (!accessDaysToValidate) {
         accessDaysToValidate = await ListingAccessDays.findOne({
-          where: { listingId: data.listingId }
+          where: { listingId: data.listingId },
         });
         const accessHoursToValidate = await ListingAccessHours.findAll({
-          where: { listingAccessDaysId: accessDaysToValidate.id }
+          where: { listingAccessDaysId: accessDaysToValidate.id },
         });
         accessDaysToValidate.listingAccessHours = accessHoursToValidate;
       }
-      const isReady: boolean = await this.isReadyCheck(data.listingId, data.title, data.bookingType, data.basePrice, accessDaysToValidate, listingObj.listSettingsParentId);
+      const isReady: boolean = await this.isReadyCheck(
+        data.listingId,
+        data.title,
+        data.bookingType,
+        data.basePrice,
+        accessDaysToValidate,
+        listingObj.listSettingsParentId
+      );
 
       let isPublished: boolean = listingObj.isPublished;
       if (!isReady) isPublished = false;
-      const bookingPeriod = data.bookingPeriod !== undefined ? data.bookingPeriod : listingObj.bookingPeriod;
+      const bookingPeriod =
+        data.bookingPeriod !== undefined
+          ? data.bookingPeriod
+          : listingObj.bookingPeriod;
       await Listing.update(
         {
           title: data.title,
           bookingType: data.bookingType,
           bookingPeriod,
           isReady,
-          isPublished
+          isPublished,
         },
         { where: { id: data.listingId }, individualHooks: true }
       );
@@ -322,19 +403,19 @@ class ListingController {
           maxEntranceHeight: data.maxEntranceHeight,
           spaceType: data.spaceType,
           bookingType: data.bookingType,
-          link: data.link
+          link: data.link,
         },
         { where: { listingId: data.listingId } }
       );
       // Checking out Amenities...
       if (data.listingAmenities) {
         await ListingAmenities.destroy({
-          where: { listingId: data.listingId }
+          where: { listingId: data.listingId },
         });
-        data.listingAmenities.map(async item => {
+        data.listingAmenities.map(async (item) => {
           await ListingAmenities.create({
             listingId: data.listingId,
-            listSettingsId: item
+            listSettingsId: item,
           });
         });
       }
@@ -343,54 +424,54 @@ class ListingController {
         // Updating Availabilities API...
         await axios.post(config.availabilitiesAPI, {
           listingId: data.listingId.toString(),
-          blockedDates: data.listingExceptionDates
+          blockedDates: data.listingExceptionDates,
         });
       }
       // Checking out Listing Rules...
       if (data.listingRules) {
         await ListingRules.destroy({
-          where: { listingId: data.listingId }
+          where: { listingId: data.listingId },
         });
-        data.listingRules.map(async item => {
+        data.listingRules.map(async (item) => {
           await ListingRules.create({
             listingId: data.listingId,
-            listSettingsId: item
+            listSettingsId: item,
           });
         });
       }
       // Checking out Listing Features...
       if (data.listingFeatures) {
         await V2ListingFeatures.destroy({
-          where: { listingId: data.listingId }
+          where: { listingId: data.listingId },
         });
-        data.listingFeatures.map(async item => {
+        data.listingFeatures.map(async (item) => {
           await V2ListingFeatures.create({
             listingId: data.listingId,
-            listSettingsId: item
+            listSettingsId: item,
           });
         });
       }
       // Checking out Listing Access...
       if (data.listingAccess) {
         await V2ListingAccess.destroy({
-          where: { listingId: data.listingId }
+          where: { listingId: data.listingId },
         });
-        data.listingAccess.map(async item => {
+        data.listingAccess.map(async (item) => {
           await V2ListingAccess.create({
             listingId: data.listingId,
-            listSettingsId: item
+            listSettingsId: item,
           });
         });
       }
       // Checking out Listing Styles...
       if (data.listingStyles) {
         await V2ListingStyles.destroy({
-          where: { listingId: data.listingId }
+          where: { listingId: data.listingId },
         });
-        data.listingStyles.map(async item => {
+        data.listingStyles.map(async (item) => {
           await V2ListingStyles.create({
             listingId: data.listingId,
-            listSettingsId: item
+            listSettingsId: item,
           });
         });
       }
@@ -406,17 +487,19 @@ class ListingController {
             fri: listingAccessDays.fri,
             sat: listingAccessDays.sat,
             sun: listingAccessDays.sun,
-            all247: listingAccessDays.all247
+            all247: listingAccessDays.all247,
           },
           { where: { listingId: data.listingId } }
         );
-        const accessDayObj: ListingAccessDays | null = await ListingAccessDays.findOne({
-          where: { listingId: data.listingId }
-        });
+        const accessDayObj: ListingAccessDays | null = await ListingAccessDays.findOne(
+          {
+            where: { listingId: data.listingId },
+          }
+        );
         if (accessDayObj) {
           // Checking out Access Hours...
           await ListingAccessHours.destroy({
-            where: { listingAccessDaysId: accessDayObj.id }
+            where: { listingAccessDaysId: accessDayObj.id },
           });
           for (const item of listingAccessDays.listingAccessHours) {
             await ListingAccessHours.create({
@@ -424,7 +507,7 @@ class ListingController {
               weekday: item.weekday,
               openHour: new Date(parseInt(item.openHour, 10)),
               closeHour: new Date(parseInt(item.closeHour, 10)),
-              allday: item.allday
+              allday: item.allday,
             });
           }
         }
@@ -437,7 +520,11 @@ class ListingController {
     }
   };
 
-  getPublicListingsByIds = async (req: Request, res: Response, next: NextFunction) => {
+  getPublicListingsByIds = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     const data = req.body;
     const idString = JSON.stringify(data.ids);
     const cacheKey = `_public_listings_by_id_${idString}_`;
@@ -453,23 +540,33 @@ class ListingController {
           {
             model: UserProfile,
             as: "host",
-            attributes: ["firstName", "lastName", "picture"]
+            attributes: ["firstName", "lastName", "picture"],
           },
           {
             model: Location,
             as: "location",
-            attributes: ["country", "city", "state"]
+            attributes: ["country", "city", "state"],
           },
           {
             model: ListingData,
             as: "listingData",
-            attributes: ["basePrice", "currency", "capacity", "size", "meetingRooms", "isFurnished", "carSpace", "bookingType", "accessType"]
+            attributes: [
+              "basePrice",
+              "currency",
+              "capacity",
+              "size",
+              "meetingRooms",
+              "isFurnished",
+              "carSpace",
+              "bookingType",
+              "accessType",
+            ],
           },
           {
             model: ListingPhotos,
             as: "listingPhotos",
             attributes: ["name"],
-            limit: 1
+            limit: 1,
           },
           {
             model: ListSettingsParent,
@@ -479,17 +576,17 @@ class ListingController {
               {
                 model: ListSettings,
                 as: "category",
-                attributes: ["itemName"]
+                attributes: ["itemName"],
               },
               {
                 model: ListSettings,
                 as: "subCategory",
-                attributes: ["itemName"]
-              }
-            ]
-          }
+                attributes: ["itemName"],
+              },
+            ],
+          },
         ],
-        where: { id: data.ids }
+        where: { id: data.ids },
       });
       this.cache.set(cacheKey, JSON.parse(JSON.stringify(listingsObj)));
       res.send(listingsObj);
@@ -498,10 +595,14 @@ class ListingController {
     }
   };
 
-  fetchAccessTypes = async (req: Request, res: Response, next: NextFunction) => {
+  fetchAccessTypes = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       const result: Array<ListSettings> = await ListSettings.findAll({
-        where: { typeId: 113 }
+        where: { typeId: 113 },
       });
       res.send(result);
     } catch (err) {
@@ -510,10 +611,14 @@ class ListingController {
     }
   };
 
-  getListingDataById = async (req: Request, res: Response, next: NextFunction) => {
+  getListingDataById = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       const listingDataObj: ListingData | null = await ListingData.findOne({
-        where: { listingId: req.params.listingId }
+        where: { listingId: req.params.listingId },
       });
       res.send(listingDataObj);
     } catch (err) {
@@ -522,7 +627,11 @@ class ListingController {
     }
   };
 
-  putChangeListingStatus = async (req: Request, res: Response, next: NextFunction) => {
+  putChangeListingStatus = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       this.cache.flushAll();
       const listingId = req.params.listingId;
@@ -530,7 +639,10 @@ class ListingController {
       if (!listingObj) {
         throw new HttpException(400, `Listing ${listingId} not found.`);
       }
-      await Listing.update({ status: req.params.status, isPublished: false }, { where: { id: listingId } });
+      await Listing.update(
+        { status: req.params.status, isPublished: false },
+        { where: { id: listingId } }
+      );
       res.send(await Listing.findOne({ where: { id: listingId } }));
     } catch (err) {
       console.error(err);
@@ -541,14 +653,28 @@ class ListingController {
   onlyOwner(req: Request, listingObj: Listing) {
     const loggedUser: string | undefined = req.userIdDecoded;
     const loggedUserRole: string | undefined = req.userRoleDecoded;
-    if (!loggedUser || (loggedUser !== listingObj.userId && loggedUserRole !== "admin")) throw new HttpException(403, `Space ${listingObj.id} does not belong to user ${loggedUser}.`);
+    if (
+      !loggedUser ||
+      (loggedUser !== listingObj.userId && loggedUserRole !== "admin")
+    )
+      throw new HttpException(
+        403,
+        `Space ${listingObj.id} does not belong to user ${loggedUser}.`
+      );
   }
 
   onlyOwnerOrAdmin(req: Request, listingObj: Listing) {
     const loggedUserId: string | undefined = req.userIdDecoded;
     const loggedUserRole: string | undefined = req.userRoleDecoded;
 
-    if (!loggedUserId || (loggedUserId !== listingObj.userId && loggedUserRole !== "admin")) throw new HttpException(403, `Space ${listingObj.id} does not belong to user ${loggedUserId}.`);
+    if (
+      !loggedUserId ||
+      (loggedUserId !== listingObj.userId && loggedUserRole !== "admin")
+    )
+      throw new HttpException(
+        403,
+        `Space ${listingObj.id} does not belong to user ${loggedUserId}.`
+      );
   }
 
   async fillDefaultTimeTable(accessDays: ListingAccessDays) {
@@ -561,7 +687,7 @@ class ListingController {
         weekday: index,
         openHour: openHour,
         closeHour: closeHour,
-        allday: false
+        allday: false,
       });
       index++;
     }
@@ -572,16 +698,26 @@ class ListingController {
 
     const listingDataObj: ListingData | null = await ListingData.findOne({
       where: { listingId: listing.id },
-      raw: true
+      raw: true,
     });
-    if (!listingDataObj) throw new HttpException(400, `Listing ${listingId} does not have a 'Listing Data' associated.`);
+    if (!listingDataObj)
+      throw new HttpException(
+        400,
+        `Listing ${listingId} does not have a 'Listing Data' associated.`
+      );
     const basePrice = listingDataObj.basePrice;
 
-    const accessDayObj: ListingAccessDays | null = await ListingAccessDays.findOne({ where: { listingId: listing.id } });
-    if (!accessDayObj) throw new HttpException(400, `Listing ${listingId} does not have an 'Access Days' associated.`);
+    const accessDayObj: ListingAccessDays | null = await ListingAccessDays.findOne(
+      { where: { listingId: listing.id } }
+    );
+    if (!accessDayObj)
+      throw new HttpException(
+        400,
+        `Listing ${listingId} does not have an 'Access Days' associated.`
+      );
     const listingAccessDay: any = accessDayObj;
     const accessHoursToValidate = await ListingAccessHours.findAll({
-      where: { listingAccessDaysId: listingAccessDay.id }
+      where: { listingAccessDaysId: listingAccessDay.id },
     });
     listingAccessDay.listingAccessHours = accessHoursToValidate;
 
@@ -589,10 +725,24 @@ class ListingController {
 
     const bookingType = listing.bookingType;
 
-    return this.isReadyCheck(listingId, title, bookingType, basePrice, listingAccessDay, listing.listSettingsParentId);
+    return this.isReadyCheck(
+      listingId,
+      title,
+      bookingType,
+      basePrice,
+      listingAccessDay,
+      listing.listSettingsParentId
+    );
   }
 
-  async isReadyCheck(listingId: number, title?: string, bookingType?: string, basePrice?: number, listingAccessDays?: any, listingCategory?: number): Promise<boolean> {
+  async isReadyCheck(
+    listingId: number,
+    title?: string,
+    bookingType?: string,
+    basePrice?: number,
+    listingAccessDays?: any,
+    listingCategory?: number
+  ): Promise<boolean> {
     // One photo at least...
     const photosCount = await ListingPhotos.count({ where: { listingId } });
     if (photosCount <= 0) return false;
@@ -607,7 +757,8 @@ class ListingController {
     if (bookingType != "poa" && (!basePrice || basePrice <= 0)) return false;
 
     // If got one day open for work...
-    if (listingCategory != 20) if (!this.isOpenForWork(listingAccessDays)) return false;
+    if (listingCategory != 20)
+      if (!this.isOpenForWork(listingAccessDays)) return false;
 
     return true;
   }
@@ -616,11 +767,17 @@ class ListingController {
     console.log("ACCESS DAYS ====>>>", listingAccessDays);
     if (!listingAccessDays) return false;
     const { mon, tue, wed, thu, fri, sat, sun, all247 } = listingAccessDays;
-    if (!mon && !tue && !wed && !thu && !fri && !sat && !sun && !all247) return false;
+    if (!mon && !tue && !wed && !thu && !fri && !sat && !sun && !all247)
+      return false;
     if (!listingAccessDays.listingAccessHours) return false;
-    const aWrongPeriod: Array<any> = listingAccessDays.listingAccessHours.filter((o: { openHour: string; closeHour: string }) => {
-      return new Date(parseInt(o.openHour)).getTime() > new Date(parseInt(o.closeHour)).getTime();
-    });
+    const aWrongPeriod: Array<any> = listingAccessDays.listingAccessHours.filter(
+      (o: { openHour: string; closeHour: string }) => {
+        return (
+          new Date(parseInt(o.openHour)).getTime() >
+          new Date(parseInt(o.closeHour)).getTime()
+        );
+      }
+    );
     return !(aWrongPeriod.length > 0);
   }
 
@@ -632,14 +789,22 @@ class ListingController {
         return;
       }
       const data = await Listing.findAndCountAll({
-        attributes: ["id", "userId", "isPublished", "title", "createdAt", "isReady", "status"],
+        attributes: [
+          "id",
+          "userId",
+          "isPublished",
+          "title",
+          "createdAt",
+          "isReady",
+          "status",
+        ],
         include: [
           {
             model: Location,
             as: "location",
-            attributes: ["country", "city", "state"]
-          }
-        ]
+            attributes: ["country", "city", "state"],
+          },
+        ],
       });
       this.cache.set(cacheKeys.COUNT_ALL, JSON.parse(JSON.stringify(data)));
       res.send(data);
@@ -648,7 +813,11 @@ class ListingController {
     }
   };
 
-  getAllHosts = async (request: Request, response: Response, next: NextFunction) => {
+  getAllHosts = async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ) => {
     try {
       const data = await Listing.count({ distinct: true, col: "userId" });
       response.send({ count: data });
@@ -657,18 +826,22 @@ class ListingController {
     }
   };
 
-  getAllHostsByDate = async (request: Request, response: Response, next: NextFunction) => {
+  getAllHostsByDate = async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ) => {
     const days = request.query.days || 10000;
     const date = format(subDays(new Date(), days), "YYYY-MM-DD");
     try {
       const data = await Listing.count({
         where: {
           createdAt: {
-            [Op.gte]: `${date}`
-          }
+            [Op.gte]: `${date}`,
+          },
         },
         distinct: true,
-        col: "userId"
+        col: "userId",
       });
       response.send({ count: data });
     } catch (error) {
@@ -676,31 +849,35 @@ class ListingController {
     }
   };
 
-  getAllListingsByDate = async (request: Request, response: Response, next: NextFunction) => {
+  getAllListingsByDate = async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ) => {
     const days = request.query.days || 10000;
     const category = request.query.category || null;
     const date = format(subDays(new Date(), days), "YYYY-MM-DD");
     let where = {
       createdAt: {
-        [Op.gte]: `${date}`
-      }
+        [Op.gte]: `${date}`,
+      },
     };
     if (category && category !== null && category !== "null") {
       where = Object.assign({
         ...where,
-        listSettingsParentId: { [Op.in]: [category] }
+        listSettingsParentId: { [Op.in]: [category] },
       });
     }
     try {
       const all = await Listing.count({ where: where });
       const active = await Listing.count({
-        where: { ...where, status: "active" }
+        where: { ...where, status: "active" },
       });
       const deleted = await Listing.count({
-        where: { ...where, status: "deleted" }
+        where: { ...where, status: "deleted" },
       });
       const published = await Listing.count({
-        where: { ...where, isPublished: true }
+        where: { ...where, isPublished: true },
       });
       response.send({ count: { all, active, deleted, published } });
     } catch (error) {
@@ -708,7 +885,11 @@ class ListingController {
     }
   };
 
-  getAllListingsByCategory = async (request: Request, response: Response, next: NextFunction) => {
+  getAllListingsByCategory = async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ) => {
     const category = request.query.category;
     const where = { where: { listSettingsParentId: category }, raw: true };
     try {
@@ -719,7 +900,11 @@ class ListingController {
     }
   };
 
-  getAllListingsCategories = async (request: Request, response: Response, next: NextFunction) => {
+  getAllListingsCategories = async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ) => {
     const category = request.query.category;
     const where = { where: { listSettingsParentId: category }, raw: true };
     try {
@@ -730,7 +915,11 @@ class ListingController {
     }
   };
 
-  getListingsCountCategories = async (request: Request, response: Response, next: NextFunction) => {
+  getListingsCountCategories = async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ) => {
     var listingsCategory = new Array();
     const categories = await _getCategories();
     for (const category of categories) {
@@ -738,17 +927,19 @@ class ListingController {
         const where = { listSettingsParentId: item.id };
         const all = await Listing.count({ where: where });
         const active = await Listing.count({
-          where: { ...where, status: "active" }
+          where: { ...where, status: "active" },
         });
         const deleted = await Listing.count({
-          where: { ...where, status: "deleted" }
+          where: { ...where, status: "deleted" },
         });
         const published = await Listing.count({
-          where: { ...where, isPublished: true }
+          where: { ...where, isPublished: true },
         });
         listingsCategory.push({
-          category: (item.subCategory && item.subCategory.itemName) || category.itemName,
-          count: { all, active, deleted, published }
+          category:
+            (item.subCategory && item.subCategory.itemName) ||
+            category.itemName,
+          count: { all, active, deleted, published },
         });
       }
     }
