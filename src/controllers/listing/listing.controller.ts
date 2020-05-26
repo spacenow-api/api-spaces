@@ -89,6 +89,11 @@ class ListingController {
     );
     this.router.put("/listings/update", authMiddleware, this.updateListing);
     this.router.put(
+      "/listings/update/user",
+      authMiddleware,
+      this.updateListingUser
+    );
+    this.router.put(
       "/listings/:listingId/status/:status",
       authAdminMiddleware,
       this.putChangeListingStatus
@@ -110,6 +115,22 @@ class ListingController {
       this.deleteListing
     );
   }
+
+  updateListingUser = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const data = req.body;
+    const where = { where: { id: data.listindId } };
+    try {
+      const listingObj = await Listing.update({ userId: data.userId }, where);
+      res.send({ status: "Success" });
+    } catch (err) {
+      console.error(err);
+      sequelizeErrorMiddleware(err, req, res, next);
+    }
+  };
 
   createDraftListing = async (
     req: Request,
