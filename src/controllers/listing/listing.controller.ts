@@ -122,9 +122,15 @@ class ListingController {
     next: NextFunction
   ) => {
     const data = req.body;
-    const where = { where: { id: data.listindId } };
     try {
-      const listingObj = await Listing.update({ userId: data.userId }, where);
+      await Listing.update(
+        { userId: data.userId },
+        { where: { id: data.listindId } }
+      );
+      await Location.update(
+        { userId: data.userId },
+        { where: { id: data.locationId } }
+      );
       res.send({ status: "Success" });
     } catch (err) {
       console.error(err);
