@@ -1,9 +1,22 @@
-import { Table, Column, AutoIncrement, Model, CreatedAt, UpdatedAt, PrimaryKey, AllowNull, Default, BelongsTo, ForeignKey, DataType } from "sequelize-typescript";
+import {
+  Table,
+  Column,
+  AutoIncrement,
+  Model,
+  CreatedAt,
+  UpdatedAt,
+  PrimaryKey,
+  AllowNull,
+  Default,
+  BelongsTo,
+  ForeignKey,
+  DataType,
+} from "sequelize-typescript";
 
 import { V2Listing } from "./";
 
 @Table({
-  tableName: "ListingPhotos"
+  tableName: "ListingPhotos",
 })
 export class V2ListingPhotos extends Model<V2ListingPhotos> {
   @PrimaryKey
@@ -28,7 +41,6 @@ export class V2ListingPhotos extends Model<V2ListingPhotos> {
   @Column
   isCover?: number;
 
-  @AllowNull(false)
   @Column
   type!: string;
 
