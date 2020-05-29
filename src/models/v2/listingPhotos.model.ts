@@ -30,7 +30,6 @@ export class V2ListingPhotos extends Model<V2ListingPhotos> {
   @Column
   listingId!: number;
 
-  @AllowNull(false)
   @Column
   name!: string;
 

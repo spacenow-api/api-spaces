@@ -125,7 +125,7 @@ class ListingController {
     try {
       await Listing.update(
         { userId: data.userId },
-        { where: { id: data.listindId } }
+        { where: { id: data.listingId } }
       );
       await Location.update(
         { userId: data.userId },
