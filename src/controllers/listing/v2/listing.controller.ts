@@ -26,7 +26,7 @@ import {
   V2Rule,
   V2Amenity,
   V2Feature,
-  V2Tag
+  V2Tag,
 } from "../../../models/v2";
 
 import { ListSettings } from "../../../models";
@@ -38,7 +38,7 @@ const Col = Sequelize.col;
 const cacheKeys = {
   PLAIN_LIST: "_listings_plain_",
   BY_USER: "_listings_by_user_",
-  COUNT_ALL: "_listings_count_"
+  COUNT_ALL: "_listings_count_",
 };
 
 class ListingController {
@@ -77,7 +77,7 @@ class ListingController {
     try {
       res.send(
         await V2Listing.create({
-          userId
+          userId,
         })
       );
     } catch (err) {
@@ -105,11 +105,11 @@ class ListingController {
           include: [
             {
               model: V2ListingAccessHours,
-              as: "accessHours"
-            }
-          ]
-        }
-      ]
+              as: "accessHours",
+            },
+          ],
+        },
+      ],
     };
     try {
       const listingObj = await V2Listing.findByPk(id, include);
@@ -153,7 +153,7 @@ class ListingController {
   ) => {
     const listingId = <string>(<unknown>req.params.id);
     const include = {
-      include: [{ model: ListSettings, as: "settingsData" }]
+      include: [{ model: ListSettings, as: "settingsData" }],
     };
     if (!listingId) {
       throw new HttpException(400, `Listing ID must be provided.`);
@@ -207,7 +207,7 @@ class ListingController {
       throw new HttpException(400, `Listing ID must be provided.`);
     }
     const include = {
-      include: [{ model: ListSettings, as: "settingsData" }]
+      include: [{ model: ListSettings, as: "settingsData" }],
     };
     const where = { where: { listingId }, ...include };
     try {
@@ -357,7 +357,7 @@ class ListingController {
     try {
       const result = await V2Listing.findAndCountAll({
         limit: pageSize,
-        offset: page * pageSize
+        offset: page * pageSize,
       });
       this.cache.set(cacheKey, JSON.parse(JSON.stringify(result)));
       res.send(result);
@@ -378,14 +378,14 @@ class ListingController {
     const where = {
       where: {
         userId,
-        status: { [Op.not]: "deleted" }
-      }
+        status: { [Op.not]: "deleted" },
+      },
     };
 
     try {
       const listingsObj = await V2Listing.findAndCountAll({
         ...where,
-        order: [["updatedAt", "DESC"]]
+        order: [["updatedAt", "DESC"]],
       });
       this.cache.set(
         `${cacheKeys.BY_USER}${userId}`,
@@ -414,9 +414,9 @@ class ListingController {
         {
           model: V2ListingAccessDays,
           as: "accessDays",
-          include: [{ model: V2ListingAccessHours, as: "accessHours" }]
-        }
-      ]
+          include: [{ model: V2ListingAccessHours, as: "accessHours" }],
+        },
+      ],
     };
     const where = { where: { listingId: id } };
 
@@ -431,7 +431,7 @@ class ListingController {
           async (amenity: any) =>
             await V2ListingAmenities.create({
               listingId: id,
-              amenityId: amenity.id
+              amenityId: amenity.id,
             })
         ));
       await V2ListingRules.destroy(where);
@@ -441,7 +441,7 @@ class ListingController {
           async (rule: any) =>
             await V2ListingRules.create({
               listingId: id,
-              ruleId: rule.id
+              listSettingsId: rule.id,
             })
         ));
       await V2ListingFeatures.destroy(where);
@@ -451,7 +451,7 @@ class ListingController {
           async (feature: any) =>
             await V2ListingFeatures.create({
               listingId: id,
-              listSettingsId: feature.id
+              listSettingsId: feature.id,
             })
         ));
       await V2ListingTag.destroy(where);
@@ -461,7 +461,7 @@ class ListingController {
           async (tag: any) =>
             await V2ListingTag.create({
               listingId: id,
-              tagId: tag.id
+              tagId: tag.id,
             })
         ));
       await V2ListingPhotos.destroy(where);
@@ -476,7 +476,7 @@ class ListingController {
         (await data.accessDays.accessHours.map(
           async (accessHour: any) =>
             await V2ListingAccessHours.update(accessHour, {
-              where: { id: accessHour.id }
+              where: { id: accessHour.id },
             })
         ));
       await listing.accessDays.update(data.accessDays);

@@ -1,12 +1,12 @@
-import express, { Application } from 'express';
-import compression from 'compression';
-import cookieParse from 'cookie-parser';
-import bodyParser from 'body-parser';
+import express, { Application } from "express";
+import compression from "compression";
+import cookieParse from "cookie-parser";
+import bodyParser from "body-parser";
 
-import sequelize from './helpers/database/sequelize';
-import loggerMiddleware from './helpers/middlewares/logger-middleware';
-import errorMiddleware from './helpers/middlewares/error-middleware';
-import sequelizeMiddleware from './helpers/middlewares/sequelize-middleware';
+import sequelize from "./helpers/database/sequelize";
+import loggerMiddleware from "./helpers/middlewares/logger-middleware";
+import errorMiddleware from "./helpers/middlewares/error-middleware";
+import sequelizeMiddleware from "./helpers/middlewares/sequelize-middleware";
 
 class App {
   public app: Application;
@@ -26,7 +26,7 @@ class App {
   private initializeMiddlewares(): void {
     this.app.use(loggerMiddleware);
     this.app.use(sequelizeMiddleware);
-    this.app.use(bodyParser.json());
+    this.app.use(bodyParser.json({ limit: "50mb" }));
     this.app.use(cookieParse());
     this.app.use(compression());
   }
@@ -40,7 +40,7 @@ class App {
   }
 
   private initializeControllers(controllers: any): void {
-    controllers.forEach((c: any) => this.app.use('/', c.router));
+    controllers.forEach((c: any) => this.app.use("/", c.router));
   }
 
   public listen() {

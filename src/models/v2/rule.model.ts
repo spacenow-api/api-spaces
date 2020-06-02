@@ -9,7 +9,7 @@ import {
   Unique,
   Default,
   BelongsToMany,
-  BeforeCreate
+  BeforeCreate,
 } from "sequelize-typescript";
 
 import { V2ListingRules, V2Listing } from "./";
@@ -17,7 +17,7 @@ import { V2ListingRules, V2Listing } from "./";
 import uuidV4 from "uuid/v4";
 
 @Table({
-  tableName: "rule"
+  tableName: "rule",
 })
 export class V2Rule extends Model<V2Rule> {
   @IsUUID(4)
@@ -48,11 +48,7 @@ export class V2Rule extends Model<V2Rule> {
   @Column({ field: "updated_at" })
   updatedAt!: Date;
 
-  @BelongsToMany(
-    () => V2Listing,
-    () => V2ListingRules,
-    "ruleId"
-  )
+  @BelongsToMany(() => V2Listing, () => V2ListingRules, "listSettingsId")
   listings!: V2Listing[];
 
   @BeforeCreate
@@ -69,7 +65,7 @@ export class V2Rule extends Model<V2Rule> {
       .toString()
       .toLowerCase()
       .replace(/\s+/g, "-")
-      .replace(p, c => b.charAt(a.indexOf(c)))
+      .replace(p, (c) => b.charAt(a.indexOf(c)))
       .replace(/&/g, "-and-")
       .replace(/[^\w\-]+/g, "")
       .replace(/\-\-+/g, "-")

@@ -30,7 +30,6 @@ import V2MediaController from "./controllers/listing/v2/media.controller";
 import V2AmenityController from "./controllers/listing/v2/amenity.controller";
 import V2FeatureController from "./controllers/listing/v2/feature.controller";
 import V2ConcellationController from "./controllers/listing/v2/cancellation.controller";
-// import V2MediaController from './controllers/media/v2/media.controller'
 import V2TagController from "./controllers/tag/v2/tag.controller";
 
 const app = new App(

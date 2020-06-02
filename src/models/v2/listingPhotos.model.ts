@@ -33,7 +33,7 @@ export class V2ListingPhotos extends Model<V2ListingPhotos> {
   @Column
   name!: string;
 
-  @Column(DataType.ENUM("photo", "video", "floorplan"))
+  @Column(DataType.ENUM("photo", "video", "floorplan", "menu"))
   category?: string;
 
   @Default(0)
