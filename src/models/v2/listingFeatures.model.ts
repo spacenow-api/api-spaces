@@ -1,20 +1,10 @@
-import {
-  Table,
-  Column,
-  Model,
-  CreatedAt,
-  UpdatedAt,
-  AllowNull,
-  ForeignKey,
-  HasOne,
-  PrimaryKey
-} from "sequelize-typescript";
+import { Table, Column, Model, CreatedAt, UpdatedAt, AllowNull, ForeignKey, HasOne, PrimaryKey } from "sequelize-typescript";
 
 import { V2Listing, V2Feature } from "./";
 import { ListSettings } from "../";
 
 @Table({
-  tableName: "ListingFeatures"
+  tableName: "ListingFeatures",
 })
 export class V2ListingFeatures extends Model<V2ListingFeatures> {
   @ForeignKey(() => V2Feature)

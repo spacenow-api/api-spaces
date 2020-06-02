@@ -1,16 +1,4 @@
-import {
-  Table,
-  Column,
-  Model,
-  CreatedAt,
-  UpdatedAt,
-  IsUUID,
-  PrimaryKey,
-  Unique,
-  Default,
-  BelongsToMany,
-  BeforeCreate,
-} from "sequelize-typescript";
+import { Table, Column, Model, CreatedAt, UpdatedAt, IsUUID, PrimaryKey, Unique, Default, BelongsToMany, BeforeCreate } from "sequelize-typescript";
 
 import { V2ListingRules, V2Listing } from "./";
 
@@ -48,7 +36,7 @@ export class V2Rule extends Model<V2Rule> {
   @Column({ field: "updated_at" })
   updatedAt!: Date;
 
-  @BelongsToMany(() => V2Listing, () => V2ListingRules, "listSettingsId")
+  @BelongsToMany(() => V2Listing, () => V2ListingRules, "ruleId")
   listings!: V2Listing[];
 
   @BeforeCreate

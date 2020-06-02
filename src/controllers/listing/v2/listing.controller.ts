@@ -58,15 +58,8 @@ class ListingController {
     this.router.get(`/v2/listing/:id/rules`, this.getListingRules);
     this.router.get(`/v2/listing/:id/tags`, this.getListingTags);
     this.router.get(`/v2/listing/:id/access-days`, this.getListingAccessDays);
-    this.router.get(
-      `/v2/listing/:id/access-days/:accessDayId`,
-      this.getListingAccessHours
-    );
-    this.router.get(
-      `/v2/user/:userId/listings`,
-      authMiddleware,
-      this.getUserListings
-    );
+    this.router.get(`/v2/listing/:id/access-days/:accessDayId`, this.getListingAccessHours);
+    this.router.get(`/v2/user/:userId/listings`, authMiddleware, this.getUserListings);
     this.router.post(`/v2/listing`, authMiddleware, this.postListing);
     this.router.patch(`/v2/listing/:id`, authMiddleware, this.updateListing);
     this.router.delete(`/v2/listing/:id`, authMiddleware, this.deleteListing);
@@ -122,11 +115,7 @@ class ListingController {
     }
   };
 
-  getListingAmenities = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
+  getListingAmenities = async (req: Request, res: Response, next: NextFunction) => {
     const listingId = <string>(<unknown>req.params.id);
     if (!listingId) {
       throw new HttpException(400, `Listing ID must be provided.`);
@@ -135,10 +124,7 @@ class ListingController {
     try {
       const obj = await V2ListingAmenities.findAll(where);
       if (!obj) {
-        throw new HttpException(
-          400,
-          `Amenities for the Listing ${listingId} not found.`
-        );
+        throw new HttpException(400, `Amenities for the Listing ${listingId} not found.`);
       }
       res.send(obj);
     } catch (err) {
@@ -146,11 +132,7 @@ class ListingController {
     }
   };
 
-  getListingActivities = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
+  getListingActivities = async (req: Request, res: Response, next: NextFunction) => {
     const listingId = <string>(<unknown>req.params.id);
     const include = {
       include: [{ model: ListSettings, as: "settingsData" }],
@@ -162,10 +144,7 @@ class ListingController {
     try {
       const obj = await V2ListingActivities.findAll(where);
       if (!obj) {
-        throw new HttpException(
-          400,
-          `Activities for the Listing ${listingId} not found.`
-        );
+        throw new HttpException(400, `Activities for the Listing ${listingId} not found.`);
       }
       res.send(obj);
     } catch (err) {
@@ -173,11 +152,7 @@ class ListingController {
     }
   };
 
-  getListingAccess = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
+  getListingAccess = async (req: Request, res: Response, next: NextFunction) => {
     const listingId = <string>(<unknown>req.params.id);
     if (!listingId) {
       throw new HttpException(400, `Listing ID must be provided.`);
@@ -186,10 +161,7 @@ class ListingController {
     try {
       const obj = await V2ListingAccess.findAll(where);
       if (!obj) {
-        throw new HttpException(
-          400,
-          `Access for the Listing ${listingId} not found.`
-        );
+        throw new HttpException(400, `Access for the Listing ${listingId} not found.`);
       }
       res.send(obj);
     } catch (err) {
@@ -197,11 +169,7 @@ class ListingController {
     }
   };
 
-  getListingFeatures = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
+  getListingFeatures = async (req: Request, res: Response, next: NextFunction) => {
     const listingId = <string>(<unknown>req.params.id);
     if (!listingId) {
       throw new HttpException(400, `Listing ID must be provided.`);
@@ -213,10 +181,7 @@ class ListingController {
     try {
       const obj = await V2ListingFeatures.findAll(where);
       if (!obj) {
-        throw new HttpException(
-          400,
-          `Features for the Listing ${listingId} not found.`
-        );
+        throw new HttpException(400, `Features for the Listing ${listingId} not found.`);
       }
       res.send(obj);
     } catch (err) {
@@ -233,10 +198,7 @@ class ListingController {
     try {
       const obj = await V2ListingRules.findAll(where);
       if (!obj) {
-        throw new HttpException(
-          400,
-          `Rules for the Listing ${listingId} not found.`
-        );
+        throw new HttpException(400, `Rules for the Listing ${listingId} not found.`);
       }
       res.send(obj);
     } catch (err) {
@@ -253,10 +215,7 @@ class ListingController {
     try {
       const obj = await V2ListingTag.findAll(where);
       if (!obj) {
-        throw new HttpException(
-          400,
-          `Tags for the Listing ${listingId} not found.`
-        );
+        throw new HttpException(400, `Tags for the Listing ${listingId} not found.`);
       }
       res.send(obj);
     } catch (err) {
@@ -265,11 +224,7 @@ class ListingController {
     }
   };
 
-  getListingStyles = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
+  getListingStyles = async (req: Request, res: Response, next: NextFunction) => {
     const listingId = <number>(<unknown>req.params.id);
     if (!listingId) {
       throw new HttpException(400, `Listing ID must be provided.`);
@@ -278,10 +233,7 @@ class ListingController {
     try {
       const obj = await V2ListingStyles.findAll(where);
       if (!obj) {
-        throw new HttpException(
-          400,
-          `Styles for the Listing ${listingId} not found.`
-        );
+        throw new HttpException(400, `Styles for the Listing ${listingId} not found.`);
       }
       res.send(obj);
     } catch (err) {
@@ -290,11 +242,7 @@ class ListingController {
     }
   };
 
-  getListingAccessDays = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
+  getListingAccessDays = async (req: Request, res: Response, next: NextFunction) => {
     const listingId = <string>(<unknown>req.params.id);
     if (!listingId) {
       throw new HttpException(400, `Listing ID must be provided.`);
@@ -303,10 +251,7 @@ class ListingController {
     try {
       const accessDaysObj = await V2ListingAccessDays.findOne(where);
       if (!accessDaysObj) {
-        throw new HttpException(
-          400,
-          `Access Days fot the Listing ${listingId} not found.`
-        );
+        throw new HttpException(400, `Access Days fot the Listing ${listingId} not found.`);
       }
       res.send(accessDaysObj);
     } catch (err) {
@@ -314,11 +259,7 @@ class ListingController {
     }
   };
 
-  getListingAccessHours = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
+  getListingAccessHours = async (req: Request, res: Response, next: NextFunction) => {
     const listingId = <string>(<unknown>req.params.id);
     if (!listingId) {
       throw new HttpException(400, `Listing ID must be provided.`);
@@ -331,10 +272,7 @@ class ListingController {
     try {
       const accessHoursObj = await V2ListingAccessHours.findAll(where);
       if (!accessHoursObj) {
-        throw new HttpException(
-          400,
-          `Access Hours fot the Listing ${listingId} not found.`
-        );
+        throw new HttpException(400, `Access Hours fot the Listing ${listingId} not found.`);
       }
       res.send(accessHoursObj);
     } catch (err) {
@@ -387,10 +325,7 @@ class ListingController {
         ...where,
         order: [["updatedAt", "DESC"]],
       });
-      this.cache.set(
-        `${cacheKeys.BY_USER}${userId}`,
-        JSON.parse(JSON.stringify(listingsObj))
-      );
+      this.cache.set(`${cacheKeys.BY_USER}${userId}`, JSON.parse(JSON.stringify(listingsObj)));
       res.send(listingsObj);
     } catch (err) {
       console.error(err);
@@ -441,7 +376,7 @@ class ListingController {
           async (rule: any) =>
             await V2ListingRules.create({
               listingId: id,
-              listSettingsId: rule.id,
+              ruleId: rule.id,
             })
         ));
       await V2ListingFeatures.destroy(where);
@@ -465,12 +400,7 @@ class ListingController {
             })
         ));
       await V2ListingPhotos.destroy(where);
-      data.photos &&
-        data.photos.length > 0 &&
-        (await data.photos.map(
-          async (photo: any) =>
-            await V2ListingPhotos.create({ ...photo, listingId: id })
-        ));
+      data.photos && data.photos.length > 0 && (await data.photos.map(async (photo: any) => await V2ListingPhotos.create({ ...photo, listingId: id })));
       data.accessDays &&
         data.accessDays.accessHours &&
         (await data.accessDays.accessHours.map(
@@ -511,14 +441,7 @@ class ListingController {
   onlyOwner(req: Request, listingObj: V2Listing) {
     const loggedUser: string | undefined = req.userIdDecoded;
     const loggedUserRole: string | undefined = req.userRoleDecoded;
-    if (
-      !loggedUser ||
-      (loggedUser !== listingObj.userId && loggedUserRole !== "admin")
-    )
-      throw new HttpException(
-        403,
-        `Space ${listingObj.id} does not belong to user ${loggedUser}.`
-      );
+    if (!loggedUser || (loggedUser !== listingObj.userId && loggedUserRole !== "admin")) throw new HttpException(403, `Space ${listingObj.id} does not belong to user ${loggedUser}.`);
   }
 }
 

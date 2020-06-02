@@ -1,38 +1,29 @@
-import {
-  Table,
-  Column,
-  Model,
-  CreatedAt,
-  UpdatedAt,
-  AllowNull,
-  ForeignKey,
-  IsUUID
-} from "sequelize-typescript";
+import { Table, Column, Model, CreatedAt, UpdatedAt, AllowNull, ForeignKey, IsUUID } from "sequelize-typescript";
 
 import { V2Listing, V2Rule } from "./";
 
 @Table({
-  tableName: "ListingRules"
+  tableName: "listing_rule",
 })
 export class V2ListingRules extends Model<V2ListingRules> {
   @ForeignKey(() => V2Listing)
   @AllowNull(false)
-  @Column({ field: "listingId" })
+  @Column({ field: "listing_id" })
   listingId!: number;
 
   @ForeignKey(() => V2Rule)
-  // @IsUUID(4)
+  @IsUUID(4)
   @AllowNull(false)
-  @Column({ field: "listSettingsId" })
-  listSettingsId!: string;
+  @Column({ field: "rule_id" })
+  ruleId!: string;
 
   @CreatedAt
   @AllowNull(false)
-  @Column({ field: "createdAt" })
+  @Column({ field: "created_at" })
   createdAt!: Date;
 
   @UpdatedAt
   @AllowNull(false)
-  @Column({ field: "updatedAt" })
+  @Column({ field: "updated_at" })
   updatedAt!: Date;
 }
