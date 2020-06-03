@@ -15,7 +15,7 @@ import {
   HasMany,
   BelongsToMany,
   AfterCreate,
-  AfterUpdate
+  AfterUpdate,
 } from "sequelize-typescript";
 
 import { UserProfile } from "../";
@@ -33,14 +33,14 @@ import {
   V2Rule,
   V2Amenity,
   V2ListingFeatures,
-  V2Feature
+  V2Feature,
 } from "./";
 
 import axios from "axios";
 import { emailsApi } from "../../config";
 
 @Table({
-  tableName: "Listing"
+  tableName: "Listing",
 })
 export class V2Listing extends Model<V2Listing> {
   @PrimaryKey
@@ -68,8 +68,8 @@ export class V2Listing extends Model<V2Listing> {
   title?: string;
 
   @AllowNull(false)
-  @Default("instant")
-  @Column(DataType.ENUM("instant", "request", "poa"))
+  @Default("enquire")
+  @Column(DataType.ENUM("request", "instant", "poa", "enquire"))
   bookingType?: string;
 
   @AllowNull(false)
@@ -111,35 +111,19 @@ export class V2Listing extends Model<V2Listing> {
   @HasMany(() => V2ListingPhotos, "listingId")
   photos!: V2ListingPhotos[];
 
-  @BelongsToMany(
-    () => V2Rule,
-    () => V2ListingRules,
-    "listingId"
-  )
+  @BelongsToMany(() => V2Rule, () => V2ListingRules, "listingId")
   rules!: V2Rule[];
 
-  @BelongsToMany(
-    () => V2Amenity,
-    () => V2ListingAmenities,
-    "listingId"
-  )
+  @BelongsToMany(() => V2Amenity, () => V2ListingAmenities, "listingId")
   amenities!: V2Amenity[];
 
-  @BelongsToMany(
-    () => V2Feature,
-    () => V2ListingFeatures,
-    "listingId"
-  )
+  @BelongsToMany(() => V2Feature, () => V2ListingFeatures, "listingId")
   features!: V2Feature[];
 
   @HasMany(() => V2ListingExceptionDates, "listingId")
   exceptionDates!: V2ListingExceptionDates[];
 
-  @BelongsToMany(
-    () => V2Tag,
-    () => V2ListingTag,
-    "listingId"
-  )
+  @BelongsToMany(() => V2Tag, () => V2ListingTag, "listingId")
   tags!: V2Tag[];
 
   @AfterCreate
@@ -159,6 +143,10 @@ export class V2Listing extends Model<V2Listing> {
 
   @AfterUpdate
   static sendPublishEmail = (instance: V2Listing) => {
-    if (instance.previous("isPublished") === false && instance.isPublished === true) return axios.post(`${emailsApi}/email/listing/${instance.id}/publish`);
+    if (
+      instance.previous("isPublished") === false &&
+      instance.isPublished === true
+    )
+      return axios.post(`${emailsApi}/email/listing/${instance.id}/publish`);
   };
 }
